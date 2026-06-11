@@ -1,0 +1,381 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders:opsz,wght@10..72,100..900&family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Fjalla+One&display=swap');
+
+.hero {
+  width: 100%;
+  margin: auto 0;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 5rem;
+}
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4rem;
+}
+
+.hero-left {
+  flex: 1;
+}
+
+.hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hero-left h1 {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 7rem;
+  font-weight: 900;
+  margin-top: 1.5rem;
+  color: #a992d6;
+  line-height: 1;
+}
+
+.hero-left p {
+  font-family: "Chivo Mono", monospace;
+  font-size: 1.2rem;
+  color: rgba(188,187,187,0.9);
+}
+
+
+
+.hero-right p {
+  max-width: 420px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  color: rgba(188,187,187,0.6);
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.hero-buttons button {
+  padding: 12px 28px;
+
+  border: none;
+  cursor: pointer;
+
+  background: rgba(128,92,186,0.2);
+
+  color: white;
+
+  font-family: "Chivo Mono", monospace;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  transition: all 0.3s ease;
+}
+
+.hero-buttons button:hover {
+  transform: translateY(-2px);
+
+  background: rgba(128,92,186,0.35);
+}
+
+.hero-bottom {
+  margin-top: 3rem;
+
+  display: flex;
+  gap: 4rem;
+  align-items: flex-start;
+}
+
+.hero-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  min-width: 180px;
+}
+
+
+
+.stat h2 {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 5.5rem;
+  color: white;
+  line-height: 1;
+}
+
+.stat span {
+  font-family: "Chivo Mono", monospace;
+  color: rgba(188, 187, 187, 0.7);
+}
+
+.stat:hover h2 {
+  color: #d4c1ff;
+}
+
+.stat:hover span {
+  color: #d4c1ff;
+}
+
+.stat h2,
+.stat span {
+  transition: color 0.3s ease;
+}
+
+.live-preview {
+  flex: 1;
+}
+
+.live-preview h3 {
+  margin-bottom: 1rem;
+
+  font-family: "Chivo Mono", monospace;
+  color: rgba(188, 187, 187, 0.8);
+}
+
+.slider-container {
+  overflow: hidden;
+  width: 100%;
+}
+
+.slider-track {
+  display: flex;
+  gap: 1rem;
+
+  width: max-content;
+
+}
+
+.match-preview {
+  width: 210px;
+  height: 210px;
+  padding: 1rem 1.5rem;
+
+  background: rgba(157, 157, 157, 0.2);
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-family: "Chivo Mono", monospace;
+  color: rgba(188,187,187,0.9);
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideMatches {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.matchmaking-panel {
+  width: 100%;
+
+  display: flex;
+  gap: 1rem;
+  margin-top: 8rem;
+}
+
+.play-type {
+  width: 180px;
+
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid rgba(128,92,186,0.5);
+}
+
+.play-type button {
+  height: 60px;
+
+  border: 2px solid rgba(128,92,186,0.3);
+
+  background: transparent;
+
+  color: rgba(188,187,187,0.8);
+
+  font-family: "Chivo Mono", monospace;
+  font-size: 1rem;
+
+  cursor: pointer;
+
+  transition: .3s;
+}
+
+.play-type button:hover{
+  border: 2px solid rgb(228, 224, 233);
+}
+
+
+.play-type button.active {
+ border: 2px solid rgb(119, 88, 157);
+ background-color: #332648;
+}
+
+.match-options {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.match-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid rgba(128,92,186,0.5);
+}
+
+.match-mode button {
+  height: 81px;
+
+  border: 2px solid rgba(128,92,186,0.3);
+  background: transparent;
+
+  color: white;
+
+  font-family: "Big Shoulders", monospace;
+  font-size: 2.25rem;
+
+  cursor: pointer;
+}
+
+.match-mode button:hover {
+  border: 2px solid rgb(228, 224, 233);
+}
+
+
+.match-mode .active {
+  border: 2px solid rgb(228, 224, 233);
+  color: #d4c1ff;
+}
+
+.difficulty-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  border: 1px solid rgba(128,92,186,0.5);
+}
+
+.difficulty-options button {
+  height: 80px;
+border: 1px solid rgba(128,92,186,0.3);
+  background: transparent;
+
+  color: white;
+
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.6rem;
+
+  cursor: pointer;
+  transition: .3s;
+}
+
+.difficulty-options button:hover {
+  border: 1px solid rgb(228, 224, 233);
+}
+.difficulty-options .active{
+  border: 1px solid rgb(153, 107, 209);
+  color: #d4c1ff;
+  background: rgba(128,92,186,0.2);
+}
+
+.find-match-btn {
+  width: 220px;
+
+  border: none;
+
+  background: linear-gradient(
+    to bottom,
+    #b89cff,
+    #805cba
+  );
+
+  color: white;
+
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+
+  cursor: pointer;
+
+  transition: .3s;
+}
+
+.find-match-btn:hover {
+  transform: scale(1.03);
+
+  box-shadow: 0 0 25px rgba(128,92,186,0.4);
+}
+
+.topic-options {
+  display: grid;
+  height: 81px;
+
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(120px, 1fr)
+  );
+
+  border: 1px solid rgba(128, 92, 186, 0.5);
+}
+
+.topic-options button {
+ border: 1px solid rgba(128, 92, 186, 0.5);
+
+  background: transparent;
+
+  color: white;
+
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.4rem;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+}
+
+
+.topic-options button:hover{
+  border: 1px solid rgb(228, 224, 233);
+}
+.topic-options button.active {
+  border: 1px solid rgb(153, 107, 209);
+  color: #d4c1ff;
+  background: rgba(128,92,186,0.2);
+}
+
+.friend-panel {
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 2rem;
+
+  border: 1px solid rgba(128, 92, 186, 0.5);
+}
+
+.friend-panel h3 {
+  color: white;
+
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 2rem;
+
+  margin-bottom: 1rem;
+}
+
+.friend-panel p {
+  color: rgba(188, 187, 187, 0.8);
+
+  font-family: "Chivo Mono", monospace;
+  line-height: 1.6;
+}

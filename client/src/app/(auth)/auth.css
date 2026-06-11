@@ -1,0 +1,94 @@
+
+
+.auth-page {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(
+    to right,
+    #000000,
+    #3c2d55
+  );
+
+  padding: 2rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+
+  padding: 3rem;
+
+  background: rgba(157, 157, 157, 0.15);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(20px);
+
+  border-radius: 20px;
+}
+
+.auth-card h1 {
+  font-size: 4rem;
+  color: #a992d6;
+  margin-bottom: 2rem;
+}
+
+.auth-card input {
+  width: 100%;
+
+  padding: 14px;
+  margin-bottom: 1rem;
+
+  background: rgba(255, 255, 255, 0.05);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: white;
+
+  outline: none;
+}
+
+.auth-card input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+.auth-card button {
+  width: 100%;
+
+  padding: 14px;
+
+  margin-top: 1rem;
+
+  border: none;
+
+  cursor: pointer;
+
+  background: linear-gradient(
+    to right,
+    #b89cff,
+    #805cba
+  );
+
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.auth-card p {
+  margin-top: 1.5rem;
+
+  text-align: center;
+
+  color: rgba(255,255,255,0.7);
+
+  font-family: "Chivo Mono", monospace;
+}
+
+.auth-card a {
+  color: #d4c1ff;
+  text-decoration: none;
+}
