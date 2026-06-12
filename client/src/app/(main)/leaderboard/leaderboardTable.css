@@ -1,0 +1,89 @@
+.leaderboard-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 40px;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  position: relative;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.leaderboard-row::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: transparent;
+  border-radius: 0 2px 2px 0;
+  transition: background 0.2s ease;
+}
+
+.leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-row:hover {
+  background: rgba(169, 146, 214, 0.06);
+  transform: translateX(4px);
+}
+
+.leaderboard-row:hover::before {
+  background: rgba(169, 146, 214, 0.7);
+}
+
+.rank {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.8rem;
+  color: rgba(180, 170, 210, 0.5);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.user-info img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(169, 146, 214, 0.3);
+  background: rgba(255, 255, 255, 0.03);
+  object-fit: cover;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.user-info span {
+  color: rgba(240, 240, 255, 0.9);
+  font-size: 0.95rem;
+  font-family: "Fjalla One", sans-serif;
+  letter-spacing: 0.3px;
+}
+
+.score {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #a992d6;
+  background: rgba(169, 146, 214, 0.1);
+  border: 1px solid rgba(169, 146, 214, 0.2);
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}

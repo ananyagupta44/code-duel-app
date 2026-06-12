@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import api from "@/lib/api";
 import "./problem.css";
 import Editor from "@monaco-editor/react";
 
 export default function ProblemPage() {
   const { id } = useParams();
-
+  const router = useRouter();
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState("javascript");
@@ -19,6 +19,8 @@ export default function ProblemPage() {
   const [customInput, setCustomInput] = useState("");
   const [showLanguages, setShowLanguages] = useState(false);
   const languageDropdownRef = useRef(null);
+  const [showSuccessBanner, setShowSuccessBanner] =
+  useState(false);
 
   const runCode = async () => {
     try {
@@ -41,25 +43,33 @@ export default function ProblemPage() {
   };
 
   const submitCode = async () => {
-    try {
-      setSubmitting(true);
+  try {
+    setSubmitting(true);
 
-      const res = await api.post(`/code/submit/${id}`, {
-        language,
-        code,
-      });
+    const res = await api.post(`/code/submit/${id}`, {
+      language,
+      code,
+    });
 
+    if (res.data.verdict === "Accepted") {
+      setShowSuccessBanner(true);
+
+      setTimeout(() => {
+        router.push("/practice");
+      }, 2500);
+    } else {
       setOutput(
         `${res.data.verdict}
-Passed ${res.data.passed}/${res.data.total} Test Cases`,
+Passed ${res.data.passed}/${res.data.total} Test Cases`
       );
-    } catch (error) {
-      console.log(error);
-      setOutput("Submission Failed");
-    } finally {
-      setSubmitting(false);
     }
-  };
+  } catch (error) {
+    console.log(error);
+    setOutput("Submission Failed");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -284,6 +294,24 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`,
           </div>
         </div>
       </div>
+      {showSuccessBanner && (
+  <div className="success-overlay">
+    <div className="success-banner">
+      <div className="success-icon">🏆</div>
+
+      <h2>Problem Solved!</h2>
+
+      <p>
+        Congratulations! Your solution passed all
+        test cases.
+      </p>
+
+      <span>
+        Redirecting to Practice Arena...
+      </span>
+    </div>
+  </div>
+)}
     </div>
   );
 }

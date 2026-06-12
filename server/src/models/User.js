@@ -36,24 +36,23 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
     solvedProblems: [
-  {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Problem",
-  },
-],
-isOnline: {
-  type: Boolean,
-  default: false,
-},
+      {
+        type: String,
+      },
+    ],
+    isOnline: {
+      type: Boolean,
+      default: false,
+    },
 
-isInMatch: {
-  type: Boolean,
-  default: false,
-},
+    isInMatch: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export default mongoose.model("User", userSchema);

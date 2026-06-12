@@ -2,13 +2,89 @@
 
 import "../css/hero.css";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import socket from "@/lib/socket";
+import api from "@/lib/api";
+import { MdArrowForwardIos } from "react-icons/md";
+import { IoLogoGameControllerB } from "react-icons/io";
+import { FaRobot } from "react-icons/fa";
+import { FaUserFriends } from "react-icons/fa";
+import { FaStopCircle } from "react-icons/fa";
+import { RiSwordLine } from "react-icons/ri";
 
 export default function Hero() {
   const [playType, setPlayType] = useState("human");
   const [matchMode, setMatchMode] = useState("casual");
   const [difficulty, setDifficulty] = useState("medium");
   const [topic, setTopic] = useState("array");
+  const [playersOnline, setPlayersOnline] = useState(0);
+
+  const [liveMatches, setLiveMatches] = useState([]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await api.get("/hero");
+
+        setPlayersOnline(res.data.playersOnline);
+
+        setLiveMatches(res.data.liveMatches);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  useEffect(() => {
+    const handleStats = (data) => {
+      setPlayersOnline(data.playersOnline);
+
+      setLiveMatches(data.liveMatches);
+    };
+
+    socket.on("heroStatsUpdated", handleStats);
+
+    return () => {
+      socket.off("heroStatsUpdated", handleStats);
+    };
+  }, []);
+
+  const mockMatches = [
+    {
+      _id: "mock1",
+      player1Id: { username: "CodeNinja" },
+      player2Id: { username: "ByteMaster" },
+    },
+    {
+      _id: "mock2",
+      player1Id: { username: "AlgoKing" },
+      player2Id: { username: "BugHunter" },
+    },
+    {
+      _id: "mock3",
+      player1Id: { username: "StackWizard" },
+      player2Id: { username: "GraphGuru" },
+    },
+    {
+      _id: "mock4",
+      player1Id: { username: "DPMaster" },
+      player2Id: { username: "BinaryBoss" },
+    },
+    {
+      _id: "mock5",
+      player1Id: { username: "StackWzard" },
+      player2Id: { username: "Graphuru" },
+    },
+    {
+      _id: "mock6",
+      player1Id: { username: "DPMater" },
+      player2Id: { username: "BinaryBss" },
+    },
+  ];
+
+  const displayedMatches = liveMatches.length > 0 ? liveMatches : mockMatches;
 
   return (
     <section className="hero">
@@ -18,8 +94,13 @@ export default function Hero() {
           <p>Online Coding Arena</p>
 
           <div className="hero-buttons">
-            <button link="/lobby">Find Match</button>
-            <button link="/practice">Practice</button>
+            <Link href="/lobby" className="hero-btn primary">
+              Find Match
+            </Link>
+
+            <Link href="/practice" className="hero-btn secondary">
+              Practice
+            </Link>
           </div>
         </div>
 
@@ -34,44 +115,47 @@ export default function Hero() {
       <div className="hero-bottom">
         <div className="hero-stats">
           <Link href="/lobby" className="stat">
-            <h2>136</h2>
+            <div className="stat-value">
+              <h2>{playersOnline}</h2>
+              <MdArrowForwardIos className="stat-arrow" />
+            </div>
             <span>Players Online</span>
           </Link>
 
           <Link href="/matches" className="stat">
-            <h2>24</h2>
+            <div className="stat-value">
+              <h2>{liveMatches.length}</h2>
+
+              <MdArrowForwardIos className="stat-arrow" />
+            </div>
             <span>Live Matches</span>
           </Link>
         </div>
 
         <div className="live-preview">
-          <h3>• Live Matches</h3>
+          <h3>• Live</h3>
 
           <div className="slider-container">
             <div className="slider-track">
-              <div className="match-preview">
-                <span>
-                  CodeNinja <br /> vs <br /> bytemaster
-                </span>
-              </div>
+              {displayedMatches.map((match) => (
+                <Link
+                  key={match._id}
+                  href={liveMatches.length > 0 ? `/spectate/${match._id}` : "#"}
+                  className="match-preview"
+                >
+                  <span>
+                    {match.player1Id?.username}
+                    <br />
+                    vs
+                    <br />
+                    {match.player2Id?.username}
+                  </span>
 
-              <div className="match-preview">
-                <span>
-                  CodeNinja <br /> vs <br /> bytemaster
-                </span>
-              </div>
-
-              <div className="match-preview">
-                <span>
-                  CodeNinja <br /> vs <br /> bytemaster
-                </span>
-              </div>
-
-              <div className="match-preview">
-                <span>
-                  CodeNinja <br /> vs <br /> bytemaster
-                </span>
-              </div>
+                  {liveMatches.length === 0 && (
+                    <small className="demo-badge">Demo</small>
+                  )}
+                </Link>
+              ))}
             </div>
           </div>
         </div>
@@ -82,21 +166,21 @@ export default function Hero() {
             className={playType === "human" ? "active" : ""}
             onClick={() => setPlayType("human")}
           >
-            ⚔ Human
+            <IoLogoGameControllerB /> Human
           </button>
 
           <button
             className={playType === "ai" ? "active" : ""}
             onClick={() => setPlayType("ai")}
           >
-            🤖 AI
+            <FaRobot /> AI
           </button>
 
           <button
             className={playType === "friend" ? "active" : ""}
             onClick={() => setPlayType("friend")}
           >
-            👥 Friend
+            <FaUserFriends /> Friend
           </button>
         </div>
 
@@ -108,14 +192,16 @@ export default function Hero() {
                   className={matchMode === "casual" ? "active" : ""}
                   onClick={() => setMatchMode("casual")}
                 >
-                  Casual
+                  <FaStopCircle />
+                  Non Ranked
                 </button>
 
                 <button
                   className={matchMode === "ranked" ? "active" : ""}
                   onClick={() => setMatchMode("ranked")}
                 >
-                  Ranked
+                  <RiSwordLine />
+                  ELO Ranked
                 </button>
               </div>
 

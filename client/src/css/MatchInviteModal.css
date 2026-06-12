@@ -1,0 +1,159 @@
+.invite-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.82);
+
+  backdrop-filter: blur(8px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 999999;
+}
+
+.invite-modal {
+  position: relative;
+
+  width: 480px;
+
+  padding: 3rem;
+
+  background: rgba(20, 20, 25, 0.96);
+
+  border: 1px solid rgba(128, 92, 186, 0.4);
+
+  overflow: hidden;
+
+  text-align: center;
+
+  animation: modalEnter 0.3s ease;
+}
+
+.invite-glow {
+  position: absolute;
+
+  width: 300px;
+  height: 300px;
+
+  background: rgba(128, 92, 186, 0.18);
+
+  filter: blur(120px);
+
+  top: -120px;
+  left: 50%;
+
+  transform: translateX(-50%);
+}
+
+.invite-badge {
+  position: relative;
+
+  display: inline-block;
+
+  padding: 0.4rem 1rem;
+
+  margin-bottom: 1.5rem;
+
+  background: rgba(128, 92, 186, 0.15);
+
+  border: 1px solid rgba(128, 92, 186, 0.4);
+
+  color: #d4c1ff;
+
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.85rem;
+
+  letter-spacing: 1px;
+}
+
+.invite-modal h2 {
+  position: relative;
+
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 4rem;
+
+  color: white;
+
+  line-height: 1;
+
+  margin-bottom: 1rem;
+}
+
+.invite-modal p {
+  position: relative;
+
+  color: rgba(255,255,255,0.75);
+
+  font-family: "Chivo Mono", monospace;
+
+  margin-bottom: 2rem;
+}
+
+.invite-actions {
+  position: relative;
+
+  display: flex;
+  gap: 1rem;
+}
+
+.invite-actions button {
+  flex: 1;
+
+  height: 60px;
+
+  cursor: pointer;
+
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+
+  transition: 0.25s ease;
+}
+
+.accept-btn {
+  border: none;
+
+  background: linear-gradient(
+    to bottom,
+    #b89cff,
+    #805cba
+  );
+
+  color: white;
+}
+
+.accept-btn:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 0 25px rgba(128,92,186,.5);
+}
+
+.decline-btn {
+  background: transparent;
+
+  border: 1px solid rgba(255,255,255,.12);
+
+  color: rgba(255,255,255,.8);
+}
+
+.decline-btn:hover {
+  border-color: #ff5e7a;
+
+  color: #ff5e7a;
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

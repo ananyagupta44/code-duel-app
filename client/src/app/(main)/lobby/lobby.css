@@ -6,6 +6,40 @@
   background: linear-gradient(to right, #000000, #3c2d55);
 }
 
+.lobby-page::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(128,92,186,0.14) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(128,92,186,0.14) 1px,
+      transparent 1px
+    );
+
+  background-size: 70px 70px;
+
+  mask-image: radial-gradient(
+    circle at center,
+    black 55%,
+    transparent 100%
+  );
+
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    black 55%,
+    transparent 100%
+  );
+
+  pointer-events: none;
+}
+
 .choose-opponent-section {
   flex: 1;
   min-height: 0;
@@ -92,21 +126,54 @@
 }
 
 .opponent-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+
+  width: 56px;
+  height: 56px;
+
   flex-shrink: 0;
-  background: linear-gradient(
-    135deg,
-    #a992d6,
-    #805cba
-  );
-  color: white;
-  font-size: 1.2rem;
-  font-weight: 700;
+}
+
+.opponent-avatar img {
+  width: 100%;
+  height: 100%;
+
+  border-radius: 50%;
+
+  border: 2px solid rgba(128,92,186,.35);
+
+  background: rgba(255,255,255,.04);
+
+  transition: .3s;
+}
+
+.opponent-card:hover .opponent-avatar img {
+  border-color: #a992d6;
+
+  box-shadow:
+    0 0 15px rgba(128,92,186,.4);
+}
+
+.status-dot {
+  position: absolute;
+
+  bottom: 2px;
+  right: 2px;
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+
+  border: 2px solid #121212;
+}
+
+.status-dot.online {
+  background: #3ddc84;
+}
+
+.status-dot.busy {
+  background: #ff6b6b;
 }
 
 .opponent-info {
@@ -205,7 +272,7 @@
 ========================== */
 
 .matchmaking-panel {
-  margin-top: 24px;
+  margin-top: 84px;
   flex-shrink: 0;
   display: flex;
   gap: 1rem;
@@ -224,6 +291,10 @@
 
 .play-type button {
   height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
 
   border: 2px solid rgba(128,92,186,0.3);
 
@@ -265,13 +336,18 @@
 .match-mode button {
   height: 81px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+
   border: 2px solid rgba(128,92,186,0.3);
   background: transparent;
 
   color: white;
 
   font-family: "Big Shoulders", monospace;
-  font-size: 2.25rem;
+  font-size: 2rem;
 
   cursor: pointer;
 }
@@ -403,9 +479,105 @@ border: 1px solid rgba(128,92,186,0.3);
   margin-bottom: 1rem;
 }
 
+
+
 .friend-panel p {
   color: rgba(188, 187, 187, 0.8);
 
   font-family: "Chivo Mono", monospace;
   line-height: 1.6;
+}
+
+.waiting-modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.75);
+
+  backdrop-filter: blur(8px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 99999;
+}
+
+.waiting-modal {
+  width: 420px;
+
+  padding: 2rem;
+
+  text-align: center;
+
+  background: rgba(20, 20, 30, 0.95);
+
+  border: 1px solid rgba(128, 92, 186, 0.4);
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 0 40px rgba(128, 92, 186, 0.3),
+    0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.waiting-modal h2 {
+  color: white;
+
+  margin-bottom: 1rem;
+
+  font-size: 1.7rem;
+}
+
+.waiting-modal p {
+  color: rgba(255, 255, 255, 0.7);
+
+  line-height: 1.6;
+
+  margin-bottom: 1.5rem;
+}
+
+.waiting-spinner {
+  width: 70px;
+  height: 70px;
+
+  margin: 0 auto 1.5rem;
+
+  border: 5px solid rgba(255, 255, 255, 0.1);
+
+  border-top-color: #b89cff;
+
+  border-radius: 50%;
+
+  animation: waitingSpin 1s linear infinite;
+}
+
+@keyframes waitingSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cancel-wait-btn {
+  padding: 12px 24px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  color: white;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+}
+
+.cancel-wait-btn:hover {
+  background: rgba(255, 0, 0, 0.2);
 }

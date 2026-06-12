@@ -1,0 +1,162 @@
+.podium {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 0;
+  padding: 2.5rem 1rem 0;
+  position: relative;
+}
+
+.podium-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: default;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.podium-card:hover {
+  transform: translateY(-6px);
+  filter: brightness(1.08);
+}
+
+.podium-card img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: block;
+  object-fit: cover;
+  border: 3px solid transparent;
+  margin-bottom: 0.6rem;
+}
+
+.podium-card h3 {
+  font-family: "Big Shoulders", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  margin: 0.5rem 0 0.15rem;
+  letter-spacing: 0.5px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.podium-card p {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.75rem;
+  color: rgba(220, 220, 220, 0.75);
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+/* Medal / crown badges */
+.crown {
+  font-size: 1.5rem;
+  display: block;
+  text-align: center;
+  margin-bottom: 0.25rem;
+  animation: float 2.2s ease-in-out infinite;
+}
+
+.medal {
+  font-size: 1.5rem;
+  display: block;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
+}
+
+/* Podium stands */
+.podium-stand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+  border-radius: 6px 6px 0 0;
+  border-bottom: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.podium-stand-num {
+  font-family: "Big Shoulders", sans-serif;
+  font-weight: 900;
+  font-size: 3.5rem;
+  color: rgba(255, 255, 255, 0.18);
+  line-height: 1;
+  user-select: none;
+}
+
+.podium-stand::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+/* First place */
+.first img {
+  width: 76px;
+  height: 76px;
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(255,215,0,0.25), 0 4px 20px rgba(255,215,0,0.3);
+}
+
+.first h3 { color: #ffd700; font-size: 1.1rem; }
+
+.first .podium-stand {
+  height: 120px;
+  width: 140px;
+  background: linear-gradient(180deg, #7d6002 0%, #1e1600 100%);
+  border: 1px solid rgba(255,215,0,0.35);
+  border-bottom: none;
+}
+
+.first .podium-stand::after { background: #ffd700; }
+
+/* Second place */
+.second img {
+  border-color: #c0c0c0;
+  box-shadow: 0 0 0 3px rgba(192,192,192,0.2);
+}
+
+.second .podium-stand {
+  height: 80px;
+  background: linear-gradient(180deg, #676767 0%, #141414 100%);
+  border: 1px solid rgba(192,192,192,0.3);
+  border-bottom: none;
+  margin-right: -1px;
+}
+
+.second .podium-stand::after { background: #c0c0c0; }
+
+/* Third place */
+.third img {
+  border-color: #cd7f32;
+  box-shadow: 0 0 0 3px rgba(205,127,50,0.2);
+}
+
+.third .podium-stand {
+  height: 55px;
+  background: linear-gradient(180deg, #8e4a01 0%, #140b00 100%);
+  border: 1px solid rgba(205,127,50,0.3);
+  border-bottom: none;
+  margin-left: -1px;
+}
+
+.third .podium-stand::after { background: #cd7f32; }
+
+/* Floor bar */
+.podium-base {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  width: calc(130px * 3 + 140px - 130px);
+  margin: 0 auto;
+  border-radius: 0 0 4px 4px;
+}

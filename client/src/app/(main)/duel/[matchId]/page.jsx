@@ -8,6 +8,7 @@ import Editor from "@monaco-editor/react";
 import { fjalla, chivo } from "@/fonts";
 import { useRouter } from "next/navigation";
 import socket from "@/lib/socket";
+import { IoIosHourglass } from "react-icons/io";
 
 export default function DuelPage() {
   const { matchId } = useParams();
@@ -203,93 +204,146 @@ Status: ${res.data.status}
 
   return (
     <div className={`duel-page ${chivo.className}`}>
-      {/* Main Content */}
-
       <div className="duel-content">
         <div className="left-column">
+          {/* Problem */}
           <div className="problem-panel">
             <div className={`panel-header ${fjalla.className}`}>
               <h2>{match.problemId.title}</h2>
             </div>
-
             <div className="problem-body">
               <p>{match.problemId.description}</p>
-
               <h3>Examples</h3>
-
               {match.problemId.testCases?.map((testCase, index) => (
                 <div key={index} className="example-box">
                   <h3>Example {index + 1}</h3>
-
                   <div className="example-section">
-                    <strong>Input</strong>
-
-                    <pre>{formatInput(testCase.input)}</pre>
-                  </div>
-
-                  <div className="example-section">
-                    <strong>Output</strong>
-
-                    <pre>{testCase.expectedOutput}</pre>
+                    <div>
+                      <strong>Input</strong>
+                      <pre>{formatInput(testCase.input)}</pre>
+                    </div>
+                    <div>
+                      <strong>Output</strong>
+                      <pre>{testCase.expectedOutput}</pre>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Editor */}
+          <div className="editor-panel">
+            <div className="editor-header">
+              <h2 className={fjalla.className}>Code Editor</h2>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+              >
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="cpp">C++</option>
+              </select>
+            </div>
+            <div className="editor-layout">
+              <div className="editor-container">
+                <Editor
+                  height="600px"
+                  theme="vs-dark"
+                  language={language}
+                  value={code}
+                  onChange={(value) => setCode(value || "")}
+                  options={{
+                    minimap: { enabled: false },
+                    automaticLayout: true,
+                    scrollBeyondLastLine: false,
+                    scrollbar: {
+                      alwaysConsumeMouseWheel: false,
+                      verticalScrollbarSize: 10,
+                    },
+                    mouseWheelZoom: false,
+                  }}
+                />
+              </div>
+              <div className="output-panel">
+                <div className="input-section">
+                  <h3>Custom Input</h3>
+                  <textarea
+                    value={customInput}
+                    onChange={(e) => setCustomInput(e.target.value)}
+                    placeholder={`Example:\n\n{\n  "nums":[2,7,11,15],\n  "target":9\n}`}
+                  />
+                </div>
+                <div className="output-section">
+                  <h3>Output</h3>
+                  <pre>{output || "Run your code..."}</pre>
+                </div>
+              </div>
+            </div>
+            <div className="editor-actions">
+              <button
+                className="run-btn"
+                onClick={handleRunCode}
+                disabled={running || match?.status === "finished"}
+              >
+                {running ? "Running..." : "Run Code"}
+              </button>
+              <button
+                className="submit-btn"
+                onClick={handleSubmit}
+                disabled={submitting || match?.status === "finished"}
+              >
+                {submitting
+                  ? "Submitting..."
+                  : match?.status === "finished"
+                    ? "Match Finished"
+                    : "Submit Solution"}
+              </button>
+            </div>
+          </div>
         </div>
 
+        {/* Sidebar */}
         <div className="match-sidebar">
           <div className="duel-sidebar-card">
-            <div className="timer-box">⏳ {formatTime(timeLeft)}</div>
-
+            <div className="timer-box">
+              <IoIosHourglass size={32} />
+              <span>{formatTime(timeLeft)}</span>
+            </div>
             {match.status === "finished" && match.winnerId && (
               <div className="winner-banner">
                 🏆 Winner: {match.winnerId.username}
               </div>
             )}
-
             <div className="vs-section">
               <div
-                className={`player-section ${
-                  match.player1Progress > match.player2Progress ? "leading" : ""
-                }`}
+                className={`player-section ${match.player1Progress > match.player2Progress ? "leading" : ""}`}
               >
                 <h3 className={`${fjalla.className} player-name`}>
                   {match.player1Id.username}
                 </h3>
-
                 <div className="player-progress">
                   <div
                     className="progress-fill"
-                    style={{
-                      width: `${match.player1Progress}%`,
-                    }}
+                    style={{ width: `${match.player1Progress}%` }}
                   />
                 </div>
-
                 <span>{match.player1Progress}%</span>
               </div>
-
               <div className={`${fjalla.className} vs`}>VS</div>
-
               <div
-                className={`player-section ${
-                  match.player2Progress > match.player1Progress ? "leading" : ""
-                }`}
+                className={`player-section ${match.player2Progress > match.player1Progress ? "leading" : ""}`}
               >
                 <h3 className={`${fjalla.className} player-name`}>
                   {match.player2Id.username}
                 </h3>
-
                 <div className="player-progress">
                   <div
                     className="progress-fill"
-                    style={{
-                      width: `${match.player2Progress}%`,
-                    }}
+                    style={{ width: `${match.player2Progress}%` }}
                   />
                 </div>
-
                 <span>{match.player2Progress}%</span>
               </div>
             </div>
@@ -297,116 +351,21 @@ Status: ${res.data.status}
 
           <div className="sidebar-card">
             <h3>Match Details</h3>
-
             <p>
               <strong>Type:</strong> {match.matchType}
             </p>
-
             <p>
               <strong>Difficulty:</strong> {match.problemId.difficulty}
             </p>
-
             <p>
               <strong>Topic:</strong> {match.problemId.topic}
             </p>
-
             <p>
               <strong>Function:</strong> {match.problemId.functionName}
             </p>
-
             <p>
               <strong>Time Limit:</strong> {match.problemId.timeLimit}s
             </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Editor */}
-
-      <div className="left-column">
-        <div className="editor-panel">
-          <div className="editor-header">
-            <h2 className={fjalla.className}>Code Editor</h2>
-
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-            >
-              <option value="javascript">JavaScript</option>
-
-              <option value="python">Python</option>
-
-              <option value="java">Java</option>
-
-              <option value="cpp">C++</option>
-            </select>
-          </div>
-
-          <div className="editor-layout">
-            <div className="editor-container">
-              <Editor
-                height="600px"
-                theme="vs-dark"
-                language={language}
-                value={code}
-                onChange={(value) => setCode(value || "")}
-                options={{
-                  minimap: { enabled: false },
-                  automaticLayout: true,
-                  scrollBeyondLastLine: false,
-                  scrollbar: {
-                    alwaysConsumeMouseWheel: false,
-                    verticalScrollbarSize: 10,
-                  },
-                  mouseWheelZoom: false,
-                }}
-              />
-            </div>
-
-            <div className="output-panel">
-              <div className="input-section">
-                <h3>Custom Input</h3>
-
-                <textarea
-                  value={customInput}
-                  onChange={(e) => setCustomInput(e.target.value)}
-                  placeholder={`Example:
-
-{
-  "nums":[2,7,11,15],
-  "target":9
-}`}
-                />
-              </div>
-
-              <div className="output-section">
-                <h3>Output</h3>
-
-                <pre>{output || "Run your code..."}</pre>
-              </div>
-            </div>
-          </div>
-
-          <div className="editor-actions">
-            <button
-              className="run-btn"
-              onClick={handleRunCode}
-              disabled={running || match?.status === "finished"}
-            >
-              {running ? "Running..." : "Run Code"}
-            </button>
-
-            <button
-              className="submit-btn"
-              onClick={handleSubmit}
-              disabled={submitting || match?.status === "finished"}
-            >
-              {submitting
-                ? "Submitting..."
-                : match?.status === "finished"
-                  ? "Match Finished"
-                  : "Submit Solution"}
-            </button>
           </div>
         </div>
       </div>

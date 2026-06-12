@@ -7,6 +7,11 @@ import "./lobby.css";
 import PlayerCard from "./components/PlayerCard";
 import socket from "@/lib/socket";
 import { fjalla, chivo } from "@/fonts";
+import { IoLogoGameControllerB } from "react-icons/io";
+import { FaRobot } from "react-icons/fa";
+import { FaUserFriends } from "react-icons/fa";
+import { FaStopCircle } from "react-icons/fa";
+import { RiSwordLine } from "react-icons/ri";
 
 export default function LobbyPage() {
   const router = useRouter();
@@ -27,7 +32,7 @@ export default function LobbyPage() {
     try {
       const res = await api.get("/matches/lobby");
 
-      console.log("LOBBY RESPONSE", res.data);
+      console.log("API USERS", res.data.users);
 
       setUsers(res.data.users);
 
@@ -96,6 +101,7 @@ export default function LobbyPage() {
     };
 
     socket.on("lobbyUpdated", (users) => {
+      console.log("SOCKET USERS", users);
       setUsers(users);
     });
 
@@ -194,21 +200,21 @@ export default function LobbyPage() {
             className={playType === "human" ? "active" : ""}
             onClick={() => setPlayType("human")}
           >
-            ⚔ Human
+            <IoLogoGameControllerB /> Human
           </button>
 
           <button
             className={playType === "ai" ? "active" : ""}
             onClick={() => setPlayType("ai")}
           >
-            🤖 AI
+            <FaRobot /> AI
           </button>
 
           <button
             className={playType === "friend" ? "active" : ""}
             onClick={() => setPlayType("friend")}
           >
-            👥 Friend
+            <FaUserFriends /> Friend
           </button>
         </div>
 
@@ -220,14 +226,16 @@ export default function LobbyPage() {
                   className={matchMode === "casual" ? "active" : ""}
                   onClick={() => setMatchMode("casual")}
                 >
-                  Casual
+                  <FaStopCircle />
+                  Non Ranked
                 </button>
 
                 <button
                   className={matchMode === "ranked" ? "active" : ""}
                   onClick={() => setMatchMode("ranked")}
                 >
-                  Ranked
+                  <RiSwordLine />
+                  ELO Ranked
                 </button>
               </div>
 
@@ -316,6 +324,27 @@ export default function LobbyPage() {
             <h2>Waiting for opponent...</h2>
 
             <p>Challenge sent. Waiting for acceptance.</p>
+          </div>
+        </div>
+      )}
+      {waitingModal && (
+        <div className="waiting-modal-overlay">
+          <div className="waiting-modal">
+            <div className="waiting-spinner"></div>
+
+            <h2>Challenge Sent</h2>
+
+            <p>Waiting for the opponent to accept your challenge...</p>
+
+            <button
+              className="cancel-wait-btn"
+              onClick={() => {
+                setWaitingModal(false);
+                setPendingMatch(null);
+              }}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}

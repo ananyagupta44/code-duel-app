@@ -1,37 +1,31 @@
-export default function MatchInviteModal({ invite, onAccept, onReject }) {
-  console.log("MODAL INVITE:", invite);
+import "../css/MatchInviteModal.css";
 
+export default function MatchInviteModal({ invite, onAccept, onReject }) {
   if (!invite) return null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        background: "rgba(0,0,0,.8)",
-        zIndex: 999999,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        style={{
-          background: "#1f1f1f",
-          padding: "30px",
-          color: "white",
-        }}
-      >
-        <h2>Match Challenge</h2>
+    <div className="invite-overlay">
+      <div className="invite-modal">
+        <div className="invite-glow"></div>
 
-        <p>You have been challenged.</p>
+        <span className="invite-badge">⚔ DUEL REQUEST</span>
 
-        <button onClick={() => onAccept(invite.matchId)}>Accept</button>
+        <h2>{invite.challenger}</h2>
 
-        <button onClick={() => onReject()}>Decline</button>
+        <p>has challenged you to a coding duel.</p>
+
+        <div className="invite-actions">
+          <button
+            className="accept-btn"
+            onClick={() => onAccept(invite.matchId)}
+          >
+            ACCEPT
+          </button>
+
+          <button className="decline-btn" onClick={onReject}>
+            DECLINE
+          </button>
+        </div>
       </div>
     </div>
   );

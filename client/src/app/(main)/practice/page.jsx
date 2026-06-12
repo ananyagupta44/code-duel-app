@@ -40,6 +40,9 @@ export default function PracticePage() {
     const fetchData = async () => {
       try {
         const problemsRes = await api.get("/problems");
+
+        console.log("FIRST PROBLEM:", problemsRes.data[0]);
+
         setProblems(problemsRes.data);
       } catch (error) {
         console.log(error);
@@ -85,16 +88,6 @@ export default function PracticePage() {
   }, []);
 
   useEffect(() => {
-    const fetchSolved = async () => {
-      const res = await api.get("/users/me/solved");
-
-      setSolvedProblems(res.data);
-    };
-
-    fetchSolved();
-  }, []);
-
-  useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
         const res = await api.get("/users/leaderboard");
@@ -109,12 +102,19 @@ export default function PracticePage() {
     fetchLeaderboard();
   }, []);
 
-  const solvedSet = new Set(
-    (solvedProblems || [])
-      .filter(Boolean)
-      .map((item) => (typeof item === "string" ? item : item?._id?.toString()))
-      .filter(Boolean),
-  );
+  useEffect(() => {
+    const fetchSolved = async () => {
+      const res = await api.get("/users/me/solved");
+
+      console.log("SOLVED PROBLEMS:", res.data);
+
+      setSolvedProblems(res.data);
+    };
+
+    fetchSolved();
+  }, []);
+
+  const solvedSet = new Set(solvedProblems || []);
 
   const filteredProblems = problems.filter((problem) => {
     const titleMatch = problem.title
@@ -235,38 +235,47 @@ export default function PracticePage() {
                 <span>Difficulty</span>
               </div>
 
-              {filteredProblems.map((problem, index) => (
-                <Link
-                  key={problem._id}
-                  href={`/practice/${problem._id}`}
-                  className="problem-row"
-                >
-                  <span>{index + 1}</span>
+              {filteredProblems.map((problem, index) => {
+                console.log(
+                  problem.title,
+                  problem.slug,
+                  solvedSet.has(problem.slug),
+                );
 
-                  <span>
-                    {solvedSet.has(problem._id) ? (
-                      <span className="status-badge solved">Solved</span>
-                    ) : (
-                      <span className="status-badge unsolved">Unsolved</span>
-                    )}
-                  </span>
+                return (
+                  <Link
+                    key={problem._id}
+                    href={`/practice/${problem._id}`}
+                    className="problem-row"
+                  >
+                    <span>{index + 1}</span>
 
-                  <span>{problem.title}</span>
+                    <span>
+                      {solvedSet.has(problem.slug) ? (
+                        <span className="status-badge solved">Solved</span>
+                      ) : (
+                        <span className="status-badge unsolved">Unsolved</span>
+                      )}
+                    </span>
 
-                  <span>
-                    {problem.topic
-                      .split("-")
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1),
-                      )
-                      .join(" ")}
-                  </span>
+                    <span>{problem.title}</span>
 
-                  <span className={`difficulty ${problem.difficulty}`}>
-                    {problem.difficulty}
-                  </span>
-                </Link>
-              ))}
+                    <span>
+                      {problem.topic
+                        .split("-")
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() + word.slice(1),
+                        )
+                        .join(" ")}
+                    </span>
+
+                    <span className={`difficulty ${problem.difficulty}`}>
+                      {problem.difficulty}
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
 

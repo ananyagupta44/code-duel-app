@@ -3,13 +3,14 @@ import MatchSubmission from "../models/MatchSubmission.js";
 import Problem from "../models/Problem.js";
 import { onlineUsers } from "../socketStore.js";
 import User from "../models/User.js";
-import { io } from "../server.js";
+import { emitHeroStats, io } from "../server.js";
 import { executeCode } from "../services/codeExecutor.js";
 import {
   generateCppWrapper,
   generateJSWrapper,
   generatePythonWrapper,
 } from "../services/wrapperGenerator.js";
+import { emitLeaderboardUpdate } from "../services/leaderboardEmitter.js";
 
 export const createMatch = async (req, res) => {
   try {
@@ -256,9 +257,11 @@ export const submitMatchSolution = async (req, res) => {
 
       await winner.save();
       await loser.save();
+      await emitLeaderboardUpdate(io);
     }
 
     await match.save();
+    await emitHeroStats();
 
     if (match.status === "finished") {
       io.to(matchId).emit("matchFinished", {
@@ -347,14 +350,11 @@ export const acceptMatch = async (req, res) => {
     match.startedAt = new Date();
 
     await match.save();
+    await emitHeroStats();
 
-    const player1Socket = onlineUsers.get(
-      match.player1Id.toString()
-    );
+    const player1Socket = onlineUsers.get(match.player1Id.toString());
 
-    const player2Socket = onlineUsers.get(
-      match.player2Id.toString()
-    );
+    const player2Socket = onlineUsers.get(match.player2Id.toString());
 
     console.log("PLAYER 1:", match.player1Id.toString());
     console.log("PLAYER 2:", match.player2Id.toString());

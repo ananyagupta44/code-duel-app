@@ -2,6 +2,8 @@ import { executeCode } from "../services/codeExecutor.js";
 import Problem from "../models/Problem.js";
 import Submission from "../models/Submission.js";
 import User from "../models/User.js";
+import { io } from "../server.js";
+import { emitLeaderboardUpdate } from "../services/leaderboardEmitter.js";
 
 import {
   generateCppWrapper,
@@ -89,19 +91,6 @@ export const submitCode = async (req, res) => {
       const normalizedOutput = normalize(output);
       const normalizedExpected = normalize(testCase.expectedOutput);
 
-      console.log("=================================");
-      console.log("TEST CASE INPUT:");
-      console.log(testCase.input);
-
-      console.log("EXPECTED OUTPUT:");
-      console.log(JSON.stringify(normalizedExpected));
-
-      console.log("ACTUAL OUTPUT:");
-      console.log(JSON.stringify(normalizedOutput));
-
-      console.log("MATCH:", normalizedOutput === normalizedExpected);
-      console.log("=================================");
-
       if (normalizedOutput === normalizedExpected) {
         passed++;
       }
@@ -119,18 +108,19 @@ export const submitCode = async (req, res) => {
       totalCases: problem.testCases.length,
     });
 
+    if (verdict === "Accepted") {
+      await User.findByIdAndUpdate(req.user._id, {
+        $addToSet: {
+          solvedProblems: problem.slug,
+        },
+      });
+      await emitLeaderboardUpdate(io);
+    }
     res.json({
       verdict,
       passed,
       total: problem.testCases.length,
     });
-    if (verdict === "Accepted") {
-      await User.findByIdAndUpdate(req.user._id, {
-        $addToSet: {
-          solvedProblems: problemId,
-        },
-      });
-    }
   } catch (error) {
     console.log(error);
 

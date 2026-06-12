@@ -4,6 +4,40 @@
   background:linear-gradient(to right,#000000,#3c2d55);
 }
 
+.practice-page::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(128,92,186,0.14) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(128,92,186,0.14) 1px,
+      transparent 1px
+    );
+
+  background-size: 70px 70px;
+
+  mask-image: radial-gradient(
+    circle at center,
+    black 55%,
+    transparent 100%
+  );
+
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    black 55%,
+    transparent 100%
+  );
+
+  pointer-events: none;
+}
+
 .practice-header{
   margin-bottom:2rem;
 }
@@ -26,7 +60,7 @@
   padding:0 16px;
   background:rgba(157,157,157,.12);
   border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
+  border-radius:4px;
   color:white;
   font-family:"Chivo Mono",monospace;
   backdrop-filter:blur(10px);
@@ -58,6 +92,7 @@
   font-family:"Chivo Mono",monospace;
   cursor:pointer;
   transition:.25s ease;
+  border-radius: 4px;
 }
 
 .dropdown-trigger:hover{

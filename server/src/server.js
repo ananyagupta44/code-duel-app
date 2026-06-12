@@ -6,6 +6,7 @@ import { Server } from "socket.io";
 import { onlineUsers } from "./socketStore.js";
 
 import User from "./models/User.js";
+import Match from "./models/Match.js";
 
 dotenv.config();
 import connectDB from "./config/db.js";
@@ -17,6 +18,9 @@ import problemRoutes from "./routes/problemRoutes.js";
 import codeRoutes from "./routes/codeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import matchRoutes from "./routes/matchRoutes.js";
+import heroRoutes from "./routes/heroRoutes.js";
+import leaderboardRoutes from "./routes/leaderboardRoutes.js";
+import { getLeaderboardData } from "./services/leaderboardEmitter.js";
 
 const app = express();
 
@@ -32,6 +36,8 @@ app.use("/api/problems", problemRoutes);
 app.use("/api/code", codeRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/matches", matchRoutes);
+app.use("/api/hero", heroRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 app.get("/", (req, res) => {
   res.send("CodeDuel API Running");
@@ -40,6 +46,24 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 5001;
 
 const httpServer = createServer(app);
+
+export const emitHeroStats = async () => {
+  const playersOnline = await User.countDocuments({
+    isOnline: true,
+  });
+
+  const liveMatches = await Match.find({
+    status: "active",
+  })
+    .populate("player1Id", "username")
+    .populate("player2Id", "username")
+    .limit(10);
+
+  io.emit("heroStatsUpdated", {
+    playersOnline,
+    liveMatches,
+  });
+};
 
 export const io = new Server(httpServer, {
   cors: {
@@ -52,26 +76,34 @@ httpServer.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
 
-io.on("connection", (socket) => {
+const formatLobbyUsers = (users) => {
+  return users.map((user) => ({
+    _id: user._id,
+    username: user.username,
+    elo: user.elo,
+    wins: user.wins,
+    losses: user.losses,
+    isInMatch: user.isInMatch,
+    solvedProblems: user.solvedProblems,
+    solvedCount: user.solvedProblems?.length || 0,
+  }));
+};
+
+io.on("connection", async (socket) => {
   console.log("User Connected:", socket.id);
 
   socket.on("userOnline", async (userId) => {
-    console.log("USER ONLINE EVENT:", userId);
     onlineUsers.set(userId, socket.id);
-    console.log("ONLINE USERS:", [...onlineUsers.entries()]);
-
     await User.findByIdAndUpdate(userId, {
       isOnline: true,
     });
+    await emitHeroStats();
 
-    for (const [userId, socketId] of onlineUsers.entries()) {
-      const users = await User.find({
-        isOnline: true,
-        _id: { $ne: userId },
-      }).select("username elo wins losses solvedProblems isInMatch");
+    const users = await User.find({
+      isOnline: true,
+    }).select("username elo wins losses solvedProblems isInMatch");
 
-      io.to(socketId).emit("lobbyUpdated", users);
-    }
+    io.emit("lobbyUpdated", formatLobbyUsers(users));
   });
 
   socket.on("disconnect", async () => {
@@ -89,13 +121,15 @@ io.on("connection", (socket) => {
       await User.findByIdAndUpdate(disconnectedUserId, {
         isOnline: false,
       });
+
+      await emitHeroStats();
     }
 
     const users = await User.find({
       isOnline: true,
     }).select("username elo wins losses solvedProblems isInMatch");
 
-    io.emit("lobbyUpdated", users);
+    io.emit("lobbyUpdated", formatLobbyUsers(users));
 
     console.log("User Disconnected:", socket.id);
   });
@@ -111,12 +145,13 @@ io.on("connection", (socket) => {
       isOnline: false,
       isInMatch: false,
     });
+    await emitHeroStats();
 
     const users = await User.find({
       isOnline: true,
     }).select("username elo wins losses solvedProblems isInMatch");
 
-    io.emit("lobbyUpdated", users);
+    io.emit("lobbyUpdated", formatLobbyUsers(users));
 
     console.log("User logged out:", userId);
   });
@@ -133,9 +168,11 @@ io.on("connection", (socket) => {
           matchId,
           challenger: challenger?.username,
         });
-
-        console.log("INVITE EMITTED");
       }
     },
   );
+
+  const leaderboardData = await getLeaderboardData();
+
+  socket.emit("leaderboard:update", leaderboardData);
 });

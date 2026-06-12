@@ -7,6 +7,12 @@ const problemSchema = new mongoose.Schema(
       required: true,
     },
 
+    slug: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+
     difficulty: {
       type: String,
       enum: ["easy", "medium", "hard"],
@@ -64,12 +70,11 @@ const problemSchema = new mongoose.Schema(
       },
     },
     functionName: {
-  type: String,
-  required: true,
-},
-
+      type: String,
+      required: true,
+    },
   },
- 
+
   {
     timestamps: true,
   },

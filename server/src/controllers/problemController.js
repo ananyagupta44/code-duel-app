@@ -2,7 +2,7 @@ import Problem from "../models/Problem.js";
 
 export const getProblems = async (req, res) => {
   try {
-    const problems = await Problem.find().select("title difficulty topic");
+    const problems = await Problem.find().select("title slug difficulty topic");
 
     res.json(problems);
   } catch (error) {
@@ -29,5 +29,3 @@ export const getProblemById = async (req, res) => {
     });
   }
 };
-
-

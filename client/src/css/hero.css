@@ -1,13 +1,50 @@
 @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders:opsz,wght@10..72,100..900&family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Fjalla+One&display=swap');
 
 .hero {
+  position: relative;
   width: 100%;
   margin: auto 0;
   min-height: 320px;
   display: flex;
   flex-direction: column;
   padding: 2rem 5rem;
+   overflow: hidden;
 }
+
+.hero::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(128,92,186,0.14) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(128,92,186,0.14) 1px,
+      transparent 1px
+    );
+
+  background-size: 70px 70px;
+
+  mask-image: radial-gradient(
+    circle at center,
+    black 55%,
+    transparent 100%
+  );
+
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    black 55%,
+    transparent 100%
+  );
+
+  pointer-events: none;
+}
+
 .hero-top {
   display: flex;
   justify-content: space-between;
@@ -40,8 +77,6 @@
   color: rgba(188,187,187,0.9);
 }
 
-
-
 .hero-right p {
   max-width: 420px;
   font-family: "Chivo Mono", monospace;
@@ -56,52 +91,134 @@
   margin-top: 2rem;
 }
 
-.hero-buttons button {
-  padding: 12px 28px;
+.hero-btn {
+  position: relative;
 
-  border: none;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  background: rgba(128,92,186,0.2);
+  min-width: 180px;
+  height: 58px;
+
+  text-decoration: none;
+
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  /* text-transform: uppercase; */
+  transition: all 0.3s ease;
+
+  overflow: hidden;
+}
+
+/* FIND MATCH */
+.hero-btn.primary {
+  background: linear-gradient(
+    135deg,
+    #c9b1ff,
+    #805cba
+  );
 
   color: white;
 
-  font-family: "Chivo Mono", monospace;
-
-  border: 1px solid rgba(255,255,255,0.08);
-
-  transition: all 0.3s ease;
+  box-shadow:
+    0 0 20px rgba(128, 92, 186, 0.35),
+    inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
-.hero-buttons button:hover {
-  transform: translateY(-2px);
+.hero-btn.primary:hover {
+  transform: translateY(-3px);
 
-  background: rgba(128,92,186,0.35);
+  box-shadow:
+    0 0 35px rgba(128,92,186,0.6),
+    0 8px 20px rgba(0,0,0,0.35);
+}
+
+/* PRACTICE */
+.hero-btn.secondary {
+  background: rgba(255,255,255,0.04);
+
+  border: 1px solid rgba(255,255,255,0.1);
+
+  color: rgba(255,255,255,0.9);
+
+  backdrop-filter: blur(10px);
+}
+
+.hero-btn.secondary:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(201,177,255,0.6);
+
+  background: rgba(128,92,186,0.15);
+
+  box-shadow: 0 0 20px rgba(128,92,186,0.25);
+}
+
+/* Animated glow sweep */
+.hero-btn::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: -120%;
+
+  width: 60%;
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.18),
+    transparent
+  );
+
+  transform: skewX(-20deg);
+
+  transition: 0.6s;
+}
+
+.hero-btn:hover::before {
+  left: 130%;
 }
 
 .hero-bottom {
   margin-top: 3rem;
-
+  margin-bottom: 3rem;
   display: flex;
   gap: 4rem;
-  align-items: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+
+.hero-bottom::-webkit-scrollbar {
+  display: none;
 }
 
 .hero-stats {
+  min-width: 220px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-
-  min-width: 180px;
 }
 
-
+.live-preview {
+  min-width: 900px; /* adjust as needed */
+  flex-shrink: 0;
+}
 
 .stat h2 {
   font-family: "Big Shoulders", sans-serif;
   font-size: 5.5rem;
   color: white;
   line-height: 1;
+  padding-top: 20px;
 }
 
 .stat span {
@@ -110,7 +227,7 @@
 }
 
 .stat:hover h2 {
-  color: #d4c1ff;
+  color: #a37ff9;
 }
 
 .stat:hover span {
@@ -122,20 +239,15 @@
   transition: color 0.3s ease;
 }
 
-.live-preview {
-  flex: 1;
-}
-
 .live-preview h3 {
-  margin-bottom: 1rem;
-
   font-family: "Chivo Mono", monospace;
-  color: rgba(188, 187, 187, 0.8);
+  color: rgba(189, 13, 13, 0.8);
 }
 
 .slider-container {
   overflow: hidden;
   width: 100%;
+  padding-top: 10px;
 }
 
 .slider-track {
@@ -147,8 +259,8 @@
 }
 
 .match-preview {
-  width: 210px;
-  height: 210px;
+  width: 250px;
+  height: 250px;
   padding: 1rem 1.5rem;
 
   background: rgba(157, 157, 157, 0.2);
@@ -177,23 +289,23 @@
 
 .matchmaking-panel {
   width: 100%;
-
   display: flex;
   gap: 1rem;
-  margin-top: 8rem;
 }
 
 .play-type {
   width: 180px;
-
   display: flex;
   flex-direction: column;
-
   border: 1px solid rgba(128,92,186,0.5);
 }
 
 .play-type button {
   height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
 
   border: 2px solid rgba(128,92,186,0.3);
 
@@ -235,13 +347,18 @@
 .match-mode button {
   height: 81px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+
   border: 2px solid rgba(128,92,186,0.3);
   background: transparent;
 
   color: white;
 
   font-family: "Big Shoulders", monospace;
-  font-size: 2.25rem;
+  font-size: 2rem;
 
   cursor: pointer;
 }
@@ -378,4 +495,50 @@ border: 1px solid rgba(128,92,186,0.3);
 
   font-family: "Chivo Mono", monospace;
   line-height: 1.6;
+}
+
+.demo-badge {
+  margin-top: 1rem;
+
+  font-size: 0.7rem;
+
+  color: rgba(255,255,255,.5);
+
+  text-transform: uppercase;
+
+  letter-spacing: 1px;
+}
+
+.match-preview {
+  text-decoration: none;
+
+  transition: .3s ease;
+}
+
+.match-preview:hover {
+  transform: translateY(-4px);
+
+  border-color: rgba(169,146,214,.6);
+
+  box-shadow:
+    0 0 20px rgba(128,92,186,.15);
+}
+
+.stat-value {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat-arrow {
+  color: white;
+  font-size: 1.5rem;
+  align-self: flex-start;
+  margin-top: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.stat:hover .stat-arrow {
+  transform: translateX(4px);
+  color: #a37ff9;
 }

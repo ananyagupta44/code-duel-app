@@ -1,0 +1,274 @@
+@import url("https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@700;800;900&family=Chivo+Mono:wght@300;400;500;600&display=swap");
+
+.leaderboard-page {
+  min-height: 100vh;
+
+  padding: 3rem 5rem 6rem;
+
+  position: relative;
+}
+
+.leaderboard-page::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(128,92,186,0.12) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(128,92,186,0.12) 1px,
+      transparent 1px
+    );
+
+  background-size: 70px 70px;
+
+  pointer-events: none;
+
+  mask-image: radial-gradient(
+    circle at center,
+    black 55%,
+    transparent 100%
+  );
+
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    black 55%,
+    transparent 100%
+  );
+}
+
+.leaderboard-page > * {
+  position: relative;
+  z-index: 2;
+}
+
+.leaderboard-hero {
+  text-align: center;
+
+  margin-bottom: 5rem;
+}
+
+.leaderboard-hero h1 {
+  font-family: "Big Shoulders", sans-serif;
+
+  font-size: 6rem;
+  font-weight: 900;
+
+  color: #a992d6;
+
+  margin-bottom: 1rem;
+
+  line-height: 1;
+}
+
+.leaderboard-hero p {
+  font-family: "Chivo Mono", monospace;
+  color: rgba(188,187,187,0.75);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.leaderboard-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.leaderboard-column {
+  width: 100%;
+  max-width: 600px;
+  min-height: 300px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(128,92,186,0.25);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+}
+
+.leaderboard-column-header {
+  display: flex;
+  align-items: center;
+justify-content: center;
+  gap: 1rem;
+}
+
+.leaderboard-column-header span {
+  font-size: 2rem;
+}
+
+.leaderboard-column-header h2 {
+  font-family: "Big Shoulders", sans-serif;
+
+  font-size: 2.5rem;
+
+  color: #a992d6;
+}
+
+.leaderboard-count {
+  color: rgba(188,187,187,0.7);
+
+  font-family: "Chivo Mono", monospace;
+}
+
+.leaderboard-toggle {
+  margin-top: 2rem;
+
+  display: flex;
+  justify-content: center;
+
+  border: 1px solid rgba(128, 92, 186, 0.4);
+
+  width: fit-content;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  overflow: hidden;
+}
+
+.leaderboard-toggle button {
+  width: 180px;
+  height: 55px;
+
+  border: none;
+
+  background: transparent;
+
+  color: rgba(188, 187, 187, 0.8);
+
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.95rem;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+}
+
+
+.leaderboard-toggle button.active {
+  background: rgba(128, 92, 186, 0.25);
+
+  color: white;
+
+  box-shadow: inset 0 0 20px rgba(128, 92, 186, 0.25);
+}
+
+.leaderboard-toggle button:hover {
+  background: rgba(128, 92, 186, 0.15);
+}
+
+.leaderboard-single-column {
+  display: flex;
+  justify-content: center;
+
+  width: 100%;
+}
+
+.leaderboard-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1rem;
+
+  margin-top: 2rem;
+}
+
+.switch-label {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+
+  color: rgba(188,187,187,.5);
+
+  transition: .3s ease;
+}
+
+.switch-label.active {
+  color: white;
+}
+
+.switch-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.switch-outer {
+  height: 55px;
+
+  width: 115px;
+
+  border-radius: 165px;
+
+  background: #252532;
+
+  border: 1px solid #32303e;
+
+  padding: 6px;
+
+  cursor: pointer;
+
+  position: relative;
+}
+
+.switch-outer input {
+  display: none;
+}
+
+.button {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.button-toggle {
+  position: absolute;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(
+    #3b3a4e,
+    #272733
+  );
+
+  transition: .3s ease;
+
+  left: 0;
+}
+
+.switch-outer input:checked + .button .button-toggle {
+  left: 58px;
+}
+
+.elo-theme .leaderboard-column-header h2 {
+  color: #b89cff;
+}
+
+.elo-theme .leaderboard-table-row:hover {
+  border-color: #b89cff;
+}
+
+.elo-theme .rank {
+  color: #b89cff;
+}
+
+.solved-theme .leaderboard-column-header h2 {
+  color: #f7c948;
+}
+
+.solved-theme .leaderboard-table-row:hover {
+  border-color: #f7c948;
+}
+
+.solved-theme .rank {
+  color: #f7c948;
+}
