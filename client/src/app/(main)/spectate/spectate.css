@@ -1,0 +1,358 @@
+@import url("https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@700;800;900&family=Chivo+Mono:wght@300;400;500;600&display=swap");
+
+.spectate-page {
+  min-height: 100vh;
+  padding: 3rem 5rem;
+
+  position: relative;
+}
+
+.spectate-page::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(128,92,186,0.08) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(128,92,186,0.08) 1px,
+      transparent 1px
+    );
+
+  background-size: 70px 70px;
+
+  pointer-events: none;
+}
+
+.spectate-page > * {
+  position: relative;
+  z-index: 2;
+}
+
+.spectate-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.spectate-header h1 {
+  font-family: "Big Shoulders", sans-serif;
+
+  font-size: 5rem;
+  font-weight: 900;
+
+  color: #b89cff;
+
+  margin-bottom: 0.5rem;
+}
+
+.spectate-header p {
+  font-family: "Chivo Mono", monospace;
+
+  color: rgba(188,187,187,.75);
+
+  max-width: 700px;
+
+  margin: 0 auto;
+}
+
+/* MATCH GRID */
+
+.matches-grid {
+  display: grid;
+
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(320px, 1fr)
+  );
+
+  gap: 1.5rem;
+}
+
+/* CARD */
+
+.spectate-card {
+  position: relative;
+
+  background: rgba(
+    255,
+    255,
+    255,
+    0.03
+  );
+
+  border: 1px solid rgba(
+    128,
+    92,
+    186,
+    0.25
+  );
+
+  backdrop-filter: blur(12px);
+
+  padding: 1.5rem;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+
+  overflow: hidden;
+}
+
+.spectate-card:hover {
+  transform: translateY(-4px);
+
+  border-color: #b89cff;
+
+  box-shadow:
+    0 0 30px rgba(
+      184,
+      156,
+      255,
+      0.2
+    );
+}
+
+.spectate-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background: linear-gradient(
+    90deg,
+    #805cba,
+    #b89cff
+  );
+}
+
+/* LIVE BADGE */
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+
+  font-family: "Chivo Mono", monospace;
+  font-size: .8rem;
+
+  color: #ff6b6b;
+
+  margin-bottom: 1rem;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #ff6b6b;
+
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.4);
+    opacity: .5;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* PLAYERS */
+
+.match-players {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 1.2rem;
+}
+
+.player-side {
+  text-align: center;
+  flex: 1;
+}
+
+.player-side h3 {
+  font-family: "Big Shoulders", sans-serif;
+
+  font-size: 2rem;
+
+  color: white;
+}
+
+.player-side span {
+  font-family: "Chivo Mono", monospace;
+
+  color: rgba(
+    188,
+    187,
+    187,
+    0.75
+  );
+
+  font-size: .85rem;
+}
+
+.vs {
+  font-family: "Big Shoulders", sans-serif;
+
+  font-size: 2rem;
+
+  color: #b89cff;
+
+  padding: 0 1rem;
+}
+
+/* PROBLEM */
+
+.problem-info {
+  margin-bottom: 1rem;
+}
+
+.problem-title {
+  font-family: "Big Shoulders", sans-serif;
+
+  font-size: 1.8rem;
+
+  color: white;
+}
+
+.problem-meta {
+  display: flex;
+  gap: .6rem;
+
+  margin-top: .5rem;
+}
+
+.problem-tag {
+  padding: .35rem .75rem;
+
+  font-family: "Chivo Mono", monospace;
+  font-size: .75rem;
+
+  border: 1px solid rgba(
+    255,
+    255,
+    255,
+    .1
+  );
+
+  color: #d4c1ff;
+}
+
+/* PROGRESS */
+
+.progress-section {
+  margin-top: 1rem;
+}
+
+.progress-row {
+  margin-bottom: .8rem;
+}
+
+.progress-row span {
+  display: block;
+
+  font-family: "Chivo Mono", monospace;
+  font-size: .75rem;
+
+  margin-bottom: .3rem;
+
+  color: rgba(
+    188,
+    187,
+    187,
+    0.8
+  );
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+
+  background: rgba(
+    255,
+    255,
+    255,
+    0.05
+  );
+
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    #805cba,
+    #b89cff
+  );
+
+  transition: width .3s ease;
+}
+
+/* EMPTY STATE */
+
+.no-matches {
+  text-align: center;
+
+  padding: 5rem 2rem;
+
+  color: rgba(
+    188,
+    187,
+    187,
+    0.6
+  );
+
+  font-family: "Chivo Mono", monospace;
+}
+
+.no-matches h2 {
+  font-family: "Big Shoulders", sans-serif;
+
+  color: #b89cff;
+
+  font-size: 3rem;
+
+  margin-bottom: 1rem;
+}
+
+.spectate-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.spectate-header h1 {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 5rem;
+  color: #b89cff;
+  margin-bottom: 0.5rem;
+}
+
+.spectate-header p {
+  font-family: "Chivo Mono", monospace;
+  color: rgba(188, 187, 187, 0.7);
+}

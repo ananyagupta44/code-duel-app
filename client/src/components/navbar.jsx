@@ -9,8 +9,10 @@ import socket from "@/lib/socket";
 import getAvatar from "@/utils/getAvatar";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAuthDrawer } from "@/context/drawerContext";
 
 export default function Navbar() {
+  const { openLogin, openSignup } = useAuthDrawer();
   const { user, logout, isAuthenticated } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
@@ -25,7 +27,7 @@ export default function Navbar() {
 
     logout();
 
-    router.push("/login");
+    router.push("/");
   };
   useEffect(() => {
     setMounted(true);
@@ -91,9 +93,13 @@ export default function Navbar() {
           <div className="dropdown">
             {!isAuthenticated ? (
               <>
-                <Link href="/login">Login</Link>
+                <button className="dropdown-btn" onClick={openLogin}>
+                  Login
+                </button>
 
-                <Link href="/register">Register</Link>
+                <button className="dropdown-btn register" onClick={openSignup}>
+                  Register
+                </button>
               </>
             ) : (
               <>

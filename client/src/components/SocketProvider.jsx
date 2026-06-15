@@ -66,9 +66,33 @@ export default function SocketProvider({ children }) {
     };
   }, [router]);
 
+  useEffect(() => {
+    const handleRejected = ({ matchId }) => {
+      alert("Challenge was declined.");
+    };
+
+    socket.on("inviteRejected", handleRejected);
+
+    return () => {
+      socket.off("inviteRejected", handleRejected);
+    };
+  }, []);
+
   const acceptInvite = async (matchId) => {
     try {
       await api.post(`/matches/${matchId}/accept`);
+
+      setInvite(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const rejectInvite = async (matchId) => {
+    try {
+      socket.emit("rejectMatchInvite", {
+        matchId,
+      });
 
       setInvite(null);
     } catch (error) {
@@ -83,7 +107,7 @@ export default function SocketProvider({ children }) {
       <MatchInviteModal
         invite={invite}
         onAccept={acceptInvite}
-        onReject={() => setInvite(null)}
+        onReject={rejectInvite}
       />
     </>
   );

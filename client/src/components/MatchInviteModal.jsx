@@ -1,6 +1,13 @@
 import "../css/MatchInviteModal.css";
 
 export default function MatchInviteModal({ invite, onAccept, onReject }) {
+  const handleReject = () => {
+    socket.emit("rejectMatchInvite", {
+      matchId: invite.matchId,
+    });
+
+    closeModal();
+  };
   if (!invite) return null;
 
   return (
@@ -22,7 +29,10 @@ export default function MatchInviteModal({ invite, onAccept, onReject }) {
             ACCEPT
           </button>
 
-          <button className="decline-btn" onClick={onReject}>
+          <button
+            className="decline-btn"
+            onClick={() => onReject(invite.matchId)}
+          >
             DECLINE
           </button>
         </div>

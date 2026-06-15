@@ -87,3 +87,48 @@
   border-radius: 20px;
   white-space: nowrap;
 }
+
+.score-label {
+  color: #b89cff;
+  font-weight: 600;
+}
+
+.leaderboard-row-me {
+  background: rgba(247, 201, 72, 0.05);
+  border-color: rgba(247, 201, 72, 0.2);
+}
+
+.leaderboard-row-me::before {
+  background: rgba(247, 201, 72, 0.7) !important;
+}
+
+.leaderboard-row-me:hover {
+  background: rgba(247, 201, 72, 0.09);
+}
+
+.leaderboard-row-me .rank {
+  color: #f7c948;
+}
+
+.leaderboard-row-me .user-info span {
+  color: #f7c948;
+}
+
+.you-badge {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #f7c948;
+  background: rgba(247, 201, 72, 0.1);
+  border: 1px solid rgba(247, 201, 72, 0.3);
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.score-me {
+  color: #f7c948 !important;
+  background: rgba(247, 201, 72, 0.1) !important;
+  border-color: rgba(247, 201, 72, 0.3) !important;
+}

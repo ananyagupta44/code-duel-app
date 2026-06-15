@@ -11,15 +11,31 @@ import { FaRobot } from "react-icons/fa";
 import { FaUserFriends } from "react-icons/fa";
 import { FaStopCircle } from "react-icons/fa";
 import { RiSwordLine } from "react-icons/ri";
+import { useAuth } from "@/context/authContext";
+import { useAuthDrawer } from "@/context/drawerContext";
+import { useRouter } from "next/navigation";
+import SpectateModal from "@/components/spectate/SpectateModal";
 
 export default function Hero() {
+  const { isAuthenticated } = useAuth();
+  const { openLogin } = useAuthDrawer();
+  const router = useRouter();
   const [playType, setPlayType] = useState("human");
   const [matchMode, setMatchMode] = useState("casual");
   const [difficulty, setDifficulty] = useState("medium");
   const [topic, setTopic] = useState("array");
   const [playersOnline, setPlayersOnline] = useState(0);
+  const [selectedMatch, setSelectedMatch] = useState(null);
 
   const [liveMatches, setLiveMatches] = useState([]);
+  const handleProtectedNavigation = (path) => {
+    if (!isAuthenticated) {
+      openLogin();
+      return;
+    }
+
+    router.push(path);
+  };
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -50,6 +66,10 @@ export default function Hero() {
       socket.off("heroStatsUpdated", handleStats);
     };
   }, []);
+
+  useEffect(() => {
+    console.log("SELECTED MATCH CHANGED:", selectedMatch);
+  }, [selectedMatch]);
 
   const mockMatches = [
     {
@@ -94,13 +114,19 @@ export default function Hero() {
           <p>Online Coding Arena</p>
 
           <div className="hero-buttons">
-            <Link href="/lobby" className="hero-btn primary">
+            <button
+              className="hero-btn primary"
+              onClick={() => handleProtectedNavigation("/lobby")}
+            >
               Find Match
-            </Link>
+            </button>
 
-            <Link href="/practice" className="hero-btn secondary">
+            <button
+              className="hero-btn secondary"
+              onClick={() => handleProtectedNavigation("/practice")}
+            >
               Practice
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -138,10 +164,16 @@ export default function Hero() {
           <div className="slider-container">
             <div className="slider-track">
               {displayedMatches.map((match) => (
-                <Link
+                <div
                   key={match._id}
-                  href={liveMatches.length > 0 ? `/spectate/${match._id}` : "#"}
                   className="match-preview"
+                  onClick={() => {
+                    console.log("CLICKED MATCH:", match._id);
+
+                    setSelectedMatch(match._id);
+
+                    console.log("AFTER SET:", match._id);
+                  }}
                 >
                   <span>
                     {match.player1Id?.username}
@@ -154,7 +186,7 @@ export default function Hero() {
                   {liveMatches.length === 0 && (
                     <small className="demo-badge">Demo</small>
                   )}
-                </Link>
+                </div>
               ))}
             </div>
           </div>
@@ -283,6 +315,11 @@ export default function Hero() {
               : "FIND MATCH"}
         </button>
       </section>
+      <SpectateModal
+        isOpen={!!selectedMatch}
+        matchId={selectedMatch}
+        onClose={() => setSelectedMatch(null)}
+      />
     </section>
   );
 }

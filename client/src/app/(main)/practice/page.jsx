@@ -285,7 +285,7 @@ export default function PracticePage() {
             {leaderboard.map((user, index) => (
               <div key={user._id} className="leaderboard-user">
                 <span
-                  className={`rank ${
+                  className={`practice-rank ${
                     index === 0
                       ? "gold"
                       : index === 1

@@ -1,0 +1,248 @@
+.your-stats-card {
+  background: #13111f;
+  border: 1px solid rgba(128,92,186,0.25);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── ELO card ── */
+.card-header {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(169,146,214,0.6);
+  padding: 14px 16px 0;
+  font-family: "Chivo Mono", monospace;
+}
+
+.rank-number {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 4rem;
+  font-weight: 900;
+  color: #d4b8ff;
+  line-height: 1;
+  padding: 4px 16px 0;
+}
+
+.rank-sub {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.3);
+  padding: 2px 16px 12px;
+  font-family: "Chivo Mono", monospace;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.stat-box {
+  padding: 14px 16px;
+}
+
+.stat-box:first-child {
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.stat-box span {
+  display: block;
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #d4b8ff;
+  line-height: 1;
+}
+
+.stat-box p {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.32);
+  margin-top: 3px;
+  font-family: "Chivo Mono", monospace;
+}
+
+/* percentile bar */
+.percentile-track {
+  margin: 0 16px 6px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 4px;
+  height: 5px;
+  overflow: hidden;
+}
+
+.percentile-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(169,146,214,0.4), #b89cff);
+  transition: width 0.6s ease;
+}
+
+.percentile-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px 0;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.25);
+  font-family: "Chivo Mono", monospace;
+}
+
+/* wins / losses / winrate */
+.win-loss {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.win-loss > div {
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.win-loss > div:not(:last-child) {
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.win-loss span {
+  display: block;
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.win-loss p {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.28);
+  margin-top: 3px;
+  font-family: "Chivo Mono", monospace;
+}
+
+.win-loss > div:nth-child(1) span { color: #4ade80; }
+.win-loss > div:nth-child(2) span { color: #f87171; }
+.win-loss > div:nth-child(3) span { color: #d4b8ff; }
+
+.rank-message {
+  padding: 10px 16px;
+  font-size: 0.73rem;
+  color: rgba(244, 240, 240, 0.449);
+  font-family: "Chivo Mono", monospace;
+  line-height: 1.5;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.rank-message span { color: #f7c948; }
+
+.streak-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+}
+
+.streak-label {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.4);
+  font-family: "Chivo Mono", monospace;
+}
+
+.streak-value {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.1rem;
+  color: #fb923c;
+  margin-left: auto;
+}
+
+/* ── SOLVED card ── */
+.solved-total {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 5rem;
+  font-weight: 900;
+  color: #f7c948;
+  line-height: 1;
+  padding: 4px 16px 0;
+}
+
+.solved-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.3);
+  padding: 2px 16px 12px;
+  font-family: "Chivo Mono", monospace;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.difficulty-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.difficulty-stats > div {
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.difficulty-stats > div:not(:last-child) {
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.difficulty-stats span {
+  display: block;
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.difficulty-stats p {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.28);
+  margin-top: 3px;
+  font-family: "Chivo Mono", monospace;
+}
+
+.difficulty-stats > div:nth-child(1) span { color: #4ade80; }
+.difficulty-stats > div:nth-child(2) span { color: #facc15; }
+.difficulty-stats > div:nth-child(3) span { color: #f87171; }
+
+.topic-section {
+  padding: 12px 16px;
+}
+
+.topic-section h4 {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(169,146,214,0.55);
+  font-family: "Chivo Mono", monospace;
+  margin-bottom: 10px;
+}
+
+.topic-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.75rem;
+  font-family: "Chivo Mono", monospace;
+}
+
+.topic-row:last-child { border-bottom: none; }
+
+.topic-row span:first-child { color: rgba(210,200,230,0.8); }
+.topic-row span:last-child {
+  color: #f7c948;
+  font-weight: 500;
+  background: rgba(247,201,72,0.08);
+  padding: 1px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(247,201,72,0.2);
+}

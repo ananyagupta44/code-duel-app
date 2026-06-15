@@ -138,6 +138,27 @@ io.on("connection", async (socket) => {
     socket.join(matchId);
   });
 
+  socket.on("spectate:join", (matchId) => {
+  socket.join(`spectate:${matchId}`);
+});
+
+socket.on("spectate:leave", (matchId) => {
+  socket.leave(`spectate:${matchId}`);
+});
+
+socket.on(
+  "match:codeUpdate",
+  ({ matchId, playerId, code, language }) => {
+
+    io.to(`spectate:${matchId}`)
+      .emit("spectate:codeUpdate", {
+        playerId,
+        code,
+        language,
+      });
+  }
+);
+
   socket.on("userOffline", async (userId) => {
     onlineUsers.delete(userId);
 
@@ -171,6 +192,56 @@ io.on("connection", async (socket) => {
       }
     },
   );
+
+  socket.on(
+  "rejectMatchInvite",
+  async ({ matchId }) => {
+    try {
+      const match = await Match.findById(
+        matchId
+      );
+
+      if (!match) return;
+
+      match.status = "cancelled";
+
+      await match.save();
+
+      await User.findByIdAndUpdate(
+        match.player1Id,
+        {
+          isInMatch: false,
+        }
+      );
+
+      await User.findByIdAndUpdate(
+        match.player2Id,
+        {
+          isInMatch: false,
+        }
+      );
+
+      io.emit("inviteRejected", {
+        matchId,
+      });
+
+      await emitHeroStats();
+
+      const users = await User.find({
+        isOnline: true,
+      }).select(
+        "username elo wins losses solvedProblems isInMatch"
+      );
+
+      io.emit(
+        "lobbyUpdated",
+        formatLobbyUsers(users)
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
   const leaderboardData = await getLeaderboardData();
 

@@ -1,0 +1,21 @@
+.solved-chart-card {
+  background: #13111f;
+  border: 1px solid rgba(128,92,186,0.22);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.solved-chart-card h3 {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(247,201,72,0.6);
+  font-family: "Chivo Mono", monospace;
+  margin-bottom: 14px;
+}
+
+.solved-chart-card .recharts-cartesian-axis-tick text {
+  fill: rgba(210,200,230,0.5) !important;
+  font-family: "Chivo Mono", monospace;
+  font-size: 10px;
+}

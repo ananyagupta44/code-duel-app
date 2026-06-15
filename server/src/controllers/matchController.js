@@ -221,6 +221,25 @@ export const submitMatchSolution = async (req, res) => {
       match.loserId = loserId;
       match.endedAt = new Date();
 
+      const updatedWinner = await User.findByIdAndUpdate(
+        userId,
+        { $inc: { wins: 1, currentStreak: 1 }, isInMatch: false },
+        { new: true },
+      );
+
+      // Update bestStreak if current streak exceeded it
+      if (updatedWinner.currentStreak > updatedWinner.bestStreak) {
+        await User.findByIdAndUpdate(userId, {
+          bestStreak: updatedWinner.currentStreak,
+        });
+      }
+
+      // ── Loser: increment losses + reset streak ──
+      await User.findByIdAndUpdate(loserId, {
+        $inc: { losses: 1 },
+        $set: { currentStreak: 0, isInMatch: false },
+      });
+
       await User.findByIdAndUpdate(userId, {
         $inc: {
           wins: 1,
@@ -261,6 +280,11 @@ export const submitMatchSolution = async (req, res) => {
     }
 
     await match.save();
+    io.to(`spectate:${match._id}`)
+  .emit("spectate:progressUpdate", {
+    player1Progress: match.player1Progress,
+    player2Progress: match.player2Progress,
+  });
     await emitHeroStats();
 
     if (match.status === "finished") {
@@ -382,3 +406,52 @@ export const acceptMatch = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const getSpectateMatch =
+  async (req, res) => {
+    try {
+      const match =
+        await Match.findById(
+          req.params.id
+        )
+          .populate(
+            "player1Id",
+            "username elo"
+          )
+          .populate(
+            "player2Id",
+            "username elo"
+          )
+          .populate(
+            "problemId"
+          );
+
+      res.json(match);
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
+  };
+
+  export const getLiveMatches =
+  async (req, res) => {
+    const matches =
+      await Match.find({
+        status: "active",
+      })
+        .populate(
+          "player1Id",
+          "username elo"
+        )
+        .populate(
+          "player2Id",
+          "username elo"
+        )
+        .populate(
+          "problemId",
+          "title difficulty"
+        );
+
+    res.json(matches);
+  };

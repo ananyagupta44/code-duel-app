@@ -1,0 +1,145 @@
+.spectate-backdrop {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.75);
+
+  backdrop-filter: blur(10px);
+
+  z-index: 9998;
+}
+
+.spectate-modal {
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 95%;
+  max-width: 1500px;
+
+  height: 90vh;
+
+  overflow-y: auto;
+
+  background: #0f172a;
+
+  border: 1px solid rgba(184, 156, 255, 0.25);
+
+  box-shadow:
+    0 0 40px rgba(184, 156, 255, 0.1);
+
+  z-index: 9999;
+
+  padding: 2rem;
+}
+
+.spectate-close {
+  position: absolute;
+
+  top: 20px;
+  right: 20px;
+
+  background: none;
+  border: none;
+
+  color: white;
+
+  cursor: pointer;
+}
+
+.spectate-problem {
+  margin-bottom: 2rem;
+}
+
+.spectate-problem h1 {
+  color: white;
+
+  font-size: 2rem;
+
+  margin-bottom: 0.75rem;
+}
+
+.problem-meta {
+  display: flex;
+
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+}
+
+.problem-meta span {
+  background: rgba(184, 156, 255, 0.15);
+
+  border: 1px solid rgba(184, 156, 255, 0.3);
+
+  color: #d4c1ff;
+
+  padding: 0.4rem 0.8rem;
+}
+
+.spectate-problem p {
+  color: rgba(255,255,255,.8);
+
+  line-height: 1.6;
+}
+
+.spectate-players {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 2rem;
+}
+
+.player-column {
+  background: rgba(255,255,255,.03);
+
+  border: 1px solid rgba(255,255,255,.08);
+
+  padding: 1rem;
+}
+
+.player-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 1rem;
+}
+
+.player-header h3 {
+  color: white;
+}
+
+.player-header span {
+  color: #b89cff;
+}
+
+.progress-wrapper {
+  width: 100%;
+
+  height: 10px;
+
+  background: rgba(255,255,255,.08);
+
+  margin-bottom: 1rem;
+
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    #805cba,
+    #b89cff
+  );
+
+  transition: width .3s ease;
+}

@@ -28,6 +28,23 @@ export default function LobbyPage() {
   const [pendingMatch, setPendingMatch] = useState(null);
   const [waitingModal, setWaitingModal] = useState(false);
 
+  useEffect(() => {
+    const handleRejected = ({ matchId }) => {
+      if (pendingMatch === matchId) {
+        setWaitingModal(false);
+        setPendingMatch(null);
+
+        alert("Challenge was declined.");
+      }
+    };
+
+    socket.on("inviteRejected", handleRejected);
+
+    return () => {
+      socket.off("inviteRejected", handleRejected);
+    };
+  }, [pendingMatch]);
+
   const fetchUsers = async () => {
     try {
       const res = await api.get("/matches/lobby");
@@ -317,16 +334,6 @@ export default function LobbyPage() {
               : "FIND MATCH"}
         </button>
       </section>
-
-      {waitingModal && (
-        <div className="waiting-modal">
-          <div className="waiting-content">
-            <h2>Waiting for opponent...</h2>
-
-            <p>Challenge sent. Waiting for acceptance.</p>
-          </div>
-        </div>
-      )}
       {waitingModal && (
         <div className="waiting-modal-overlay">
           <div className="waiting-modal">
@@ -339,6 +346,10 @@ export default function LobbyPage() {
             <button
               className="cancel-wait-btn"
               onClick={() => {
+                socket.emit("rejectMatchInvite", {
+                  matchId: pendingMatch,
+                });
+
                 setWaitingModal(false);
                 setPendingMatch(null);
               }}

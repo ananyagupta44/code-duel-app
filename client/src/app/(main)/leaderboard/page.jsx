@@ -3,29 +3,44 @@
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import "./leaderboard.css";
-import "./podium.css";
-import "./leaderboardTable.css";
-
-import Podium from "./Podium";
-import LeaderboardTable from "./LeaderboardTable";
-import LeaderboardHero from "./leaderboardHero";
-
+import "./components/podium.css";
+import "./components/leaderboardTable.css";
+import Podium from "./components/Podium";
+import LeaderboardTable from "./components/LeaderboardTable";
+import LeaderboardHero from "./components/leaderboardHero";
+import YourStatsCard from "./components/YourStatsCard";
 import socket from "@/lib/socket";
+import EloDistribution from "./components/EloDistribution";
+import SolvedDistribution from "./components/SolvedDistribution";
 
 export default function LeaderboardPage() {
   const [eloLeaderboard, setEloLeaderboard] = useState([]);
   const [solvedLeaderboard, setSolvedLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [myStats, setMyStats] = useState(null);
   const [leaderboardType, setLeaderboardType] = useState("elo");
+
+  useEffect(() => {
+    if (myStats) {
+      console.log("ELO DISTRIBUTION:", myStats.eloDistribution);
+    }
+  }, [myStats]);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const { data } = await api.get("/leaderboard");
+        const [leaderboardRes, statsRes] = await Promise.all([
+          api.get("/leaderboard"),
+          api.get("/leaderboard/me"),
+        ]);
 
-        setEloLeaderboard(data.eloLeaderboard);
-        setSolvedLeaderboard(data.solvedLeaderboard);
+        setEloLeaderboard(leaderboardRes.data.eloLeaderboard);
+
+        setSolvedLeaderboard(leaderboardRes.data.solvedLeaderboard);
+
+        setMyStats(statsRes.data);
+
+        console.log("MY STATS:", statsRes.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -37,6 +52,7 @@ export default function LeaderboardPage() {
 
     const handleLeaderboardUpdate = (data) => {
       setEloLeaderboard(data.eloLeaderboard);
+
       setSolvedLeaderboard(data.solvedLeaderboard);
     };
 
@@ -65,25 +81,39 @@ export default function LeaderboardPage() {
         setLeaderboardType={setLeaderboardType}
       />
 
-      <section className="leaderboard-single-column">
-        <div
-          className={`leaderboard-column ${
-            leaderboardType === "elo" ? "elo-theme" : "solved-theme"
-          }`}
-        >
-          <div className="leaderboard-column-header">
-            <h2>
-              {leaderboardType === "elo"
-                ? "ELO Rankings"
-                : "Most Problems Solved"}
-            </h2>
-          </div>
-
-          <Podium users={currentLeaderboard} type={leaderboardType} />
-
-          <LeaderboardTable users={currentLeaderboard} type={leaderboardType} />
+      <div className="leaderboard-content-layout">
+        <div className="leaderboard-left-panel">
+          <YourStatsCard type={leaderboardType} stats={myStats} />
+          {leaderboardType === "elo" ? (
+            <EloDistribution data={myStats?.eloDistribution} />
+          ) : (
+            <SolvedDistribution data={myStats?.solved?.topicBreakdown} />
+          )}
         </div>
-      </section>
+
+        <section className="leaderboard-single-column">
+          <div
+            className={`leaderboard-column ${
+              leaderboardType === "elo" ? "elo-theme" : "solved-theme"
+            }`}
+          >
+            <div className="leaderboard-column-header">
+              <h2>
+                {leaderboardType === "elo"
+                  ? "ELO Rankings"
+                  : "Most Problems Solved"}
+              </h2>
+            </div>
+
+            <Podium users={currentLeaderboard} type={leaderboardType} />
+
+            <LeaderboardTable
+              users={currentLeaderboard}
+              type={leaderboardType}
+            />
+          </div>
+        </section>
+      </div>
     </main>
   );
 }

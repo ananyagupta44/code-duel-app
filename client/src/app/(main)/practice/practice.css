@@ -200,7 +200,7 @@
 .problem-table{
   background:rgba(157,157,157,.15);
   border:1px solid rgba(255,255,255,.08);
-  backdrop-filter:blur(15px);
+  backdrop-filter:blur(10px); 
 }
 
 .table-header,
@@ -326,7 +326,7 @@
   color:white;
 }
 
-.rank{
+.practice-rank{
   width:40px;
   font-weight:700;
 }

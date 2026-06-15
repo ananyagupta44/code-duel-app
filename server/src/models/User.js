@@ -49,6 +49,20 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    currentStreak: {
+  type: Number,
+  default: 0,
+},
+
+bestStreak: {
+  type: Number,
+  default: 0,
+},
+
+lastMatchAt: {
+  type: Date,
+  default: null,
+},
   },
   {
     timestamps: true,

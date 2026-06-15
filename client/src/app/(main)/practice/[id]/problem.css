@@ -1,440 +1,489 @@
-.problem-page{
-  height:100vh;
-  display:grid;
-  grid-template-columns:48% 52%;
-  background:linear-gradient(to right,#000000,#3c2d55);
-  overflow:hidden;
+/* =========================================
+   BASE
+========================================= */
+
+.problem-page {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 48% 52%;
+  background: #0e0e1a;
+  overflow: hidden;
 }
 
-.problem-left{
-  padding:60px 2rem 2rem;
-  overflow-y:auto;
-  border-right:1px solid rgba(255,255,255,.08);
-  scrollbar-width:none;
+.problem-page::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(128,92,186,0.14) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(128,92,186,0.14) 1px,
+      transparent 1px
+    );
+
+  background-size: 70px 70px;
+
+  mask-image: radial-gradient(
+    circle at center,
+    black 55%,
+    transparent 100%
+  );
+
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    black 55%,
+    transparent 100%
+  );
+
+  pointer-events: none;
 }
 
-.problem-left::-webkit-scrollbar{
-  display:none;
+
+.loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  background: #0e0e1a;
+  font-family: "Chivo Mono", monospace;
 }
 
-.problem-left h1{
-  font-size:3.5rem;
-  color:#a992d6;
-  margin-bottom:.5rem;
+/* =========================================
+   LEFT PANEL
+========================================= */
+
+.problem-left {
+  padding: 36px 28px 28px;
+  overflow-y: auto;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  scrollbar-width: none;
+}
+
+.problem-left::-webkit-scrollbar { display: none; }
+
+.problem-left h1 {
   font-family: "Big Shoulders", sans-serif;
+  font-size: 2.8rem;
+  color: #d4b8ff;
+  margin-bottom: 0.5rem;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
 }
 
-.problem-right{
-  padding:60px 1.5rem 1.5rem;
-  height:100vh;
-  overflow:hidden;
+/* =========================================
+   META PILLS
+========================================= */
+
+.problem-meta {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 1.25rem 0 1.75rem;
 }
 
-.problem-right::-webkit-scrollbar{
-  display:none;
+.meta-pill {
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(210, 200, 230, 0.85);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
 }
 
-.problem-meta{
-  display:flex;
-  gap:.75rem;
-  flex-wrap:wrap;
-  margin:1.5rem 0 2rem;
+.easy   { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.07); }
+.medium { color: #facc15; border-color: rgba(250, 204, 21, 0.3);  background: rgba(250, 204, 21, 0.07); }
+.hard   { color: #f87171; border-color: rgba(248, 113, 113, 0.3); background: rgba(248, 113, 113, 0.07); }
+
+/* =========================================
+   DESCRIPTION
+========================================= */
+
+.problem-description {
+  color: rgba(210, 200, 230, 0.88);
+  line-height: 1.9;
+  font-size: 0.92rem;
+  font-family: "Chivo Mono", monospace;
 }
 
-.meta-pill{
-  padding:8px 18px;
-  border-radius:999px;
-  background:rgba(157,157,157,.12);
-  border:1px solid rgba(255,255,255,.08);
-  color:rgba(188,187,187,.9);
-  font-family:"Chivo Mono",monospace;
-  font-size:.85rem;
+/* =========================================
+   EXAMPLES
+========================================= */
+
+.examples {
+  margin-top: 2.5rem;
 }
 
-.easy{
-  color:#4ade80;
+.examples h2 {
+  font-family: "Fjalla One", sans-serif;
+  color: #d4b8ff;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.5px;
 }
 
-.medium{
-  color:#facc15;
+.example-card {
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.hard{
-  color:#ef4444;
+.example-card h3 {
+  padding: 9px 14px;
+  background: rgba(169, 146, 214, 0.1);
+  font-family: "Fjalla One", sans-serif;
+  font-size: 0.85rem;
+  color: #c6afed;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.problem-description{
-  color:rgba(188,187,187,.9);
-  line-height:1.9;
-  font-size:1rem;
-  font-family:"Chivo Mono",monospace;
+.example-card p {
+  padding: 10px 14px 0;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0;
 }
 
-.examples{
-  margin-top:3rem;
+.example-card pre {
+  margin: 4px 14px 12px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 7px;
+  color: #d4c1ff;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  overflow: auto;
+  line-height: 1.6;
 }
 
-.examples h2{
-  color:white;
-  margin-bottom:1rem;
-  font-size:1.8rem;
+/* =========================================
+   RIGHT PANEL
+========================================= */
+
+.problem-right {
+  padding: 20px 18px 18px;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.example-card{
-  padding:1.25rem;
-  margin-bottom:1rem;
-  background:rgba(157,157,157,.12);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:16px;
-  backdrop-filter:blur(10px);
+/* =========================================
+   EDITOR CONTAINER
+========================================= */
+
+.editor-container {
+  height: calc(100vh - 38px);
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.example-card h3{
-  color:#a992d6;
-  margin-bottom:1rem;
-  font-family:"Chivo Mono",monospace;
+.editor-header {
+  height: 58px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
 }
 
-.example-card p{
-  color:white;
-  margin-bottom:.5rem;
-  font-family:"Chivo Mono",monospace;
+/* =========================================
+   LANGUAGE SELECTOR
+========================================= */
+
+.language-selector { position: relative; }
+
+.language-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  color: rgba(220, 210, 240, 0.9);
+  cursor: pointer;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  transition: 0.2s ease;
 }
 
-.example-card pre{
-  margin:.5rem 0 1rem;
-  padding:1rem;
-  background:rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.05);
-  border-radius:12px;
-  color:#d4c1ff;
-  font-family:"Chivo Mono",monospace;
-  overflow:auto;
+.language-btn:hover {
+  background: rgba(169, 146, 214, 0.15);
+  border-color: rgba(169, 146, 214, 0.4);
 }
 
-.editor-container{
-  height:calc(100vh - 90px);
-  display:flex;
-  flex-direction:column;
-  background:rgba(157,157,157,.08);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:20px;
-  backdrop-filter:blur(20px);
-  box-shadow:
-    0 8px 30px rgba(0,0,0,.3),
-    0 0 30px rgba(128,92,186,.08);
-}
-.editor-body{
-  flex:1;
-  min-height:0;
+.language-menu {
+  position: absolute;
+  top: 115%;
+  left: 0;
+  width: 160px;
+  background: #14101f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+  overflow: hidden;
+  z-index: 999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-.editor-header{
-  height:65px;
-  padding:0 1rem;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  background:rgba(0,0,0,.25);
-  border-bottom:1px solid rgba(255,255,255,.08);
+.language-menu div {
+  padding: 11px 14px;
+  color: rgba(220, 210, 240, 0.85);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.editor-header select{
-  padding:10px 18px;
-  background:rgba(157,157,157,.12);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
-  color:white;
-  font-family:"Chivo Mono",monospace;
-  outline:none;
+.language-menu div:last-child { border-bottom: none; }
+
+.language-menu div:hover {
+  background: rgba(169, 146, 214, 0.15);
+  color: #d4b8ff;
 }
 
-.run-btn{
-  padding:10px 24px;
-  background:#805cba;
-  border:none;
-  color:white;
-  cursor:pointer;
-  transition:.25s ease;
+/* =========================================
+   EDITOR ACTIONS
+========================================= */
+
+.editor-actions {
+  display: flex;
+  gap: 8px;
 }
 
-.run-btn:hover{
-  background:#9a78d3;
+.run-btn {
+  padding: 8px 18px;
+  border: 1px solid rgba(169, 146, 214, 0.45);
+  border-radius: 7px;
+  background: rgba(169, 146, 214, 0.12);
+  color: #d4b8ff;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.output-panel{
-  height:180px;
-  flex-shrink:0;
-  padding:1rem;
-  background:rgba(0,0,0,.35);
-  border-top:1px solid rgba(255,255,255,.08);
-  overflow-y:auto;
-  scrollbar-width:none;
+.run-btn:hover {
+  background: rgba(169, 146, 214, 0.25);
+  border-color: rgba(169, 146, 214, 0.7);
+  transform: translateY(-1px);
 }
 
-.output-panel::-webkit-scrollbar{
-  display:none;
+.submit-btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 7px;
+  background: #22c55e;
+  color: #000;
+  font-family: "Fjalla One", sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.output-panel h3{
-  color:#a992d6;
-  margin-bottom:.75rem;
+.submit-btn:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
 }
 
-.output-panel pre{
-  color:#d4c1ff;
-  font-family:"Chivo Mono",monospace;
-  white-space:pre-wrap;
+/* =========================================
+   EDITOR BODY
+========================================= */
+
+.editor-body {
+  flex: 1;
+  min-height: 0;
 }
 
-.run-btn{
-  padding:10px 24px;
-  border:none;
-  border-radius:12px;
-  background:#805cba;
-  color:white;
-  font-family:"Chivo Mono",monospace;
-  font-weight:600;
-  cursor:pointer;
-  transition:.25s ease;
+/* =========================================
+   CUSTOM INPUT
+========================================= */
+
+.custom-input-panel {
+  padding: 12px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
-.run-btn:hover{
-  background:#9a78d3;
-  transform:translateY(-2px);
-  box-shadow:0 0 20px rgba(154,120,211,.3);
+.custom-input-info {
+  margin-bottom: 8px;
 }
 
-.editor-actions{
-  display:flex;
-  gap:.75rem;
+.custom-input-info p {
+  color: rgba(210, 200, 230, 0.75);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+  margin-bottom: 2px;
 }
 
-.submit-btn{
-  padding:10px 24px;
-  border:none;
-  border-radius:12px;
-
-  background:#22c55e;
-
-  color:white;
-
-  cursor:pointer;
-
-  transition:.25s ease;
+.custom-input-info small {
+  color: rgba(169, 146, 214, 0.7);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.72rem;
 }
 
-.submit-btn:hover{
-  background:#34d399;
+.custom-input-panel textarea {
+  width: 100%;
+  height: 80px;
+  resize: none;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+  color: rgba(220, 210, 240, 0.9);
+  outline: none;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  font-family: "Chivo Mono", monospace;
+  transition: border-color 0.2s;
 }
 
-.custom-input-panel{
-  padding:1rem;
-  border-top:1px solid rgba(255,255,255,.08);
-  background:rgba(0,0,0,.25);
+.custom-input-panel textarea::-webkit-scrollbar { display: none; }
+
+.custom-input-panel textarea:focus {
+  border-color: rgba(169, 146, 214, 0.55);
 }
 
-.custom-input-panel h3{
-  color:#a992d6;
-  margin-bottom:.75rem;
+/* =========================================
+   OUTPUT
+========================================= */
+
+.output-panel {
+  height: 140px;
+  flex-shrink: 0;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  overflow-y: auto;
+  scrollbar-width: none;
 }
 
-.custom-input-panel textarea{
-  width:100%;
-  height:140px;
-  resize:vertical;
-  padding:14px;
-  background:rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
-  color:white;
-  outline:none;
-  font-size:.9rem;
-  line-height:1.5;
-  font-family:"Chivo Mono",monospace;
+.output-panel::-webkit-scrollbar { display: none; }
+
+.output-panel h3 {
+  font-family: "Fjalla One", sans-serif;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(169, 146, 214, 0.7);
+  margin-bottom: 8px;
 }
 
-.custom-input-panel textarea::-webkit-scrollbar{
-  display:none;
+.output-panel pre {
+  color: rgba(212, 193, 255, 0.88);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  white-space: pre-wrap;
+  line-height: 1.7;
 }
 
-.custom-input-panel textarea:focus{
-  border-color:#a992d6;
-}
-
-.language-selector {
-  position: relative;
-}
-
-.language-btn{
-  display:flex;
-  align-items:center;
-  gap:.6rem;
-  padding:10px 16px;
-  background:rgba(157,157,157,.12);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
-  color:white;
-  cursor:pointer;
-  font-family:"Chivo Mono",monospace;
-  transition:.25s ease;
-}
-
-.language-btn:hover{
-  background:rgba(157,157,157,.18);
-}
-
-.language-menu{
-  position:absolute;
-  top:115%;
-  left:0;
-  width:180px;
-  background:#111;
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:14px;
-  overflow:hidden;
-  backdrop-filter:blur(20px);
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.4);
-  z-index:999;
-}
-
-.language-menu div{
-  padding:12px 16px;
-  color:white;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.language-menu div:hover{
-  background:rgba(128,92,186,.25);
-}
-
-.custom-input-info{
-  margin-bottom:12px;
-}
-
-.custom-input-info p{
-  color:white;
-  font-size:.9rem;
-  margin-bottom:4px;
-}
-
-.custom-input-info small{
-  color:#a992d6;
-  font-family:"Chivo Mono",monospace;
-}
+/* =========================================
+   SUCCESS OVERLAY
+========================================= */
 
 .success-overlay {
   position: fixed;
   inset: 0;
-
-  background: rgba(0, 0, 0, 0.8);
-
+  background: rgba(0, 0, 0, 0.82);
   backdrop-filter: blur(8px);
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   z-index: 9999;
-
   animation: fadeIn 0.3s ease;
 }
 
 .success-banner {
-  width: 500px;
-
-  padding: 3rem;
-
+  width: 460px;
+  padding: 3rem 2.5rem;
   text-align: center;
-
-  background: rgba(18, 18, 22, 0.98);
-
-  border: 1px solid rgba(128, 92, 186, 0.4);
-
-  box-shadow:
-    0 0 40px rgba(128, 92, 186, 0.25);
-
+  background: #0e0a1a;
+  border: 1px solid rgba(169, 146, 214, 0.35);
+  border-radius: 16px;
   position: relative;
-
   overflow: hidden;
+  box-shadow: 0 0 60px rgba(128, 92, 186, 0.2);
 }
 
 .success-banner::before {
   content: "";
-
   position: absolute;
-
-  width: 350px;
-  height: 350px;
-
+  width: 300px;
+  height: 300px;
   background: rgba(128, 92, 186, 0.15);
-
-  filter: blur(120px);
-
-  top: -180px;
+  filter: blur(100px);
+  top: -150px;
   left: 50%;
-
   transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .success-icon {
   position: relative;
-
-  font-size: 4rem;
-
+  font-size: 3.5rem;
   margin-bottom: 1rem;
-
-  animation: bounce 1.5s infinite;
+  animation: bounce 1.5s ease-in-out infinite;
 }
 
 .success-banner h2 {
   position: relative;
-
   font-family: "Big Shoulders", sans-serif;
-
-  font-size: 4rem;
-
+  font-size: 3rem;
   color: white;
-
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: 1px;
 }
 
 .success-banner p {
   position: relative;
-
   font-family: "Chivo Mono", monospace;
-
-  color: rgba(255,255,255,0.75);
-
+  font-size: 0.88rem;
+  color: rgba(210, 200, 230, 0.75);
   margin-bottom: 1.5rem;
+  line-height: 1.7;
 }
 
 .success-banner span {
   position: relative;
-
-  color: #d4c1ff;
-
+  display: inline-block;
+  color: #c6afed;
   font-family: "Chivo Mono", monospace;
-
-  font-size: 0.9rem;
-
-  letter-spacing: 1px;
+  font-size: 0.78rem;
+  letter-spacing: 1.5px;
+  padding: 6px 14px;
+  border: 1px solid rgba(169, 146, 214, 0.3);
+  border-radius: 999px;
+  background: rgba(169, 146, 214, 0.08);
 }
 
 @keyframes bounce {
-  50% {
-    transform: translateY(-8px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

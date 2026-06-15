@@ -9,6 +9,9 @@ import { fjalla, chivo } from "@/fonts";
 import { useRouter } from "next/navigation";
 import socket from "@/lib/socket";
 import { IoIosHourglass } from "react-icons/io";
+import { throttle } from "lodash";
+import { useAuth } from "@/context/authContext";
+import { useMemo } from "react";
 
 export default function DuelPage() {
   const { matchId } = useParams();
@@ -22,6 +25,25 @@ export default function DuelPage() {
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [customInput, setCustomInput] = useState("");
+  const { user } = useAuth();
+  const emitCodeUpdate = useMemo(
+    () =>
+      throttle((newCode) => {
+        socket.emit("match:codeUpdate", {
+          matchId,
+          playerId: user?._id,
+          code: newCode,
+          language,
+        });
+      }, 500),
+    [matchId, language, user],
+  );
+
+  useEffect(() => {
+    return () => {
+      emitCodeUpdate.cancel();
+    };
+  }, [emitCodeUpdate]);
 
   const getStorageKey = (lang) => `duel_${matchId}_${lang}`;
 
@@ -253,7 +275,11 @@ Status: ${res.data.status}
                   theme="vs-dark"
                   language={language}
                   value={code}
-                  onChange={(value) => setCode(value || "")}
+                  onChange={(value) => {
+                    setCode(value);
+
+                    emitCodeUpdate(value);
+                  }}
                   options={{
                     minimap: { enabled: false },
                     automaticLayout: true,

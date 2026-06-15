@@ -1,0 +1,50 @@
+.elo-chart-card {
+  background: #13111f;
+  border: 1px solid rgba(128,92,186,0.22);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.elo-chart-card h3 {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(169,146,214,0.6);
+  font-family: "Chivo Mono", monospace;
+  margin-bottom: 14px;
+}
+
+.elo-chart-card .recharts-cartesian-axis-tick text {
+  fill: rgba(210,200,230,0.5) !important;
+  font-family: "Chivo Mono", monospace;
+  font-size: 10px;
+}
+
+.elo-chart-card .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #14101f !important;
+  border: 1px solid rgba(169,146,214,0.3) !important;
+  border-radius: 8px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.4);
+  font-family: "Chivo Mono", monospace;
+}
+
+.chart-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
