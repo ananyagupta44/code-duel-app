@@ -13,6 +13,7 @@ export default function SpectateModal({ isOpen, onClose, matchId }) {
   const [player2Code, setPlayer2Code] = useState("");
   const [player1Progress, setPlayer1Progress] = useState(0);
   const [player2Progress, setPlayer2Progress] = useState(0);
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
     if (!matchId) return;
@@ -30,12 +31,14 @@ export default function SpectateModal({ isOpen, onClose, matchId }) {
     const fetchMatch = async () => {
       try {
         const res = await api.get(`/matches/spectate/${matchId}`);
-
         setMatch(res.data);
         setPlayer1Code(res.data.player1Submission?.code || "");
         setPlayer2Code(res.data.player2Submission?.code || "");
         setPlayer1Progress(res.data.player1Progress || 0);
         setPlayer2Progress(res.data.player2Progress || 0);
+        console.log("MATCH DATA", res.data);
+        console.log(res.data.player1Submission);
+        console.log(res.data.player2Submission);
       } catch (error) {
         console.log(error);
       }
@@ -76,6 +79,18 @@ export default function SpectateModal({ isOpen, onClose, matchId }) {
     };
   }, []);
 
+  useEffect(() => {
+    const handleEvent = (event) => {
+      setEvents((prev) => [event, ...prev].slice(0, 30));
+    };
+
+    socket.on("spectate:event", handleEvent);
+
+    return () => {
+      socket.off("spectate:event", handleEvent);
+    };
+  }, []);
+
   if (!isOpen) return null;
 
   return (
@@ -83,8 +98,12 @@ export default function SpectateModal({ isOpen, onClose, matchId }) {
       <div className="spectate-backdrop" onClick={onClose} />
 
       <div className="spectate-modal">
+        <div className="spectator-indicator">
+          <span className="rec-dot" />
+          SPECTATING
+        </div>
         <button className="spectate-close" onClick={onClose}>
-          <X size={22} />
+          <X size={20} />
         </button>
 
         <div className="spectate-problem">
@@ -97,6 +116,17 @@ export default function SpectateModal({ isOpen, onClose, matchId }) {
           </div>
 
           <p>{match?.problemId?.description}</p>
+        </div>
+        <div className="live-feed">
+          <h3>Live Feed</h3>
+
+          <div className="feed-events">
+            {events.map((event, index) => (
+              <div key={index} className="feed-event">
+                {event.message}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="spectate-players">

@@ -87,6 +87,22 @@ const matchSchema = new mongoose.Schema(
     endedAt: {
       type: Date,
     },
+
+    player1EloBefore: {
+      type: Number,
+    },
+
+    player1EloAfter: {
+      type: Number,
+    },
+
+    player2EloBefore: {
+      type: Number,
+    },
+
+    player2EloAfter: {
+      type: Number,
+    },
   },
   {
     timestamps: true,

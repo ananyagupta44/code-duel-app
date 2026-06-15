@@ -132,3 +132,15 @@
   background: rgba(247, 201, 72, 0.1) !important;
   border-color: rgba(247, 201, 72, 0.3) !important;
 }
+
+.elo-up {
+  color: #5dcaa5;
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+.elo-down {
+  color: #f09595;
+  margin-left: 6px;
+  font-weight: 600;
+}

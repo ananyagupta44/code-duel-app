@@ -28,8 +28,17 @@ export default function LeaderboardTable({ users, type = "elo" }) {
             <span className={`score ${isMe ? "score-me" : ""}`}>
               <span className="score-label">
                 {type === "elo" ? "ELO:" : "Solved:"}
-              </span>{" "}
+              </span>
+
               {getValue(u)}
+
+              {type === "elo" && u.eloChange > 0 && (
+                <span className="elo-up">▲ {u.eloChange}</span>
+              )}
+
+              {type === "elo" && u.eloChange < 0 && (
+                <span className="elo-down">▼ {Math.abs(u.eloChange)}</span>
+              )}
             </span>
           </div>
         );

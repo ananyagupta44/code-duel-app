@@ -4,6 +4,7 @@ import Submission from "../models/Submission.js";
 import User from "../models/User.js";
 import { io } from "../server.js";
 import { emitLeaderboardUpdate } from "../services/leaderboardEmitter.js";
+import Match from "../models/Match.js";
 
 import {
   generateCppWrapper,
@@ -13,7 +14,7 @@ import {
 
 export const runCode = async (req, res) => {
   try {
-    const { language, code, functionName, input } = req.body;
+    const { language, code, functionName, input, matchId } = req.body;
 
     let executableCode = code;
 
@@ -26,6 +27,17 @@ export const runCode = async (req, res) => {
     }
     if (language === "cpp") {
       executableCode = generateCppWrapper(code, functionName, input);
+    }
+
+    if (matchId && req.user) {
+      const match = await Match.findById(matchId);
+      const user = await User.findById(req.user._id).select("username");
+
+      io.to(`spectate:${matchId}`).emit("spectate:event", {
+        type: "run",
+        message: `⚡ ${user.username} ran code`,
+        timestamp: Date.now(),
+      });
     }
 
     const output = await executeCode(language, executableCode);

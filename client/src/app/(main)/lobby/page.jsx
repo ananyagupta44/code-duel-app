@@ -27,6 +27,7 @@ export default function LobbyPage() {
   const [currentUserElo, setCurrentUserElo] = useState(1000);
   const [pendingMatch, setPendingMatch] = useState(null);
   const [waitingModal, setWaitingModal] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
     const handleRejected = ({ matchId }) => {
@@ -48,12 +49,9 @@ export default function LobbyPage() {
   const fetchUsers = async () => {
     try {
       const res = await api.get("/matches/lobby");
-
-      console.log("API USERS", res.data.users);
-
       setUsers(res.data.users);
-
       setCurrentUserElo(res.data.currentUserElo);
+      setCurrentUserId(res.data.currentUserId);
     } catch (error) {
       console.log(error);
     } finally {
@@ -89,20 +87,15 @@ export default function LobbyPage() {
       const res = await api.post("/matches/create", {
         opponentId,
         matchType: matchMode,
+        difficulty,
       });
-      console.log("MATCH RESPONSE:", res.data);
       setPendingMatch(res.data._id);
       setWaitingModal(true);
-      console.log("Socket connected:", socket.connected);
-      console.log("Socket ID:", socket.id);
       socket.emit("sendMatchInvite", {
         matchId: res.data._id,
         opponentId,
       });
-
-      console.log("INVITE SENT", res.data._id, opponentId);
     } catch (error) {
-      console.log("CREATE MATCH ERROR:", error);
       console.log(error);
       alert(error.response?.data?.message || "Failed to create match");
     } finally {
@@ -112,20 +105,44 @@ export default function LobbyPage() {
 
   useEffect(() => {
     fetchUsers();
+  }, []);
 
-    const handleLobbyUpdate = (data) => {
-      setUsers(data.users);
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    const handleLobbyUpdate = (users) => {
+      setUsers(users.filter((u) => String(u._id) !== String(currentUserId)));
     };
 
-    socket.on("lobbyUpdated", (users) => {
-      console.log("SOCKET USERS", users);
-      setUsers(users);
-    });
+    socket.on("lobbyUpdated", handleLobbyUpdate);
 
     return () => {
       socket.off("lobbyUpdated", handleLobbyUpdate);
     };
-  }, []);
+  }, [currentUserId]);
+
+  const handleFindMatch = async () => {
+    if (playType === "friend") {
+      router.push("/create-game");
+      return;
+    }
+
+    if (playType === "ai") {
+      router.push(`/ai?difficulty=${difficulty}&topic=${topic}`);
+      return;
+    }
+
+    try {
+      const res = await api.post("/matches/find", {
+        matchType: matchMode,
+        difficulty,
+      });
+
+      router.push(`/duel/${res.data.matchId}`);
+    } catch (error) {
+      alert(error.response?.data?.message || "No opponent found");
+    }
+  };
 
   const top10 = displayedUsers.slice(0, 10);
   const top25 = displayedUsers.slice(10, 25);
@@ -134,82 +151,113 @@ export default function LobbyPage() {
 
   return (
     <div className={`lobby-page ${chivo.className}`}>
-      <div className="choose-opponent-section">
-        <h1 className={`choose-title ${fjalla.className}`}>
-          CHOOSE AN OPPONENT
-        </h1>
+      {playType === "friend" && (
+        <div className="choose-opponent-section">
+          <h1 className={`choose-title ${fjalla.className}`}>
+            CHOOSE AN OPPONENT
+          </h1>
 
-        {matchMode === "casual" ? (
-          <div className="opponents-grid">
-            <div className={`opponent-column ${fjalla.className}`}>
-              <h2>Top 10</h2>
+          {matchMode === "casual" ? (
+            <div className="opponents-grid">
+              <div className={`opponent-column ${fjalla.className}`}>
+                <h2>Top 10</h2>
 
-              {top10.map((user) => (
-                <PlayerCard
-                  key={user._id}
-                  user={user}
-                  challengeUser={challengeUser}
-                  creatingMatch={creatingMatch}
-                />
-              ))}
+                {top10.map((user) => (
+                  <PlayerCard
+                    key={user._id}
+                    user={user}
+                    challengeUser={challengeUser}
+                    creatingMatch={creatingMatch}
+                  />
+                ))}
+              </div>
+
+              <div className={`opponent-column ${fjalla.className}`}>
+                <h2>Top 25</h2>
+
+                {top25.map((user) => (
+                  <PlayerCard
+                    key={user._id}
+                    user={user}
+                    challengeUser={challengeUser}
+                    creatingMatch={creatingMatch}
+                  />
+                ))}
+              </div>
+
+              <div className={`opponent-column ${fjalla.className}`}>
+                <h2>Top 50</h2>
+
+                {top50.map((user) => (
+                  <PlayerCard
+                    key={user._id}
+                    user={user}
+                    challengeUser={challengeUser}
+                    creatingMatch={creatingMatch}
+                  />
+                ))}
+              </div>
+
+              <div className={`opponent-column ${fjalla.className}`}>
+                <h2>All Players</h2>
+
+                {remaining.map((user) => (
+                  <PlayerCard
+                    key={user._id}
+                    user={user}
+                    challengeUser={challengeUser}
+                    creatingMatch={creatingMatch}
+                  />
+                ))}
+              </div>
             </div>
+          ) : (
+            <div className="ranked-section">
+              <h2 className={fjalla.className}>ELO Ranked Matchmaking</h2>
 
-            <div className={`opponent-column ${fjalla.className}`}>
-              <h2>Top 25</h2>
-
-              {top25.map((user) => (
-                <PlayerCard
-                  key={user._id}
-                  user={user}
-                  challengeUser={challengeUser}
-                  creatingMatch={creatingMatch}
-                />
-              ))}
+              <div className="ranked-list">
+                {displayedUsers.map((user) => (
+                  <PlayerCard
+                    key={user._id}
+                    user={user}
+                    challengeUser={challengeUser}
+                    creatingMatch={creatingMatch}
+                  />
+                ))}
+              </div>
             </div>
+          )}
+        </div>
+      )}
+      {playType === "human" && (
+        <div className="choose-opponent-section">
+          <h1 className={`choose-title ${fjalla.className}`}>
+            FIND YOUR NEXT DUEL
+          </h1>
 
-            <div className={`opponent-column ${fjalla.className}`}>
-              <h2>Top 50</h2>
+          <div className="human-matchmaking-info">
+            <h2>Find Your Next Opponent</h2>
 
-              {top50.map((user) => (
-                <PlayerCard
-                  key={user._id}
-                  user={user}
-                  challengeUser={challengeUser}
-                  creatingMatch={creatingMatch}
-                />
-              ))}
-            </div>
+            <p>Queue into a live coding duel against another online player.</p>
 
-            <div className={`opponent-column ${fjalla.className}`}>
-              <h2>All Players</h2>
+            <p>
+              Casual matches are perfect for practice while
+              <span className="matchmaking-highlight">
+                {" "}
+                Ranked Matches
+              </span>{" "}
+              affect your ELO and leaderboard position.
+            </p>
 
-              {remaining.map((user) => (
-                <PlayerCard
-                  key={user._id}
-                  user={user}
-                  challengeUser={challengeUser}
-                  creatingMatch={creatingMatch}
-                />
-              ))}
-            </div>
+            <ul>
+              <li>Automatic opponent matching</li>
+              <li>Difficulty-based problem selection</li>
+              <li>Live code duel experience</li>
+              <li>ELO progression in ranked mode</li>
+            </ul>
           </div>
-        ) : (
-          <div className="ranked-section">
-            <h2 className={fjalla.className}>ELO Ranked Matchmaking</h2>
-
-            <div className="ranked-list">
-              {displayedUsers.map((user) => (
-                <PlayerCard
-                  key={user._id}
-                  user={user}
-                  challengeUser={challengeUser}
-                  creatingMatch={creatingMatch}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
       {/* matchmaking panel*/}
       <section className="matchmaking-panel">
         <div className="play-type">
@@ -217,7 +265,7 @@ export default function LobbyPage() {
             className={playType === "human" ? "active" : ""}
             onClick={() => setPlayType("human")}
           >
-            <IoLogoGameControllerB /> Human
+            <IoLogoGameControllerB /> Random
           </button>
 
           <button
@@ -236,7 +284,7 @@ export default function LobbyPage() {
         </div>
 
         <div className="match-options">
-          {playType === "human" && (
+          {playType === "friend" && (
             <>
               <div className="match-mode">
                 <button
@@ -310,23 +358,44 @@ export default function LobbyPage() {
             </>
           )}
 
-          {playType === "friend" && (
+          {playType === "human" && (
             <div className="friend-panel">
-              <h3>Create a Private Duel Room</h3>
+              <div className="match-mode">
+                <button
+                  className={matchMode === "casual" ? "active" : ""}
+                  onClick={() => setMatchMode("casual")}
+                >
+                  <FaStopCircle />
+                  Non Ranked
+                </button>
 
-              <p>Invite friends using a room code and compete head-to-head.</p>
+                <button
+                  className={matchMode === "ranked" ? "active" : ""}
+                  onClick={() => setMatchMode("ranked")}
+                >
+                  <RiSwordLine />
+                  ELO Ranked
+                </button>
+              </div>
+              <div className="space"></div>
+              <div className="difficulty-options">
+                {["Easy", "Medium", "Hard", "Random"].map((level) => (
+                  <button
+                    key={level}
+                    className={
+                      difficulty === level.toLowerCase() ? "active" : ""
+                    }
+                    onClick={() => setDifficulty(level.toLowerCase())}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
 
-        <button
-          className="find-match-btn"
-          onClick={() => {
-            if (playType === "friend") {
-              router.push("/create-game");
-            }
-          }}
-        >
+        <button className="find-match-btn" onClick={handleFindMatch}>
           {playType === "friend"
             ? "CREATE GAME"
             : playType === "ai"

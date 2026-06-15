@@ -2,6 +2,7 @@ import express from "express";
 import {
   acceptMatch,
   createMatch,
+  findMatch,
   getLiveMatches,
   getLobbyUsers,
   getMatchById,
@@ -15,8 +16,8 @@ router.post("/", protect, createMatch);
 router.get("/lobby", protect, getLobbyUsers);
 router.post("/create", protect, createMatch);
 router.get("/live", getLiveMatches);
+router.post("/find", protect, findMatch);
 router.get("/:matchId", getMatchById);
-
 router.post("/:matchId/submit", protect, submitMatchSolution);
 router.post("/:matchId/accept", protect, acceptMatch);
 router.get("/spectate/:id", getSpectateMatch);

@@ -21,6 +21,7 @@ import matchRoutes from "./routes/matchRoutes.js";
 import heroRoutes from "./routes/heroRoutes.js";
 import leaderboardRoutes from "./routes/leaderboardRoutes.js";
 import { getLeaderboardData } from "./services/leaderboardEmitter.js";
+import profileRoutes from "./routes/profileRoutes.js";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/matches", matchRoutes);
 app.use("/api/hero", heroRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/profile", profileRoutes);
 
 app.get("/", (req, res) => {
   res.send("CodeDuel API Running");
@@ -57,6 +59,7 @@ export const emitHeroStats = async () => {
   })
     .populate("player1Id", "username")
     .populate("player2Id", "username")
+    .populate("problemId", "title difficulty")
     .limit(10);
 
   io.emit("heroStatsUpdated", {
@@ -102,6 +105,10 @@ io.on("connection", async (socket) => {
     const users = await User.find({
       isOnline: true,
     }).select("username elo wins losses solvedProblems isInMatch");
+    console.log(
+      "LOBBY EMIT",
+      users.map((u) => u.username),
+    );
 
     io.emit("lobbyUpdated", formatLobbyUsers(users));
   });
@@ -128,6 +135,10 @@ io.on("connection", async (socket) => {
     const users = await User.find({
       isOnline: true,
     }).select("username elo wins losses solvedProblems isInMatch");
+    console.log(
+      "LOBBY EMIT",
+      users.map((u) => u.username),
+    );
 
     io.emit("lobbyUpdated", formatLobbyUsers(users));
 
@@ -139,25 +150,20 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("spectate:join", (matchId) => {
-  socket.join(`spectate:${matchId}`);
-});
+    socket.join(`spectate:${matchId}`);
+  });
 
-socket.on("spectate:leave", (matchId) => {
-  socket.leave(`spectate:${matchId}`);
-});
+  socket.on("spectate:leave", (matchId) => {
+    socket.leave(`spectate:${matchId}`);
+  });
 
-socket.on(
-  "match:codeUpdate",
-  ({ matchId, playerId, code, language }) => {
-
-    io.to(`spectate:${matchId}`)
-      .emit("spectate:codeUpdate", {
-        playerId,
-        code,
-        language,
-      });
-  }
-);
+  socket.on("match:codeUpdate", ({ matchId, playerId, code, language }) => {
+    io.to(`spectate:${matchId}`).emit("spectate:codeUpdate", {
+      playerId,
+      code,
+      language,
+    });
+  });
 
   socket.on("userOffline", async (userId) => {
     onlineUsers.delete(userId);
@@ -171,6 +177,10 @@ socket.on(
     const users = await User.find({
       isOnline: true,
     }).select("username elo wins losses solvedProblems isInMatch");
+    console.log(
+      "LOBBY EMIT",
+      users.map((u) => u.username),
+    );
 
     io.emit("lobbyUpdated", formatLobbyUsers(users));
 
@@ -193,13 +203,9 @@ socket.on(
     },
   );
 
-  socket.on(
-  "rejectMatchInvite",
-  async ({ matchId }) => {
+  socket.on("rejectMatchInvite", async ({ matchId }) => {
     try {
-      const match = await Match.findById(
-        matchId
-      );
+      const match = await Match.findById(matchId);
 
       if (!match) return;
 
@@ -207,19 +213,13 @@ socket.on(
 
       await match.save();
 
-      await User.findByIdAndUpdate(
-        match.player1Id,
-        {
-          isInMatch: false,
-        }
-      );
+      await User.findByIdAndUpdate(match.player1Id, {
+        isInMatch: false,
+      });
 
-      await User.findByIdAndUpdate(
-        match.player2Id,
-        {
-          isInMatch: false,
-        }
-      );
+      await User.findByIdAndUpdate(match.player2Id, {
+        isInMatch: false,
+      });
 
       io.emit("inviteRejected", {
         matchId,
@@ -229,19 +229,17 @@ socket.on(
 
       const users = await User.find({
         isOnline: true,
-      }).select(
-        "username elo wins losses solvedProblems isInMatch"
+      }).select("username elo wins losses solvedProblems isInMatch");
+      console.log(
+        "LOBBY EMIT",
+        users.map((u) => u.username),
       );
 
-      io.emit(
-        "lobbyUpdated",
-        formatLobbyUsers(users)
-      );
+      io.emit("lobbyUpdated", formatLobbyUsers(users));
     } catch (error) {
       console.log(error);
     }
-  }
-);
+  });
 
   const leaderboardData = await getLeaderboardData();
 

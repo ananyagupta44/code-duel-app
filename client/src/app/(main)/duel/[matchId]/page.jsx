@@ -58,6 +58,7 @@ export default function DuelPage() {
         code,
         functionName: match.problemId.functionName,
         input,
+        matchId,
       });
 
       setOutput(res.data.output);

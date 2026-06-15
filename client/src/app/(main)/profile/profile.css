@@ -1,0 +1,412 @@
+@import url("https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@700;800;900&family=Chivo+Mono:wght@300;400;500;600&display=swap");
+
+.profile-page {
+  min-height: 100vh;
+  padding: 2.5rem 4rem 5rem;
+  position: relative;
+}
+
+.profile-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(128,92,186,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128,92,186,0.1) 1px, transparent 1px);
+  background-size: 70px 70px;
+  pointer-events: none;
+  mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+}
+
+.profile-page > * { position: relative; z-index: 2; }
+
+/* HEADER */
+.profile-header {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.profile-avatar-card {
+  background: linear-gradient(160deg, #1c1530 0%, #100e1c 100%);
+  border: 1px solid rgba(128,92,186,0.25);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+
+.profile-avatar-card img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #b89cff;
+  object-fit: cover;
+  background: rgba(169,146,214,0.08);
+  flex-shrink: 0;
+}
+
+.profile-id h1 {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+
+.profile-id-meta {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-pill {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(169,146,214,0.25);
+  background: rgba(169,146,214,0.08);
+  color: #c6afed;
+}
+
+.profile-pill.gold {
+  border-color: rgba(247,201,72,0.3);
+  background: rgba(247,201,72,0.08);
+  color: #f7c948;
+}
+
+/* QUICK STATS */
+.profile-quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  flex: 1.4;
+}
+
+.profile-qcard {
+  background: linear-gradient(160deg, #1c1530 0%, #100e1c 100%);
+  border: 1px solid rgba(128,92,186,0.22);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.profile-qcard .val {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #d4b8ff;
+  line-height: 1;
+}
+
+.profile-qcard .lbl {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.35);
+  margin-top: 6px;
+  font-family: "Chivo Mono", monospace;
+}
+
+.profile-qcard.green .val { color: #4ade80; }
+.profile-qcard.red .val { color: #f87171; }
+.profile-qcard.gold .val { color: #f7c948; }
+
+/* GRID LAYOUT */
+.profile-grid2 {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.profile-grid2.reverse {
+  grid-template-columns: 1fr 1.3fr;
+}
+
+.profile-card {
+  background: linear-gradient(160deg, #1c1530 0%, #100e1c 100%);
+  border: 1px solid rgba(128,92,186,0.22);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.profile-card h3 {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(169,146,214,0.6);
+  margin-bottom: 16px;
+}
+
+.profile-card .recharts-cartesian-axis-tick text {
+  fill: rgba(210,200,230,0.4) !important;
+  font-family: "Chivo Mono", monospace;
+  font-size: 10px;
+}
+
+.profile-card .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #14101f !important;
+  border: 1px solid rgba(169,146,214,0.3) !important;
+  border-radius: 8px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+}
+
+/* DONUT LEGEND */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leg-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-family: "Chivo Mono", monospace;
+  color: rgba(255,255,255,0.7);
+}
+
+.leg-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.leg-val {
+  margin-left: auto;
+  font-family: "Big Shoulders", sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* TOPICS LIST */
+.topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.topic-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topic-name {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.7);
+  width: 90px;
+  flex-shrink: 0;
+  font-family: "Chivo Mono", monospace;
+}
+
+.topic-bar-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.topic-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #805cba, #b89cff);
+}
+
+.topic-count {
+  font-size: 0.75rem;
+  color: #c6afed;
+  width: 28px;
+  text-align: right;
+  font-family: "Chivo Mono", monospace;
+}
+
+/* ACTIVITY GRID */
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(26, 1fr);
+  gap: 3px;
+  margin-top: 8px;
+}
+
+.act-cell {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.04);
+}
+
+.act-1 { background: rgba(184,156,255,0.25); }
+.act-2 { background: rgba(184,156,255,0.5); }
+.act-3 { background: rgba(184,156,255,0.8); }
+.act-4 { background: #b89cff; }
+
+/* MATCH HISTORY */
+.match-history {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.match-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  transition: 0.2s ease;
+}
+
+.match-row:hover {
+  background: rgba(169,146,214,0.05);
+  border-color: rgba(169,146,214,0.2);
+}
+
+.result-tag {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  width: 36px;
+  text-align: center;
+  border-radius: 6px;
+  padding: 4px 0;
+  flex-shrink: 0;
+}
+
+.result-tag.win {
+  background: rgba(74,222,128,0.12);
+  color: #4ade80;
+}
+
+.result-tag.loss {
+  background: rgba(248,113,113,0.12);
+  color: #f87171;
+}
+
+.match-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.match-info .title {
+  font-size: 0.85rem;
+  color: #fff;
+  font-family: "Chivo Mono", monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.match-info .sub {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.35);
+  margin-top: 2px;
+  font-family: "Chivo Mono", monospace;
+}
+
+.match-elo {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.match-elo.win { color: #4ade80; }
+.match-elo.loss { color: #f87171; }
+
+.match-date {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.3);
+  width: 60px;
+  text-align: right;
+  font-family: "Chivo Mono", monospace;
+  flex-shrink: 0;
+}
+
+.profile-empty {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(255,255,255,0.4);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.85rem;
+}
+
+.act-cell {
+  position: relative;
+  cursor: pointer;
+}
+
+.heat-tooltip {
+  position: absolute;
+  bottom: 140%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #14101f;
+  border: 1px solid rgba(184, 156, 255, 0.25);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #fff;
+  font-size: 0.72rem;
+  font-family: "Chivo Mono", monospace;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.15s ease;
+  z-index: 100;
+  pointer-events: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.heat-tooltip strong {
+  color: #b89cff;
+}
+
+.act-cell:hover .heat-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.heat-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #14101f transparent transparent transparent;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .profile-header { flex-direction: column; }
+  .profile-quick-stats { grid-template-columns: repeat(2, 1fr); }
+  .profile-grid2, .profile-grid2.reverse { grid-template-columns: 1fr; }
+  .activity-grid { grid-template-columns: repeat(13, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .profile-page { padding: 1.5rem 1.25rem 3rem; }
+  .profile-quick-stats { grid-template-columns: repeat(2, 1fr); }
+}

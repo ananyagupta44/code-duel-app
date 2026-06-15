@@ -1,32 +1,84 @@
 import User from "../models/User.js";
 import Problem from "../models/Problem.js";
+import Match from "../models/Match.js";
 
 export const getLeaderboardData = async (req, res) => {
   try {
-    const eloLeaderboard = await User.find()
-      .select("username elo wins losses solvedProblems")
+    // ==========================
+    // ELO LEADERBOARD
+    // ==========================
+
+    const eloUsers = await User.find()
+      .select(
+        "username elo wins losses solvedProblems currentStreak bestStreak",
+      )
       .sort({ elo: -1 })
       .limit(50);
 
-    const solvedLeaderboard = await User.find().select(
-      "username elo wins losses solvedProblems",
+    const eloLeaderboard = await Promise.all(
+      eloUsers.map(async (user) => {
+        const lastMatch = await Match.findOne({
+          status: "finished",
+          matchType: "ranked",
+          $or: [{ player1Id: user._id }, { player2Id: user._id }],
+        }).sort({ endedAt: -1 });
+
+        let eloChange = 0;
+
+        if (lastMatch) {
+          const isPlayer1 =
+            lastMatch.player1Id.toString() === user._id.toString();
+
+          eloChange = isPlayer1
+            ? (lastMatch.player1EloAfter ?? 0) -
+              (lastMatch.player1EloBefore ?? 0)
+            : (lastMatch.player2EloAfter ?? 0) -
+              (lastMatch.player2EloBefore ?? 0);
+        }
+
+        return {
+          _id: user._id,
+          username: user.username,
+          elo: user.elo,
+          wins: user.wins,
+          losses: user.losses,
+          solvedCount: user.solvedProblems?.length || 0,
+          currentStreak: user.currentStreak || 0,
+          bestStreak: user.bestStreak || 0,
+          eloChange,
+        };
+      }),
     );
 
-    const solvedSorted = solvedLeaderboard
+    // ==========================
+    // SOLVED LEADERBOARD
+    // ==========================
+
+    const solvedUsers = await User.find().select(
+      "username elo wins losses solvedProblems currentStreak bestStreak",
+    );
+
+    const solvedLeaderboard = solvedUsers
       .map((user) => ({
         _id: user._id,
         username: user.username,
         elo: user.elo,
         wins: user.wins,
         losses: user.losses,
-        solvedCount: user.solvedProblems.length,
+        solvedCount: user.solvedProblems?.length || 0,
+        currentStreak: user.currentStreak || 0,
+        bestStreak: user.bestStreak || 0,
       }))
       .sort((a, b) => b.solvedCount - a.solvedCount)
       .slice(0, 50);
 
+    // ==========================
+    // RESPONSE
+    // ==========================
+
     res.status(200).json({
       eloLeaderboard,
-      solvedLeaderboard: solvedSorted,
+      solvedLeaderboard,
     });
   } catch (error) {
     console.error(error);

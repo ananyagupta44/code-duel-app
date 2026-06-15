@@ -26,7 +26,6 @@ export default function SpectatePage() {
     const fetchMatches = async () => {
       try {
         const res = await api.get("/matches/live");
-        console.log("LIVE MATCHES:", res.data);
 
         setMatches(res.data);
       } catch (error) {
@@ -45,7 +44,7 @@ export default function SpectatePage() {
           <p>Watch ongoing coding duels in real time.</p>
         </div>
 
-        {matches.length === 0 ? (
+        {Array.isArray(matches) && matches.length === 0 ? (
           <div className="no-matches">
             <h2>No Live Matches</h2>
             <p>Check back later.</p>

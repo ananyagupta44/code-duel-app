@@ -12,24 +12,47 @@ import {
 } from "../services/wrapperGenerator.js";
 import { emitLeaderboardUpdate } from "../services/leaderboardEmitter.js";
 
+const saveMatchCode = async ({ match, userId, code, language }) => {
+  if (match.player1Id.toString() === userId.toString()) {
+    match.player1Submission = {
+      ...match.player1Submission,
+      code,
+      language,
+      submittedAt: new Date(),
+    };
+  } else {
+    match.player2Submission = {
+      ...match.player2Submission,
+      code,
+      language,
+      submittedAt: new Date(),
+    };
+  }
+
+  await match.save();
+};
+
 export const createMatch = async (req, res) => {
   try {
-    const { opponentId, matchType } = req.body;
+    const { opponentId, matchType, difficulty = "medium" } = req.body;
 
     const player1Id = req.user._id;
 
-    const problem = await Problem.aggregate([
-      {
-        $sample: {
-          size: 1,
-        },
-      },
-    ]);
+    const filter = {};
+
+    if (difficulty !== "random") {
+      filter.difficulty = difficulty;
+    }
+
+    const problems = await Problem.find(filter);
+
+    const problem = problems[Math.floor(Math.random() * problems.length)];
 
     const match = await Match.create({
-      player1Id,
+      problemId: problem._id,
+      difficulty: difficulty === "random" ? problem.difficulty : difficulty,
       player2Id: opponentId,
-      problemId: problem[0]._id,
+      player1Id,
       matchType,
       status: "waiting",
       player1Progress: 0,
@@ -110,6 +133,19 @@ export const submitMatchSolution = async (req, res) => {
 
     const match = await Match.findById(matchId).populate("problemId");
 
+    await saveMatchCode({
+      match,
+      userId,
+      code,
+      language,
+    });
+
+    io.to(`spectate:${match._id}`).emit("spectate:codeUpdate", {
+      playerId: userId,
+      code,
+      language,
+    });
+
     if (!match) {
       return res.status(404).json({
         message: "Match not found",
@@ -184,6 +220,13 @@ export const submitMatchSolution = async (req, res) => {
         break;
       }
     }
+    const player = await User.findById(userId).select("username");
+
+    io.to(`spectate:${match._id}`).emit("spectate:event", {
+      type: "tests",
+      message: `✓ ${player.username} passed ${passed}/${problem.testCases.length} tests`,
+      timestamp: Date.now(),
+    });
 
     if (verdict !== "RE") {
       verdict = passed === problem.testCases.length ? "accepted" : "WA";
@@ -200,6 +243,12 @@ export const submitMatchSolution = async (req, res) => {
     });
 
     const progress = Math.floor((passed / problem.testCases.length) * 100);
+
+    io.to(`spectate:${match._id}`).emit("spectate:event", {
+      type: "progress",
+      message: `🚀 ${player.username} reached ${progress}%`,
+      timestamp: Date.now(),
+    });
 
     if (match.player1Id.toString() === userId.toString()) {
       match.player1Progress = Math.max(match.player1Progress, progress);
@@ -253,6 +302,12 @@ export const submitMatchSolution = async (req, res) => {
         },
         isInMatch: false,
       });
+
+      io.to(`spectate:${match._id}`).emit("spectate:event", {
+        type: "winner",
+        message: `🏆 ${player.username} solved the problem`,
+        timestamp: Date.now(),
+      });
     }
 
     if (match.matchType === "ranked") {
@@ -262,29 +317,46 @@ export const submitMatchSolution = async (req, res) => {
           ? match.player2Id
           : match.player1Id;
       const loser = await User.findById(loserId);
-      const K = 32;
 
+      match.player1EloBefore =
+        match.player1Id.toString() === winner._id.toString()
+          ? winner.elo
+          : loser.elo;
+
+      match.player2EloBefore =
+        match.player2Id.toString() === winner._id.toString()
+          ? winner.elo
+          : loser.elo;
+
+      const K = 32;
       const expectedWinner =
         1 / (1 + Math.pow(10, (loser.elo - winner.elo) / 400));
-
       const expectedLoser =
         1 / (1 + Math.pow(10, (winner.elo - loser.elo) / 400));
-
       winner.elo = Math.round(winner.elo + K * (1 - expectedWinner));
-
       loser.elo = Math.round(loser.elo + K * (0 - expectedLoser));
 
       await winner.save();
       await loser.save();
+
+      match.player1EloAfter =
+        match.player1Id.toString() === winner._id.toString()
+          ? winner.elo
+          : loser.elo;
+
+      match.player2EloAfter =
+        match.player2Id.toString() === winner._id.toString()
+          ? winner.elo
+          : loser.elo;
+
       await emitLeaderboardUpdate(io);
     }
 
     await match.save();
-    io.to(`spectate:${match._id}`)
-  .emit("spectate:progressUpdate", {
-    player1Progress: match.player1Progress,
-    player2Progress: match.player2Progress,
-  });
+    io.to(`spectate:${match._id}`).emit("spectate:progressUpdate", {
+      player1Progress: match.player1Progress,
+      player2Progress: match.player2Progress,
+    });
     await emitHeroStats();
 
     if (match.status === "finished") {
@@ -350,7 +422,7 @@ export const getLobbyUsers = async (req, res) => {
 
     res.json({
       currentUserElo: currentUser.elo,
-
+      currentUserId: req.user._id,
       users: rankedUsers,
     });
   } catch (error) {
@@ -363,13 +435,7 @@ export const getLobbyUsers = async (req, res) => {
 export const acceptMatch = async (req, res) => {
   try {
     const { matchId } = req.params;
-
-    console.log("ACCEPT MATCH:", matchId);
-
     const match = await Match.findById(matchId);
-
-    console.log("MATCH:", match);
-
     match.status = "active";
     match.startedAt = new Date();
 
@@ -380,24 +446,16 @@ export const acceptMatch = async (req, res) => {
 
     const player2Socket = onlineUsers.get(match.player2Id.toString());
 
-    console.log("PLAYER 1:", match.player1Id.toString());
-    console.log("PLAYER 2:", match.player2Id.toString());
-
-    console.log("SOCKET 1:", player1Socket);
-    console.log("SOCKET 2:", player2Socket);
-
     if (player1Socket) {
       io.to(player1Socket).emit("matchAccepted", {
         matchId,
       });
-      console.log("EMITTED TO PLAYER 1");
     }
 
     if (player2Socket) {
       io.to(player2Socket).emit("matchAccepted", {
         matchId,
       });
-      console.log("EMITTED TO PLAYER 2");
     }
 
     res.json({ success: true });
@@ -407,51 +465,128 @@ export const acceptMatch = async (req, res) => {
   }
 };
 
-export const getSpectateMatch =
-  async (req, res) => {
-    try {
-      const match =
-        await Match.findById(
-          req.params.id
-        )
-          .populate(
-            "player1Id",
-            "username elo"
-          )
-          .populate(
-            "player2Id",
-            "username elo"
-          )
-          .populate(
-            "problemId"
-          );
+export const getSpectateMatch = async (req, res) => {
+  try {
+    const match = await Match.findById(req.params.id)
+      .populate("player1Id", "username elo")
+      .populate("player2Id", "username elo")
+      .populate("problemId");
 
-      res.json(match);
-    } catch (error) {
-      res.status(500).json({
-        message: error.message,
+    res.json(match);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getLiveMatches = async (req, res) => {
+  const matches = await Match.find({
+    status: "active",
+  })
+    .populate("player1Id", "username elo")
+    .populate("player2Id", "username elo")
+    .populate("problemId", "title difficulty");
+
+  res.json(matches);
+};
+
+export const findMatch = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const { matchType, difficulty } = req.body;
+
+    const currentUser = await User.findById(userId);
+
+    let opponent;
+
+    if (matchType === "ranked") {
+      opponent = await User.findOne({
+        _id: { $ne: userId },
+        isOnline: true,
+        isInMatch: false,
+        elo: {
+          $gte: currentUser.elo - 200,
+          $lte: currentUser.elo + 200,
+        },
+      }).sort({
+        elo: 1,
+      });
+    } else {
+      opponent = await User.findOne({
+        _id: { $ne: userId },
+        isOnline: true,
+        isInMatch: false,
       });
     }
-  };
 
-  export const getLiveMatches =
-  async (req, res) => {
-    const matches =
-      await Match.find({
-        status: "active",
-      })
-        .populate(
-          "player1Id",
-          "username elo"
-        )
-        .populate(
-          "player2Id",
-          "username elo"
-        )
-        .populate(
-          "problemId",
-          "title difficulty"
-        );
+    if (!opponent) {
+      return res.status(404).json({
+        message: "No opponent available",
+      });
+    }
 
-    res.json(matches);
-  };
+    const filter = {};
+
+    if (difficulty !== "random") {
+      filter.difficulty = difficulty;
+    }
+
+    const problems = await Problem.find(filter);
+
+    if (!problems.length) {
+      return res.status(404).json({
+        message: "No problem found",
+      });
+    }
+
+    const problem = problems[Math.floor(Math.random() * problems.length)];
+
+    const match = await Match.create({
+      player1Id: userId,
+      player2Id: opponent._id,
+      problemId: problem._id,
+      matchType,
+      difficulty: difficulty === "random" ? problem.difficulty : difficulty,
+      status: "active",
+      startedAt: new Date(),
+    });
+
+    await User.findByIdAndUpdate(userId, {
+      isInMatch: true,
+    });
+
+    await User.findByIdAndUpdate(opponent._id, {
+      isInMatch: true,
+    });
+
+    await emitHeroStats();
+
+    const player1Socket = onlineUsers.get(userId.toString());
+
+    const player2Socket = onlineUsers.get(opponent._id.toString());
+
+    if (player1Socket) {
+      io.to(player1Socket).emit("matchAccepted", {
+        matchId: match._id,
+      });
+    }
+
+    if (player2Socket) {
+      io.to(player2Socket).emit("matchAccepted", {
+        matchId: match._id,
+      });
+    }
+
+    res.json({
+      matchId: match._id,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

@@ -2,6 +2,10 @@ import "../lobby.css";
 import getAvatar from "@/utils/getAvatar";
 
 export default function PlayerCard({ user, challengeUser, creatingMatch }) {
+  const totalGames = user.wins + user.losses;
+
+  const winRate =
+    totalGames > 0 ? Math.round((user.wins / totalGames) * 100) : 0;
   return (
     <div className={`opponent-card ${user.isInMatch ? "in-match" : "online"}`}>
       <div className="opponent-left">
@@ -12,14 +16,10 @@ export default function PlayerCard({ user, challengeUser, creatingMatch }) {
             className={`status-dot ${user.isInMatch ? "busy" : "online"}`}
           />
         </div>
-
+         <span className="elo-badge">{user.elo} ELO</span>
         <div className="opponent-info">
           <div className="opponent-meta">
             <span className="leaderboard-rank">#{user.leaderboardRank}</span>
-
-            <span className="solved-count">
-              {user.solvedCount ?? user.solvedProblems?.length ?? 0} Solved
-            </span>
           </div>
 
           <div className="username-row">
@@ -27,11 +27,24 @@ export default function PlayerCard({ user, challengeUser, creatingMatch }) {
           </div>
 
           <div className="user-stats">
-            <span>⚔ {user.wins}W</span>
+            <div className="stat-item">
+              <span className="stat-label">Wins</span>
+              <span className="stat-value">{user.wins}</span>
+            </div>
 
-            <span>❌ {user.losses}L</span>
+            <div className="stat-item">
+              <span className="stat-label">Losses</span>
+              <span className="stat-value">{user.losses}</span>
+            </div>
 
-            <span>🏆 {user.elo}</span>
+            <div className="stat-item">
+              <span className="stat-label">Solved</span>
+              <span className="stat-value">{user.solvedCount ?? 0}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Win Rate</span>
+              <span className="stat-value">{winRate}%</span>
+            </div>
           </div>
         </div>
       </div>

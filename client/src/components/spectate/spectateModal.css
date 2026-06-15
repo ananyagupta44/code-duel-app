@@ -1,145 +1,206 @@
 .spectate-backdrop {
   position: fixed;
   inset: 0;
-
-  background: rgba(0, 0, 0, 0.75);
-
-  backdrop-filter: blur(10px);
-
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(8px);
   z-index: 9998;
 }
 
 .spectate-modal {
   position: fixed;
-
   top: 50%;
   left: 50%;
-
   transform: translate(-50%, -50%);
-
   width: 95%;
   max-width: 1500px;
-
   height: 90vh;
-
   overflow-y: auto;
-
-  background: #0f172a;
-
-  border: 1px solid rgba(184, 156, 255, 0.25);
-
-  box-shadow:
-    0 0 40px rgba(184, 156, 255, 0.1);
-
+  background: linear-gradient(160deg, #1a1528 0%, #0d0c16 100%);
+  border: 1px solid rgba(184,156,255,0.25);
+  border-radius: 14px;
+  box-shadow: 0 0 50px rgba(128,92,186,0.15);
   z-index: 9999;
-
   padding: 2rem;
+}
+
+.spectate-modal::-webkit-scrollbar { width: 6px; }
+.spectate-modal::-webkit-scrollbar-thumb {
+  background: rgba(169,146,214,0.3);
+  border-radius: 4px;
+}
+
+/* SPECTATOR BADGE */
+.spectator-indicator {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,107,107,0.08);
+  border: 1px solid rgba(255,107,107,0.3);
+  border-radius: 999px;
+  padding: 6px 14px 6px 10px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+  color: #ff8a8a;
+  letter-spacing: 1px;
+}
+
+.spectator-indicator .rec-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  animation: recPulse 1.2s infinite;
+}
+
+@keyframes recPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
 .spectate-close {
   position: absolute;
-
   top: 20px;
   right: 20px;
-
-  background: none;
-  border: none;
-
-  color: white;
-
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.7);
   cursor: pointer;
+  transition: 0.2s;
 }
 
+.spectate-close:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+/* PROBLEM HEADER */
 .spectate-problem {
-  margin-bottom: 2rem;
+  margin: 50px 0 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .spectate-problem h1 {
-  color: white;
-
-  font-size: 2rem;
-
+  font-family: "Big Shoulders", sans-serif;
+  color: #d4b8ff;
+  font-size: 2.2rem;
   margin-bottom: 0.75rem;
+  letter-spacing: 0.5px;
 }
 
 .problem-meta {
   display: flex;
-
-  gap: 1rem;
-
+  gap: 0.6rem;
   margin-bottom: 1rem;
 }
 
 .problem-meta span {
-  background: rgba(184, 156, 255, 0.15);
-
-  border: 1px solid rgba(184, 156, 255, 0.3);
-
-  color: #d4c1ff;
-
-  padding: 0.4rem 0.8rem;
+  background: rgba(169,146,214,0.08);
+  border: 1px solid rgba(169,146,214,0.25);
+  border-radius: 6px;
+  color: #c6afed;
+  padding: 4px 12px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.75rem;
 }
 
 .spectate-problem p {
-  color: rgba(255,255,255,.8);
-
-  line-height: 1.6;
+  color: rgba(210,200,230,0.75);
+  line-height: 1.8;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.9rem;
 }
 
+/* PLAYERS */
 .spectate-players {
   display: grid;
-
   grid-template-columns: 1fr 1fr;
-
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .player-column {
-  background: rgba(255,255,255,.03);
-
-  border: 1px solid rgba(255,255,255,.08);
-
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .player-header {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .player-header h3 {
+  font-family: "Big Shoulders", sans-serif;
   color: white;
+  font-size: 1.3rem;
 }
 
 .player-header span {
-  color: #b89cff;
+  font-family: "Chivo Mono", monospace;
+  color: #c6afed;
+  font-size: 0.78rem;
+  background: rgba(169,146,214,0.08);
+  border: 1px solid rgba(169,146,214,0.2);
+  padding: 3px 10px;
+  border-radius: 20px;
 }
 
 .progress-wrapper {
   width: 100%;
-
-  height: 10px;
-
-  background: rgba(255,255,255,.08);
-
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
   margin-bottom: 1rem;
-
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
+  background: linear-gradient(90deg, #805cba, #b89cff);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
 
-  background: linear-gradient(
-    90deg,
-    #805cba,
-    #b89cff
-  );
+.live-feed {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(128,92,186,.25);
+}
 
-  transition: width .3s ease;
+.live-feed h3 {
+  color: #b89cff;
+  margin-bottom: 1rem;
+}
+
+.feed-events {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.feed-event {
+  color: white;
+  font-size: .9rem;
+  padding: .6rem;
+  background: rgba( 255, 255, 255, .03 );
+}
+
+@media (max-width: 1100px) {
+  .spectate-players { grid-template-columns: 1fr; }
 }

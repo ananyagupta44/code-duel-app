@@ -26,7 +26,7 @@ export default function Hero() {
   const [topic, setTopic] = useState("array");
   const [playersOnline, setPlayersOnline] = useState(0);
   const [selectedMatch, setSelectedMatch] = useState(null);
-
+  const [matchProgress, setMatchProgress] = useState({});
   const [liveMatches, setLiveMatches] = useState([]);
   const handleProtectedNavigation = (path) => {
     if (!isAuthenticated) {
@@ -68,8 +68,22 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    console.log("SELECTED MATCH CHANGED:", selectedMatch);
-  }, [selectedMatch]);
+    const handleProgress = (data) => {
+      setMatchProgress((prev) => ({
+        ...prev,
+        [data.matchId]: {
+          player1Progress: data.player1Progress,
+          player2Progress: data.player2Progress,
+        },
+      }));
+    };
+
+    socket.on("progressUpdated", handleProgress);
+
+    return () => {
+      socket.off("progressUpdated", handleProgress);
+    };
+  }, []);
 
   const mockMatches = [
     {
@@ -105,6 +119,29 @@ export default function Hero() {
   ];
 
   const displayedMatches = liveMatches.length > 0 ? liveMatches : mockMatches;
+
+  const handleFindMatch = async () => {
+    if (playType === "friend") {
+      router.push("/create-game");
+      return;
+    }
+
+    if (playType === "ai") {
+      router.push(`/ai?difficulty=${difficulty}&topic=${topic}`);
+      return;
+    }
+
+    try {
+      const res = await api.post("/matches/find", {
+        matchType: matchMode,
+        difficulty,
+      });
+
+      router.push(`/duel/${res.data.matchId}`);
+    } catch (error) {
+      alert(error.response?.data?.message || "No opponent found");
+    }
+  };
 
   return (
     <section className="hero">
@@ -159,35 +196,87 @@ export default function Hero() {
         </div>
 
         <div className="live-preview">
-          <h3>• Live</h3>
+          <h3>
+            <span className="live-dot" /> Live
+          </h3>
 
           <div className="slider-container">
             <div className="slider-track">
-              {displayedMatches.map((match) => (
-                <div
-                  key={match._id}
-                  className="match-preview"
-                  onClick={() => {
-                    console.log("CLICKED MATCH:", match._id);
+              {displayedMatches.map((match, index) => {
+                const progress = matchProgress[match._id] || {
+                  player1Progress: match.player1Progress || 0,
+                  player2Progress: match.player2Progress || 0,
+                };
 
-                    setSelectedMatch(match._id);
+                const themes = [
+                  "theme-purple",
+                  "theme-teal",
+                  "theme-coral",
+                  "theme-gold",
+                ];
+                const themeClass = themes[index % themes.length];
 
-                    console.log("AFTER SET:", match._id);
-                  }}
-                >
-                  <span>
-                    {match.player1Id?.username}
-                    <br />
-                    vs
-                    <br />
-                    {match.player2Id?.username}
-                  </span>
+                return (
+                  <div
+                    key={match._id}
+                    className={`match-preview ${themeClass}`}
+                    onClick={() => setSelectedMatch(match._id)}
+                  >
+                    <div className="preview-live-badge">
+                      <span className="live-dot" />
+                      LIVE
+                    </div>
 
-                  {liveMatches.length === 0 && (
-                    <small className="demo-badge">Demo</small>
-                  )}
-                </div>
-              ))}
+                    <div className="preview-players">
+                      <div className="preview-player">
+                        <h4>{match.player1Id?.username}</h4>
+                      </div>
+                      <div className="preview-vs">VS</div>
+                      <div className="preview-player">
+                        <h4>{match.player2Id?.username}</h4>
+                      </div>
+                    </div>
+
+                    {match.problemId?.title && (
+                      <div className="preview-problem">
+                        {match.problemId.title}
+                      </div>
+                    )}
+
+                    <div className="preview-progress">
+                      <div className="preview-progress-row">
+                        <span>
+                          {match.player1Id?.username} —{" "}
+                          {progress.player1Progress}%
+                        </span>
+                        <div className="preview-progress-bar">
+                          <div
+                            className="preview-progress-fill"
+                            style={{ width: `${progress.player1Progress}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="preview-progress-row">
+                        <span>
+                          {match.player2Id?.username} —{" "}
+                          {progress.player2Progress}%
+                        </span>
+                        <div className="preview-progress-bar">
+                          <div
+                            className="preview-progress-fill"
+                            style={{ width: `${progress.player2Progress}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {liveMatches.length === 0 && (
+                      <small className="demo-badge">Demo</small>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -198,7 +287,7 @@ export default function Hero() {
             className={playType === "human" ? "active" : ""}
             onClick={() => setPlayType("human")}
           >
-            <IoLogoGameControllerB /> Human
+            <IoLogoGameControllerB /> Random
           </button>
 
           <button
@@ -217,7 +306,7 @@ export default function Hero() {
         </div>
 
         <div className="match-options">
-          {playType === "human" && (
+          {playType === "friend" && (
             <>
               <div className="match-mode">
                 <button
@@ -291,23 +380,44 @@ export default function Hero() {
             </>
           )}
 
-          {playType === "friend" && (
+          {playType === "human" && (
             <div className="friend-panel">
-              <h3>Create a Private Duel Room</h3>
+              <div className="match-mode">
+                <button
+                  className={matchMode === "casual" ? "active" : ""}
+                  onClick={() => setMatchMode("casual")}
+                >
+                  <FaStopCircle />
+                  Non Ranked
+                </button>
 
-              <p>Invite friends using a room code and compete head-to-head.</p>
+                <button
+                  className={matchMode === "ranked" ? "active" : ""}
+                  onClick={() => setMatchMode("ranked")}
+                >
+                  <RiSwordLine />
+                  ELO Ranked
+                </button>
+              </div>
+              <div className="space"></div>
+              <div className="difficulty-options">
+                {["Easy", "Medium", "Hard", "Random"].map((level) => (
+                  <button
+                    key={level}
+                    className={
+                      difficulty === level.toLowerCase() ? "active" : ""
+                    }
+                    onClick={() => setDifficulty(level.toLowerCase())}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
 
-        <button
-          className="find-match-btn"
-          onClick={() => {
-            if (playType === "friend") {
-              router.push("/create-game");
-            }
-          }}
-        >
+        <button className="find-match-btn" onClick={handleFindMatch}>
           {playType === "friend"
             ? "CREATE GAME"
             : playType === "ai"
