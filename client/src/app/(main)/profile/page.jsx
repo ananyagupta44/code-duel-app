@@ -24,6 +24,7 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showAllMatches, setShowAllMatches] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -73,6 +74,9 @@ export default function ProfilePage() {
     },
     { name: "Hard", value: profile.difficultyBreakdown.hard, color: "#f09595" },
   ];
+  const visibleMatches = showAllMatches
+    ? profile.recentMatches
+    : profile.recentMatches.slice(0, 4);
 
   return (
     <div className="profile-page">
@@ -140,14 +144,14 @@ export default function ProfilePage() {
           <h3>Problems by Difficulty</h3>
           {profile.totalSolved > 0 ? (
             <div className="donut-wrap">
-              <div style={{ height: 160, width: 160, flexShrink: 0 }}>
+              <div style={{ height: 180, width: 180, flexShrink: 0 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={difficultyData}
                       dataKey="value"
                       innerRadius={50}
-                      outerRadius={75}
+                      outerRadius={85}
                       paddingAngle={2}
                     >
                       {difficultyData.map((entry, i) => (
@@ -263,25 +267,43 @@ export default function ProfilePage() {
         <div className="profile-card">
           <h3>Recent Matches</h3>
           {profile.recentMatches.length > 0 ? (
-            <div className="match-history">
-              {profile.recentMatches.map((m) => (
-                <div className="match-row" key={m._id}>
-                  <div className={`result-tag ${m.isWin ? "win" : "loss"}`}>
-                    {m.isWin ? "W" : "L"}
-                  </div>
-                  <div className="match-info">
-                    <div className="title">
-                      {m.problemTitle} vs {m.opponentUsername}
+            <>
+              <div className="match-history">
+                {visibleMatches.map((m) => (
+                  <div className="match-row" key={m._id}>
+                    <div className={`result-tag ${m.isWin ? "win" : "loss"}`}>
+                      {m.isWin ? "W" : "L"}
                     </div>
-                    <div className="sub">
-                      {m.matchType} · {m.duration}
+                    <div className="match-info">
+                      <div className="title">
+                        {m.problemTitle} vs {m.opponentUsername}
+                      </div>
+                      <div className="sub">
+                        {m.matchType} · {m.duration}
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="match-date">{m.timeAgo}</div>
-                </div>
-              ))}
-            </div>
+                    <div className="match-date">{m.timeAgo}</div>
+                  </div>
+                ))}
+              </div>
+
+              {profile.recentMatches.length > 4 && (
+                <button
+                  className="match-history-toggle"
+                  onClick={() => setShowAllMatches((prev) => !prev)}
+                >
+                  {showAllMatches
+                    ? "Show less"
+                    : `Show ${profile.recentMatches.length - 4} more`}
+                  <span
+                    className={`toggle-arrow ${showAllMatches ? "up" : "down"}`}
+                  >
+                    ▾
+                  </span>
+                </button>
+              )}
+            </>
           ) : (
             <div className="profile-empty">No matches played yet</div>
           )}

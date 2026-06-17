@@ -50,19 +50,23 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     currentStreak: {
-  type: Number,
-  default: 0,
-},
+      type: Number,
+      default: 0,
+    },
 
-bestStreak: {
-  type: Number,
-  default: 0,
-},
+    bestStreak: {
+      type: Number,
+      default: 0,
+    },
 
-lastMatchAt: {
-  type: Date,
-  default: null,
-},
+    lastMatchAt: {
+      type: Date,
+      default: null,
+    },
+    tournamentWins: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

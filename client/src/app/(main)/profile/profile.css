@@ -167,6 +167,7 @@
   display: flex;
   align-items: center;
   gap: 24px;
+  justify-content: center;
 }
 
 .donut-legend {
@@ -202,6 +203,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  justify-content: center;
 }
 
 .topic-row {
@@ -398,6 +400,37 @@
   border-color: #14101f transparent transparent transparent;
 }
 
+.match-history-toggle {
+  width: 100%;
+  margin-top: 10px;
+  padding: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(169, 146, 214, 0.06);
+  border: 1px solid rgba(169, 146, 214, 0.2);
+  border-radius: 8px;
+  color: #c6afed;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.match-history-toggle:hover {
+  background: rgba(169, 146, 214, 0.12);
+  border-color: rgba(169, 146, 214, 0.4);
+}
+
+.toggle-arrow {
+  font-size: 0.7rem;
+  transition: transform 0.2s ease;
+}
+
+.toggle-arrow.up {
+  transform: rotate(180deg);
+}
 /* RESPONSIVE */
 @media (max-width: 1100px) {
   .profile-header { flex-direction: column; }

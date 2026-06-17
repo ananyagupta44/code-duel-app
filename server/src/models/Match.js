@@ -17,7 +17,9 @@ const matchSchema = new mongoose.Schema(
     player2Id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: function () {
+        return !this.isAiMatch;
+      },
     },
 
     status: {
@@ -28,7 +30,7 @@ const matchSchema = new mongoose.Schema(
 
     matchType: {
       type: String,
-      enum: ["ranked", "casual", "friend", "ai"],
+      enum: ["ranked", "casual", "friend", "ai", "tournament"],
       default: "casual",
     },
 
@@ -41,6 +43,11 @@ const matchSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       default: null,
+    },
+
+    winner: {
+      type: String,
+      enum: ["player", "ai", null],
     },
 
     loserId: {
@@ -102,6 +109,23 @@ const matchSchema = new mongoose.Schema(
 
     player2EloAfter: {
       type: Number,
+    },
+    aiBot: {
+      id: String,
+      name: String,
+      elo: Number,
+    },
+
+    aiFinishTime: Number,
+
+    isAiMatch: {
+      type: Boolean,
+      default: false,
+    },
+    tournamentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tournament",
+      default: null,
     },
   },
   {

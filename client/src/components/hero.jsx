@@ -15,6 +15,7 @@ import { useAuth } from "@/context/authContext";
 import { useAuthDrawer } from "@/context/drawerContext";
 import { useRouter } from "next/navigation";
 import SpectateModal from "@/components/spectate/SpectateModal";
+import getAvatar from "@/utils/getAvatar";
 
 export default function Hero() {
   const { isAuthenticated } = useAuth();
@@ -28,6 +29,8 @@ export default function Hero() {
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [matchProgress, setMatchProgress] = useState({});
   const [liveMatches, setLiveMatches] = useState([]);
+  const [topEloPlayers, setTopEloPlayers] = useState([]);
+  const [topSolvedPlayers, setTopSolvedPlayers] = useState([]);
   const handleProtectedNavigation = (path) => {
     if (!isAuthenticated) {
       openLogin();
@@ -82,6 +85,33 @@ export default function Hero() {
 
     return () => {
       socket.off("progressUpdated", handleProgress);
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchTopPlayers = async () => {
+      try {
+        const res = await api.get("/leaderboard");
+        setTopEloPlayers(res.data.eloLeaderboard.slice(0, 5));
+        setTopSolvedPlayers(res.data.solvedLeaderboard.slice(0, 5));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchTopPlayers();
+  }, []);
+
+  useEffect(() => {
+    const handleLeaderboardUpdate = (data) => {
+      setTopEloPlayers(data.eloLeaderboard.slice(0, 5));
+      setTopSolvedPlayers(data.solvedLeaderboard.slice(0, 5));
+    };
+
+    socket.on("leaderboard:update", handleLeaderboardUpdate);
+
+    return () => {
+      socket.off("leaderboard:update", handleLeaderboardUpdate);
     };
   }, []);
 
@@ -281,7 +311,8 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      <section className="matchmaking-panel">
+
+      <section className={`matchmaking-panel panel-${playType}`}>
         <div className="play-type">
           <button
             className={playType === "human" ? "active" : ""}
@@ -425,6 +456,88 @@ export default function Hero() {
               : "FIND MATCH"}
         </button>
       </section>
+      <div className="leaderboard-glimpse-row">
+        <div className="leaderboard-glimpse theme-elo">
+          <div className="glimpse-head">
+            <h3>Top ELO</h3>
+            <Link href="/leaderboard" className="view-all-btn">
+              View All <MdArrowForwardIos />
+            </Link>
+          </div>
+
+          <div className="glimpse-list">
+            {topEloPlayers.map((player, index) => (
+              <Link
+                href="/leaderboard"
+                key={player._id}
+                className="glimpse-row"
+              >
+                <span
+                  className={`glimpse-rank ${
+                    index === 0
+                      ? "gold"
+                      : index === 1
+                        ? "silver"
+                        : index === 2
+                          ? "bronze"
+                          : "normal"
+                  }`}
+                >
+                  {index + 1}
+                </span>
+
+                <div className="glimpse-avatar">
+                  <img src={getAvatar(player)} alt={player.username} />
+                </div>
+
+                <span className="glimpse-name">{player.username}</span>
+                <span className="glimpse-stat">{player.elo} ELO</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="leaderboard-glimpse theme-solved">
+          <div className="glimpse-head">
+            <h3>Most Solved</h3>
+            <Link href="/leaderboard" className="view-all-btn">
+              View All <MdArrowForwardIos />
+            </Link>
+          </div>
+
+          <div className="glimpse-list">
+            {topSolvedPlayers.map((player, index) => (
+              <Link
+                href="/leaderboard"
+                key={player._id}
+                className="glimpse-row"
+              >
+                <span
+                  className={`glimpse-rank ${
+                    index === 0
+                      ? "gold"
+                      : index === 1
+                        ? "silver"
+                        : index === 2
+                          ? "bronze"
+                          : "normal"
+                  }`}
+                >
+                  {index + 1}
+                </span>
+                <div className="glimpse-avatar">
+                  <img src={getAvatar(player)} alt={player.username} />
+                </div>
+
+                <span className="glimpse-name">{player.username}</span>
+                <span className="glimpse-stat">
+                  {player.solvedCount} Solved
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
       <SpectateModal
         isOpen={!!selectedMatch}
         matchId={selectedMatch}

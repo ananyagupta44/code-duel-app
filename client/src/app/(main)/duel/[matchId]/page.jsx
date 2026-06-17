@@ -25,7 +25,16 @@ export default function DuelPage() {
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [customInput, setCustomInput] = useState("");
+  const [aiMessage, setAiMessage] = useState("");
   const { user } = useAuth();
+  const aiMessages = [
+    "Reading the problem...",
+    "Exploring brute force...",
+    "Trying an optimized solution...",
+    "Testing edge cases...",
+    "Optimizing memory usage...",
+    "Preparing final submission...",
+  ];
   const emitCodeUpdate = useMemo(
     () =>
       throttle((newCode) => {
@@ -44,6 +53,18 @@ export default function DuelPage() {
       emitCodeUpdate.cancel();
     };
   }, [emitCodeUpdate]);
+
+  useEffect(() => {
+    if (match?.matchType !== "ai") return;
+
+    const interval = setInterval(() => {
+      const random = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+
+      setAiMessage(random);
+    }, 12000);
+
+    return () => clearInterval(interval);
+  }, [match]);
 
   const getStorageKey = (lang) => `duel_${matchId}_${lang}`;
 
@@ -237,21 +258,23 @@ Status: ${res.data.status}
             <div className="problem-body">
               <p>{match.problemId.description}</p>
               <h3>Examples</h3>
-              {match.problemId.testCases?.map((testCase, index) => (
-                <div key={index} className="example-box">
-                  <h3>Example {index + 1}</h3>
-                  <div className="example-section">
-                    <div>
-                      <strong>Input</strong>
-                      <pre>{formatInput(testCase.input)}</pre>
-                    </div>
-                    <div>
-                      <strong>Output</strong>
-                      <pre>{testCase.expectedOutput}</pre>
+              {match.problemId.testCases
+                ?.filter((testCase) => !testCase.isHidden)
+                .map((testCase, index) => (
+                  <div key={index} className="example-box">
+                    <h3>Example {index + 1}</h3>
+                    <div className="example-section">
+                      <div>
+                        <strong>Input</strong>
+                        <pre>{formatInput(testCase.input)}</pre>
+                      </div>
+                      <div>
+                        <strong>Output</strong>
+                        <pre>{testCase.expectedOutput}</pre>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
 
@@ -338,9 +361,17 @@ Status: ${res.data.status}
               <IoIosHourglass size={32} />
               <span>{formatTime(timeLeft)}</span>
             </div>
-            {match.status === "finished" && match.winnerId && (
+            {match.matchType === "ai" && (
+              <div className="ai-badge">🤖 AI DUEL</div>
+            )}
+            {match.status === "finished" && (
               <div className="winner-banner">
-                🏆 Winner: {match.winnerId.username}
+                🏆 Winner:{" "}
+                {match.matchType === "ai"
+                  ? match.winner === "ai"
+                    ? match.aiBot.name
+                    : match.player1Id.username
+                  : match.winnerId?.username}
               </div>
             )}
             <div className="vs-section">
@@ -363,8 +394,13 @@ Status: ${res.data.status}
                 className={`player-section ${match.player2Progress > match.player1Progress ? "leading" : ""}`}
               >
                 <h3 className={`${fjalla.className} player-name`}>
-                  {match.player2Id.username}
+                  {match.matchType === "ai"
+                    ? match.aiBot.name
+                    : match.player2Id.username}
                 </h3>
+                {match.matchType === "ai" && (
+                  <span className="ai-rating">{match.aiBot.elo} ELO</span>
+                )}
                 <div className="player-progress">
                   <div
                     className="progress-fill"
@@ -374,6 +410,9 @@ Status: ${res.data.status}
                 <span>{match.player2Progress}%</span>
               </div>
             </div>
+            {match.matchType === "ai" && (
+              <div className="ai-status">🤖 {aiMessage}</div>
+            )}
           </div>
 
           <div className="sidebar-card">
@@ -393,6 +432,11 @@ Status: ${res.data.status}
             <p>
               <strong>Time Limit:</strong> {match.problemId.timeLimit}s
             </p>
+            {match.matchType === "ai" && (
+              <p>
+                <strong>Opponent:</strong> {match.aiBot.name}
+              </p>
+            )}
           </div>
         </div>
       </div>

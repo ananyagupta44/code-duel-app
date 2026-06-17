@@ -28,6 +28,93 @@ export default function LobbyPage() {
   const [pendingMatch, setPendingMatch] = useState(null);
   const [waitingModal, setWaitingModal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [selectedBot, setSelectedBot] = useState("rookie");
+  const [topics, setTopics] = useState([]);
+
+  const aiBots = [
+    {
+      id: "rookie",
+      name: "Rookie Bot",
+      elo: 800,
+      tier: "Beginner",
+      avatar: "🤖",
+      description:
+        "Still learning loops. Makes silly mistakes — great for a confidence boost.",
+      speed: 20,
+      accuracy: 25,
+      theme: "teal",
+    },
+    {
+      id: "debug-dave",
+      name: "Debug Dave",
+      elo: 1000,
+      tier: "Novice",
+      avatar: "🐛",
+      description:
+        "Sometimes fixes bugs. Sometimes creates them. Unpredictable pace.",
+      speed: 35,
+      accuracy: 38,
+      theme: "blue",
+    },
+    {
+      id: "array-assassin",
+      name: "Array Assassin",
+      elo: 1200,
+      tier: "Intermediate",
+      avatar: "⚡",
+      description:
+        "Lightning-fast array specialist. Sharp on indices and pointers.",
+      speed: 55,
+      accuracy: 50,
+      theme: "coral",
+    },
+    {
+      id: "graph-guru",
+      name: "Graph Guru",
+      elo: 1400,
+      tier: "Advanced",
+      avatar: "🕸️",
+      description: "Lives inside BFS and DFS. Traverses problems with ease.",
+      speed: 65,
+      accuracy: 68,
+      theme: "purple",
+    },
+    {
+      id: "dp-demon",
+      name: "DP Demon",
+      elo: 1600,
+      tier: "Expert",
+      avatar: "🧠",
+      description:
+        "Remembers everything. Memoizes its way through hard problems.",
+      speed: 78,
+      accuracy: 80,
+      theme: "pink",
+    },
+    {
+      id: "grandmaster",
+      name: "Grandmaster AI",
+      elo: 1800,
+      tier: "Elite",
+      avatar: "👑",
+      description: "Elite arena veteran. Optimal solutions on the first try.",
+      speed: 90,
+      accuracy: 92,
+      theme: "gold",
+    },
+    {
+      id: "champion",
+      name: "AI Champion",
+      elo: 2500,
+      tier: "Final boss",
+      avatar: "💀",
+      description:
+        "The final boss. Flawless logic, zero mercy, no second chances.",
+      speed: 100,
+      accuracy: 100,
+      theme: "crimson",
+    },
+  ];
 
   useEffect(() => {
     const handleRejected = ({ matchId }) => {
@@ -45,6 +132,24 @@ export default function LobbyPage() {
       socket.off("inviteRejected", handleRejected);
     };
   }, [pendingMatch]);
+
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const res = await api.get("/problems/topics");
+
+        setTopics(res.data);
+
+        if (res.data.length > 0) {
+          setTopic(res.data[0]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchTopics();
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -128,7 +233,14 @@ export default function LobbyPage() {
     }
 
     if (playType === "ai") {
-      router.push(`/ai?difficulty=${difficulty}&topic=${topic}`);
+      console.log("AI button clicked");
+      const res = await api.post("/ai/create", {
+        topic,
+        difficulty,
+        botId: selectedBot,
+      });
+
+      router.push(`/duel/${res.data.matchId}`);
       return;
     }
 
@@ -150,7 +262,7 @@ export default function LobbyPage() {
   const remaining = displayedUsers.slice(50);
 
   return (
-    <div className={`lobby-page ${chivo.className}`}>
+    <div className={`lobby-page panel-${playType} ${chivo.className}`}>
       {playType === "friend" && (
         <div className="choose-opponent-section">
           <h1 className={`choose-title ${fjalla.className}`}>
@@ -160,53 +272,71 @@ export default function LobbyPage() {
           {matchMode === "casual" ? (
             <div className="opponents-grid">
               <div className={`opponent-column ${fjalla.className}`}>
-                <h2>Top 10</h2>
+                <h2>
+                  Top 10{" "}
+                  <span className="online-count">{top10.length} online</span>
+                </h2>
 
-                {top10.map((user) => (
+                {top10.map((user, index) => (
                   <PlayerCard
                     key={user._id}
                     user={user}
                     challengeUser={challengeUser}
                     creatingMatch={creatingMatch}
+                    index={index}
                   />
                 ))}
               </div>
 
               <div className={`opponent-column ${fjalla.className}`}>
-                <h2>Top 25</h2>
+                <h2>
+                  Top 25{" "}
+                  <span className="online-count">{top25.length} online</span>
+                </h2>
 
-                {top25.map((user) => (
+                {top25.map((user, index) => (
                   <PlayerCard
                     key={user._id}
                     user={user}
                     challengeUser={challengeUser}
                     creatingMatch={creatingMatch}
+                    index={index}
                   />
                 ))}
               </div>
 
               <div className={`opponent-column ${fjalla.className}`}>
-                <h2>Top 50</h2>
+                <h2>
+                  Top 50{" "}
+                  <span className="online-count">{top50.length} online</span>
+                </h2>
 
-                {top50.map((user) => (
+                {top50.map((user, index) => (
                   <PlayerCard
                     key={user._id}
                     user={user}
                     challengeUser={challengeUser}
                     creatingMatch={creatingMatch}
+                    index={index}
                   />
                 ))}
               </div>
 
               <div className={`opponent-column ${fjalla.className}`}>
-                <h2>All Players</h2>
+                <h2>
+                  All Players{" "}
+                  <span className="online-count">
+                    {remaining.length} online
+                  </span>
+                </h2>
 
-                {remaining.map((user) => (
+                {remaining.map((user, index) => (
                   <PlayerCard
                     key={user._id}
                     user={user}
                     challengeUser={challengeUser}
                     creatingMatch={creatingMatch}
+                    index={index}
                   />
                 ))}
               </div>
@@ -216,12 +346,13 @@ export default function LobbyPage() {
               <h2 className={fjalla.className}>ELO Ranked Matchmaking</h2>
 
               <div className="ranked-list">
-                {displayedUsers.map((user) => (
+                {displayedUsers.map((user, index) => (
                   <PlayerCard
                     key={user._id}
                     user={user}
                     challengeUser={challengeUser}
                     creatingMatch={creatingMatch}
+                    index={index}
                   />
                 ))}
               </div>
@@ -255,6 +386,63 @@ export default function LobbyPage() {
               <li>Live code duel experience</li>
               <li>ELO progression in ranked mode</li>
             </ul>
+          </div>
+        </div>
+      )}
+      {playType === "ai" && (
+        <div className="choose-opponent-section">
+          <h1 className={`choose-title ${fjalla.className}`}>PRACTICE VS AI</h1>
+
+          <div className="ai-bot-grid">
+            {aiBots.map((bot) => (
+              <div
+                key={bot.id}
+                className={`ai-bot-card theme-${bot.theme} ${
+                  selectedBot === bot.id ? "selected" : ""
+                }`}
+                onClick={() => setSelectedBot(bot.id)}
+              >
+                {selectedBot === bot.id && (
+                  <div className="bot-selected-badge">SELECTED</div>
+                )}
+
+                <div className="bot-top-row">
+                  <div className="bot-avatar">{bot.avatar}</div>
+                  <div className="bot-name-block">
+                    <h3>{bot.name}</h3>
+                    <div className="bot-tier">{bot.tier}</div>
+                  </div>
+                </div>
+
+                <div className="bot-elo-row">
+                  <span className="bot-elo-label">Rating</span>
+                  <span className="bot-elo-value">{bot.elo}</span>
+                </div>
+
+                <p className="bot-description">{bot.description}</p>
+
+                <div className="bot-power-bars">
+                  <div className="bot-power-row">
+                    <span className="bot-power-label">Speed</span>
+                    <div className="bot-power-track">
+                      <div
+                        className="bot-power-fill"
+                        style={{ width: `${bot.speed}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="bot-power-row">
+                    <span className="bot-power-label">Accuracy</span>
+                    <div className="bot-power-track">
+                      <div
+                        className="bot-power-fill"
+                        style={{ width: `${bot.accuracy}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -323,21 +511,13 @@ export default function LobbyPage() {
           {playType === "ai" && (
             <>
               <div className="topic-options">
-                {[
-                  "Array",
-                  "String",
-                  "Linked List",
-                  "Graph",
-                  "DP",
-                  "Tree",
-                  "Heap",
-                ].map((item) => (
+                {topics.map((item) => (
                   <button
                     key={item}
-                    className={topic === item.toLowerCase() ? "active" : ""}
-                    onClick={() => setTopic(item.toLowerCase())}
+                    className={topic === item ? "active" : ""}
+                    onClick={() => setTopic(item)}
                   >
-                    {item}
+                    {item === "random" ? "Random" : item}
                   </button>
                 ))}
               </div>

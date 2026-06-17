@@ -11,6 +11,7 @@ import {
   generatePythonWrapper,
 } from "../services/wrapperGenerator.js";
 import { emitLeaderboardUpdate } from "../services/leaderboardEmitter.js";
+import { handleAiMatchSubmit } from "./aiController.js";
 
 const saveMatchCode = async ({ match, userId, code, language }) => {
   if (match.player1Id.toString() === userId.toString()) {
@@ -132,6 +133,10 @@ export const submitMatchSolution = async (req, res) => {
     const userId = req.user._id;
 
     const match = await Match.findById(matchId).populate("problemId");
+
+    if (match.matchType === "ai") {
+      return handleAiMatchSubmit(req, res, match);
+    }
 
     await saveMatchCode({
       match,
@@ -308,6 +313,10 @@ export const submitMatchSolution = async (req, res) => {
         message: `🏆 ${player.username} solved the problem`,
         timestamp: Date.now(),
       });
+
+      if (match.matchType === "tournament" && match.tournamentId) {
+        await advanceTournament(match.tournamentId, match);
+      }
     }
 
     if (match.matchType === "ranked") {

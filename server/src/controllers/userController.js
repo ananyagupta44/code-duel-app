@@ -40,20 +40,25 @@ export const getMyProfile = async (req, res) => {
     const buildEloHistory = async (userId) => {
       const matches = await Match.find({
         $or: [{ player1Id: userId }, { player2Id: userId }],
-
-        matchType: "ranked",
-
         status: "finished",
+        $or: [{ matchType: "ranked" }, { matchType: "ai" }],
       }).sort({
         endedAt: 1,
       });
 
-      return matches.map((match, index) => {
+      const validMatches = matches.filter((match) => {
+        const isPlayer1 = match.player1Id?.toString() === userId.toString();
+
+        const elo = isPlayer1 ? match.player1EloAfter : match.player2EloAfter;
+
+        return elo !== undefined && elo !== null;
+      });
+
+      return validMatches.map((match, index) => {
         const isPlayer1 = match.player1Id.toString() === userId.toString();
 
         return {
           match: index + 1,
-
           elo: isPlayer1 ? match.player1EloAfter : match.player2EloAfter,
         };
       });
@@ -152,10 +157,10 @@ export const getMyProfile = async (req, res) => {
         if (count >= 8) level = 4;
 
         cells.push({
-  date: key,
-  count,
-  level,
-});
+          date: key,
+          count,
+          level,
+        });
       }
 
       return cells;
@@ -181,7 +186,6 @@ export const getMyProfile = async (req, res) => {
       .map(([topic, count]) => ({ topic, count }))
       .sort((a, b) => b.count - a.count);
 
-    // RECENT MATCHES (last 10, finished, ranked)
     const recentMatchesRaw = await Match.find({
       $or: [{ player1Id: currentUser._id }, { player2Id: currentUser._id }],
       status: "finished",
@@ -195,7 +199,15 @@ export const getMyProfile = async (req, res) => {
     const recentMatches = recentMatchesRaw.map((m) => {
       const isPlayer1 =
         m.player1Id._id.toString() === currentUser._id.toString();
-      const opponent = isPlayer1 ? m.player2Id : m.player1Id;
+      let opponent;
+
+      if (m.matchType === "ai") {
+        opponent = {
+          username: m.aiBot?.name || "AI Bot",
+        };
+      } else {
+        opponent = isPlayer1 ? m.player2Id : m.player1Id;
+      }
       const isWin = m.winnerId?.toString() === currentUser._id.toString();
 
       const duration =
@@ -234,7 +246,7 @@ export const getMyProfile = async (req, res) => {
 
     // ACTIVITY HEATMAP (26 weeks x 7 days)
     const activityHeatmap = await buildActivityHeatmap(currentUser._id);
-
+    console.log("ELO HISTORY", eloHistory);
     res.status(200).json({
       username: currentUser.username,
       elo: currentUser.elo,

@@ -1,9 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import { RiSwordLine } from "react-icons/ri";
 import { FaGithub, FaDiscord, FaTwitter } from "react-icons/fa";
 import "../css/footer.css";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/duel") || pathname.startsWith("/practice")) {
+    return null;
+  }
   return (
     <footer className="footer">
       <div className="footer-top">

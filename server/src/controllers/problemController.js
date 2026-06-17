@@ -29,3 +29,15 @@ export const getProblemById = async (req, res) => {
     });
   }
 };
+
+export const getProblemTopics = async (req, res) => {
+  try {
+    const topics = await Problem.distinct("topic");
+
+    res.json(topics.sort());
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

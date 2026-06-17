@@ -17,9 +17,11 @@ import authRoutes from "./routes/authRoutes.js";
 import problemRoutes from "./routes/problemRoutes.js";
 import codeRoutes from "./routes/codeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 import matchRoutes from "./routes/matchRoutes.js";
 import heroRoutes from "./routes/heroRoutes.js";
 import leaderboardRoutes from "./routes/leaderboardRoutes.js";
+import tournamentRoutes from "./routes/tournamentRoutes.js";
 import { getLeaderboardData } from "./services/leaderboardEmitter.js";
 import profileRoutes from "./routes/profileRoutes.js";
 
@@ -40,6 +42,8 @@ app.use("/api/matches", matchRoutes);
 app.use("/api/hero", heroRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/tournaments", tournamentRoutes);
 
 app.get("/", (req, res) => {
   res.send("CodeDuel API Running");
