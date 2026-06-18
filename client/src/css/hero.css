@@ -1003,6 +1003,29 @@ border: 1px solid rgba(128,92,186,0.3);
   border: 1px solid rgba(247, 201, 72, 0.2);
 }
 
+.disabled-spectate {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.disabled-spectate:hover {
+  transform: none !important;
+}
+
+.your-match-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255, 99, 71, 0.15);
+  border: 1px solid rgba(255, 99, 71, 0.25);
+  color: tomato;
+  z-index: 2;
+}
+
 @media (max-width: 1100px) {
   .leaderboard-glimpse-row {
     flex-direction: column;

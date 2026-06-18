@@ -39,9 +39,13 @@ export const getMyProfile = async (req, res) => {
 
     const buildEloHistory = async (userId) => {
       const matches = await Match.find({
-        $or: [{ player1Id: userId }, { player2Id: userId }],
         status: "finished",
-        $or: [{ matchType: "ranked" }, { matchType: "ai" }],
+
+        $or: [{ player1Id: userId }, { player2Id: userId }],
+
+        matchType: {
+          $in: ["ranked", "ai"],
+        },
       }).sort({
         endedAt: 1,
       });

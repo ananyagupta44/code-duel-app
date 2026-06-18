@@ -3,6 +3,8 @@ import MatchSubmission from "../models/MatchSubmission.js";
 import Problem from "../models/Problem.js";
 import { onlineUsers } from "../socketStore.js";
 import User from "../models/User.js";
+import Tournament from "../models/Tournament.js";
+import { advanceTournament } from "../services/tournamentEngine.js";
 import { emitHeroStats, io } from "../server.js";
 import { executeCode } from "../services/codeExecutor.js";
 import {
@@ -360,6 +362,24 @@ export const submitMatchSolution = async (req, res) => {
 
       await emitLeaderboardUpdate(io);
     }
+    if (match.matchType === "tournament") {
+      const winner = await User.findById(userId);
+
+      const loserId =
+        match.player1Id.toString() === userId.toString()
+          ? match.player2Id
+          : match.player1Id;
+
+      const loser = await User.findById(loserId);
+
+      winner.elo += 15;
+      loser.elo = Math.max(800, loser.elo - 5);
+
+      await winner.save();
+      await loser.save();
+
+      await emitLeaderboardUpdate(io);
+    }
 
     await match.save();
     io.to(`spectate:${match._id}`).emit("spectate:progressUpdate", {
@@ -451,6 +471,48 @@ export const acceptMatch = async (req, res) => {
     await match.save();
     await emitHeroStats();
 
+    if (match.status === "finished" && match.tournamentId) {
+      const updatedTournament = await Tournament.findById(match.tournamentId)
+        .populate("participants", "username elo")
+        .populate("winnerId", "username")
+        .populate("bracket.matches.player1Id", "username elo")
+        .populate("bracket.matches.player2Id", "username elo")
+        .populate("bracket.matches.winnerId", "username");
+
+      io.emit("tournament:update", updatedTournament);
+
+      const currentRound =
+        updatedTournament.bracket[updatedTournament.currentRound - 1];
+
+      if (currentRound) {
+        currentRound.matches.forEach((m) => {
+          if (!m.winnerId && m.matchId && m.player1Id && m.player2Id) {
+            const p1Socket = onlineUsers.get(m.player1Id._id.toString());
+
+            const p2Socket = onlineUsers.get(m.player2Id._id.toString());
+
+            if (p1Socket) {
+              io.to(p1Socket).emit("tournamentMatchReady", {
+                matchId: m.matchId,
+                tournamentId: updatedTournament._id,
+                tournamentName: updatedTournament.name,
+                opponentName: m.player2Id.username,
+              });
+            }
+
+            if (p2Socket) {
+              io.to(p2Socket).emit("tournamentMatchReady", {
+                matchId: m.matchId,
+                tournamentId: updatedTournament._id,
+                tournamentName: updatedTournament.name,
+                opponentName: m.player1Id.username,
+              });
+            }
+          }
+        });
+      }
+    }
+
     const player1Socket = onlineUsers.get(match.player1Id.toString());
 
     const player2Socket = onlineUsers.get(match.player2Id.toString());
@@ -480,6 +542,25 @@ export const getSpectateMatch = async (req, res) => {
       .populate("player1Id", "username elo")
       .populate("player2Id", "username elo")
       .populate("problemId");
+
+    if (!match) {
+      return res.status(404).json({
+        message: "Match not found",
+      });
+    }
+
+    const userId = req.user?._id;
+
+    const isParticipant =
+      userId &&
+      (match.player1Id._id.toString() === userId.toString() ||
+        match.player2Id._id.toString() === userId.toString());
+
+    if (isParticipant) {
+      return res.status(403).json({
+        message: "Players cannot spectate their own match",
+      });
+    }
 
     res.json(match);
   } catch (error) {

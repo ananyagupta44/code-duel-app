@@ -4,6 +4,9 @@ import Tournament from "../models/Tournament.js";
 import Match from "../models/Match.js";
 import User from "../models/User.js";
 import Problem from "../models/Problem.js";
+import { onlineUsers } from "../socketStore.js";
+import { io } from "../server.js";
+import { startTournamentInternal } from "../services/tournamentEngine.js";
 
 export const createTournament = async (req, res) => {
   try {
@@ -25,11 +28,25 @@ export const createTournament = async (req, res) => {
       endDate,
       difficulty,
       prizePool,
-
+      createdBy: req.user._id,
       registrationDeadline: startDate,
-
       status: "upcoming",
     });
+    if (!name || !startDate || !endDate) {
+      return res.status(400).json({
+        message: "Missing required fields",
+      });
+    }
+    if (new Date(startDate) <= new Date()) {
+      return res.status(400).json({
+        message: "Start date must be in future",
+      });
+    }
+    if (new Date(endDate) <= new Date(startDate)) {
+      return res.status(400).json({
+        message: "End date must be after start date",
+      });
+    }
 
     res.status(201).json(tournament);
   } catch (error) {
@@ -91,14 +108,8 @@ export const getTournaments = async (req, res) => {
       .sort({
         startDate: 1,
       })
-       .populate(
-        "participants",
-        "username elo"
-      )
-      .populate(
-        "winnerId",
-        "username"
-      );
+      .populate("participants", "username elo")
+      .populate("winnerId", "username");
 
     res.json(tournaments);
   } catch (error) {
@@ -113,18 +124,9 @@ export const getTournament = async (req, res) => {
     const tournament = await Tournament.findById(req.params.id)
       .populate("participants", "username elo")
       .populate("winnerId", "username")
-      .populate(
-        "bracket.matches.player1Id",
-        "username elo"
-      )
-      .populate(
-        "bracket.matches.player2Id",
-        "username elo"
-      )
-      .populate(
-        "bracket.matches.winnerId",
-        "username"
-      );
+      .populate("bracket.matches.player1Id", "username elo")
+      .populate("bracket.matches.player2Id", "username elo")
+      .populate("bracket.matches.winnerId", "username");
 
     if (!tournament) {
       return res.status(404).json({
@@ -144,106 +146,7 @@ export const getTournament = async (req, res) => {
 
 export const startTournament = async (req, res) => {
   try {
-    const tournament = await Tournament.findById(req.params.id);
-
-    if (!tournament) {
-      return res.status(404).json({
-        message: "Tournament not found",
-      });
-    }
-
-    if (tournament.status !== "upcoming") {
-      return res.status(400).json({
-        message: "Tournament already started",
-      });
-    }
-
-    if (tournament.participants.length < 2) {
-      return res.status(400).json({
-        message: "Not enough participants",
-      });
-    }
-
-    // Fetch players and seed by ELO
-    const players = await User.find({
-      _id: {
-        $in: tournament.participants,
-      },
-    }).sort({
-      elo: -1,
-    });
-
-    // Ensure power of 2
-    const count = players.length;
-
-    if ((count & (count - 1)) !== 0) {
-      return res.status(400).json({
-        message: "Tournament participants must be a power of 2 (4,8,16,32...)",
-      });
-    }
-
-    // Pick tournament problem
-    const problems = await Problem.find();
-
-    if (!problems.length) {
-      return res.status(400).json({
-        message: "No problems found",
-      });
-    }
-
-    const bracketMatches = [];
-    const createdMatchIds = [];
-
-    for (let i = 0; i < players.length / 2; i++) {
-      const player1 = players[i];
-      const player2 = players[players.length - 1 - i];
-
-      const problem = problems[Math.floor(Math.random() * problems.length)];
-
-      const match = await Match.create({
-        player1Id: player1._id,
-        player2Id: player2._id,
-        tournamentId: tournament._id,
-
-        problemId: problem._id,
-
-        matchType: "tournament",
-
-        difficulty: problem.difficulty,
-
-        status: "waiting",
-
-        durationSecs: 1800,
-      });
-
-      createdMatchIds.push(match._id);
-
-      bracketMatches.push({
-        matchId: match._id,
-
-        player1Id: player1._id,
-        player2Id: player2._id,
-
-        winnerId: null,
-      });
-    }
-
-    tournament.matchIds = createdMatchIds;
-
-    tournament.bracket = [
-      {
-        round: 1,
-        matches: bracketMatches,
-      },
-    ];
-
-    tournament.currentRound = 1;
-
-    tournament.totalRounds = Math.log2(players.length);
-
-    tournament.status = "active";
-
-    await tournament.save();
+    const tournament = await startTournamentInternal(req.params.id);
 
     res.json({
       message: "Tournament started",
@@ -256,4 +159,38 @@ export const startTournament = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+export const getMyTournamentMatch = async (req, res) => {
+  const userId = req.user._id;
+
+  const match = await Match.findOne({
+    matchType: "tournament",
+    status: { $in: ["waiting", "active"] },
+    $or: [{ player1Id: userId }, { player2Id: userId }],
+  })
+    .sort({ startTime: 1 })
+    .populate("tournamentId", "name")
+    .populate("player1Id", "username")
+    .populate("player2Id", "username");
+
+  if (!match) {
+    return res.json(null);
+  }
+  res.json(match);
+};
+
+export const getMyActiveTournamentMatch = async (req, res) => {
+  const userId = req.user._id;
+
+  const match = await Match.findOne({
+    matchType: "tournament",
+    status: "active",
+    $or: [{ player1Id: userId }, { player2Id: userId }],
+  })
+    .populate("tournamentId", "name")
+    .populate("player1Id", "username")
+    .populate("player2Id", "username");
+
+  res.json(match);
 };

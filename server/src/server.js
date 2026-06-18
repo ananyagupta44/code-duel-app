@@ -4,7 +4,8 @@ import dotenv from "dotenv";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { onlineUsers } from "./socketStore.js";
-
+import { startTournamentScheduler } from "./jobs/tournamentScheduler.js";
+import { startMatchScheduler } from "./jobs/matchScheduler.js";
 import User from "./models/User.js";
 import Match from "./models/Match.js";
 
@@ -12,6 +13,8 @@ dotenv.config();
 import connectDB from "./config/db.js";
 
 connectDB();
+startTournamentScheduler();
+startMatchScheduler();
 
 import authRoutes from "./routes/authRoutes.js";
 import problemRoutes from "./routes/problemRoutes.js";
@@ -109,11 +112,7 @@ io.on("connection", async (socket) => {
     const users = await User.find({
       isOnline: true,
     }).select("username elo wins losses solvedProblems isInMatch");
-    console.log(
-      "LOBBY EMIT",
-      users.map((u) => u.username),
-    );
-
+  
     io.emit("lobbyUpdated", formatLobbyUsers(users));
   });
 
@@ -139,10 +138,6 @@ io.on("connection", async (socket) => {
     const users = await User.find({
       isOnline: true,
     }).select("username elo wins losses solvedProblems isInMatch");
-    console.log(
-      "LOBBY EMIT",
-      users.map((u) => u.username),
-    );
 
     io.emit("lobbyUpdated", formatLobbyUsers(users));
 
@@ -181,10 +176,6 @@ io.on("connection", async (socket) => {
     const users = await User.find({
       isOnline: true,
     }).select("username elo wins losses solvedProblems isInMatch");
-    console.log(
-      "LOBBY EMIT",
-      users.map((u) => u.username),
-    );
 
     io.emit("lobbyUpdated", formatLobbyUsers(users));
 
@@ -234,11 +225,7 @@ io.on("connection", async (socket) => {
       const users = await User.find({
         isOnline: true,
       }).select("username elo wins losses solvedProblems isInMatch");
-      console.log(
-        "LOBBY EMIT",
-        users.map((u) => u.username),
-      );
-
+     
       io.emit("lobbyUpdated", formatLobbyUsers(users));
     } catch (error) {
       console.log(error);

@@ -1,0 +1,102 @@
+.tcb-banner {
+  position: fixed;
+  top: 82px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: min(900px, calc(100% - 32px));
+
+  z-index: 998;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 20px;
+
+  border-radius: 16px;
+
+  background: rgba(17, 24, 39, 0.95);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+.tcb-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tcb-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: rgba(99, 102, 241, 0.18);
+
+  color: #8b5cf6;
+
+  font-size: 22px;
+}
+
+.tcb-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.tcb-title {
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.tcb-subtitle {
+  color: #b9c0cf;
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+.tcb-right {
+  text-align: right;
+}
+
+.tcb-label {
+  color: #8d98ad;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tcb-timer {
+  margin-top: 2px;
+
+  color: #fff;
+
+  font-size: 1.15rem;
+  font-weight: 800;
+
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 768px) {
+  .tcb-banner {
+    flex-direction: column;
+    gap: 12px;
+
+    text-align: center;
+  }
+
+  .tcb-right {
+    text-align: center;
+  }
+}

@@ -118,6 +118,18 @@ const matchSchema = new mongoose.Schema(
 
     aiFinishTime: Number,
 
+    startTime: Date,
+
+    player1Joined: {
+      type: Boolean,
+      default: false,
+    },
+
+    player2Joined: {
+      type: Boolean,
+      default: false,
+    },
+
     isAiMatch: {
       type: Boolean,
       default: false,

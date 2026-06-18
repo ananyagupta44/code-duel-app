@@ -18,7 +18,7 @@ import SpectateModal from "@/components/spectate/SpectateModal";
 import getAvatar from "@/utils/getAvatar";
 
 export default function Hero() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { openLogin } = useAuthDrawer();
   const router = useRouter();
   const [playType, setPlayType] = useState("human");
@@ -237,6 +237,9 @@ export default function Hero() {
                   player1Progress: match.player1Progress || 0,
                   player2Progress: match.player2Progress || 0,
                 };
+                const isParticipant =
+                  String(match.player1Id?._id) === String(user?._id) ||
+                  String(match.player2Id?._id) === String(user?._id);
 
                 const themes = [
                   "theme-purple",
@@ -249,9 +252,17 @@ export default function Hero() {
                 return (
                   <div
                     key={match._id}
-                    className={`match-preview ${themeClass}`}
-                    onClick={() => setSelectedMatch(match._id)}
+                    className={`match-preview ${themeClass} ${
+                      isParticipant ? "disabled-spectate" : ""
+                    }`}
+                    onClick={() => {
+                      if (isParticipant) return;
+                      setSelectedMatch(match._id);
+                    }}
                   >
+                    {isParticipant && (
+                      <div className="your-match-badge">YOUR MATCH</div>
+                    )}
                     <div className="preview-live-badge">
                       <span className="live-dot" />
                       LIVE

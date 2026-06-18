@@ -210,6 +210,15 @@
   margin-bottom: 1rem;
 }
 
+.disabled-spectate {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.disabled-spectate:hover {
+  transform: none;
+}
+
 @media (max-width: 1100px) {
   .spectate-page { padding: 2rem 1.5rem 4rem; }
 }

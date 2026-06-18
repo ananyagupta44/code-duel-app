@@ -2,6 +2,8 @@ import Tournament from "../models/Tournament.js";
 import Match from "../models/Match.js";
 import User from "../models/User.js";
 import Problem from "../models/Problem.js";
+import { io } from "../server.js";
+import { onlineUsers } from "../socketStore.js";
 
 export const advanceTournament = async (tournamentId, finishedMatch) => {
   const tournament = await Tournament.findById(tournamentId);
@@ -32,11 +34,24 @@ export const advanceTournament = async (tournamentId, finishedMatch) => {
     tournament.status = "finished";
 
     tournament.winnerId = winners[0];
-    await User.findByIdAndUpdate(winners[0], {
-      $inc: {
-        tournamentWins: 1,
+
+    await User.findByIdAndUpdate(
+      winners[0],
+      {
+        $inc: {
+          tournamentWins: 1,
+        },
+
+        $push: {
+          badges: {
+            name: "Tournament Champion",
+            awardedAt: new Date(),
+          },
+        },
       },
-    });
+      { new: true },
+    );
+
     await tournament.save();
 
     return;
@@ -53,19 +68,13 @@ export const advanceTournament = async (tournamentId, finishedMatch) => {
 
     const match = await Match.create({
       player1Id: winners[i],
-
       player2Id: winners[i + 1],
-
       tournamentId: tournament._id,
-
       problemId: problem._id,
-
       difficulty: problem.difficulty,
-
       matchType: "tournament",
-
       status: "waiting",
-
+      startTime: new Date(Date.now() + 5 * 60 * 1000),
       durationSecs: 1800,
     });
 
@@ -90,4 +99,94 @@ export const advanceTournament = async (tournamentId, finishedMatch) => {
   tournament.currentRound = nextRoundNumber;
 
   await tournament.save();
+};
+
+export const startTournamentInternal = async (tournamentId) => {
+  console.log("START TOURNAMENT CALLED");
+
+  const tournament = await Tournament.findById(tournamentId);
+
+  if (!tournament) {
+    throw new Error("Tournament not found");
+  }
+
+  if (tournament.status !== "upcoming") {
+    throw new Error("Tournament already started");
+  }
+
+  if (tournament.participants.length < 2) {
+    throw new Error("Not enough participants");
+  }
+
+  const players = await User.find({
+    _id: { $in: tournament.participants },
+  }).sort({ elo: -1 });
+
+  const count = players.length;
+
+  if ((count & (count - 1)) !== 0) {
+    throw new Error(
+      "Tournament participants must be a power of 2 (4,8,16,32...)",
+    );
+  }
+
+  const problems = await Problem.find();
+
+  if (!problems.length) {
+    throw new Error("No problems found");
+  }
+
+  const bracketMatches = [];
+  const createdMatchIds = [];
+
+  for (let i = 0; i < players.length / 2; i++) {
+    const player1 = players[i];
+    const player2 = players[players.length - 1 - i];
+
+    const problem = problems[Math.floor(Math.random() * problems.length)];
+
+    const match = await Match.create({
+      player1Id: player1._id,
+      player2Id: player2._id,
+      tournamentId: tournament._id,
+      problemId: problem._id,
+      matchType: "tournament",
+      difficulty: problem.difficulty,
+
+      // waiting until scheduler activates it
+      status: "waiting",
+
+      startTime: new Date(Date.now() + 5 * 60 * 1000),
+
+      durationSecs: 1800,
+    });
+
+    createdMatchIds.push(match._id);
+
+    bracketMatches.push({
+      matchId: match._id,
+      player1Id: player1._id,
+      player2Id: player2._id,
+      winnerId: null,
+    });
+  }
+
+  tournament.matchIds = createdMatchIds;
+
+  tournament.bracket = [
+    {
+      round: 1,
+      matches: bracketMatches,
+    },
+  ];
+
+  tournament.currentRound = 1;
+  tournament.totalRounds = Math.log2(players.length);
+
+  // tournament starts immediately
+  tournament.status = "active";
+
+  await tournament.save();
+
+  return tournament;
 };
