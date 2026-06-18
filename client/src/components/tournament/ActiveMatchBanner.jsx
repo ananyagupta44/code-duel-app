@@ -57,6 +57,20 @@ export default function ActiveMatchBanner() {
     fetchActiveMatch();
   }, []);
 
+  useEffect(() => {
+    const handleMatchFinished = ({ matchId }) => {
+      if (matchAlert?.matchId === matchId) {
+        setMatchAlert(null);
+      }
+    };
+
+    socket.on("matchFinished", handleMatchFinished);
+
+    return () => {
+      socket.off("matchFinished", handleMatchFinished);
+    };
+  }, [matchAlert]);
+
   if (!matchAlert) return null;
 
   return (

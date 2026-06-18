@@ -25,8 +25,8 @@
 }
 
 .rank-sub {
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.3);
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.659);
   padding: 2px 16px 12px;
   font-family: "Chivo Mono", monospace;
   border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -49,17 +49,17 @@
 .stat-box span {
   display: block;
   font-family: "Big Shoulders", sans-serif;
-  font-size: 1.9rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #d4b8ff;
   line-height: 1;
 }
 
 .stat-box p {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: rgba(255,255,255,0.32);
+  color: rgba(236, 226, 226, 0.612);
   margin-top: 3px;
   font-family: "Chivo Mono", monospace;
 }
@@ -71,6 +71,7 @@
   border-radius: 4px;
   height: 5px;
   overflow: hidden;
+  margin-bottom: 15px;
 }
 
 .percentile-fill {
@@ -84,8 +85,8 @@
   display: flex;
   justify-content: space-between;
   padding: 8px 16px 0;
-  font-size: 0.62rem;
-  color: rgba(255,255,255,0.25);
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.756);
   font-family: "Chivo Mono", monospace;
 }
 
@@ -109,7 +110,7 @@
 .win-loss span {
   display: block;
   font-family: "Big Shoulders", sans-serif;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1;
 }
@@ -118,7 +119,7 @@
   font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: rgba(255,255,255,0.28);
+  color: rgba(232, 227, 227, 0.638);
   margin-top: 3px;
   font-family: "Chivo Mono", monospace;
 }

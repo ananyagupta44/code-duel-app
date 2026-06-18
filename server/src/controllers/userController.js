@@ -44,7 +44,7 @@ export const getMyProfile = async (req, res) => {
         $or: [{ player1Id: userId }, { player2Id: userId }],
 
         matchType: {
-          $in: ["ranked", "ai"],
+          $in: ["ranked", "ai","tournament"],
         },
       }).sort({
         endedAt: 1,
@@ -222,7 +222,7 @@ export const getMyProfile = async (req, res) => {
       const secs = duration % 60;
 
       const eloChange =
-        m.matchType === "ranked"
+        m.matchType === "ranked" && "tournament"
           ? isPlayer1
             ? (m.player1EloAfter ?? m.player1EloBefore ?? 0) -
               (m.player1EloBefore ?? 0)

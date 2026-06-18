@@ -18,7 +18,17 @@ export default function Podium({ users, type = "elo" }) {
         <div className="podium-card second">
           <img src={getAvatar(second)} alt={second.username} />
           <h3>{second.username}</h3>
-          <p>{getValue(second)}</p>
+          <p className="podium-score">
+            {getValue(second)}
+
+            {type === "elo" && second.eloChange > 0 && (
+              <span className="elo-up">▲{second.eloChange}</span>
+            )}
+
+            {type === "elo" && second.eloChange < 0 && (
+              <span className="elo-down">▼{Math.abs(second.eloChange)}</span>
+            )}
+          </p>
           <div className="podium-stand">
             <span className="podium-stand-num">2</span>
           </div>
@@ -30,7 +40,17 @@ export default function Podium({ users, type = "elo" }) {
           </div>
           <img src={getAvatar(first)} alt={first.username} />
           <h3>{first.username}</h3>
-          <p>{getValue(first)}</p>
+          <p className="podium-score">
+            {getValue(first)}
+
+            {type === "elo" && first.eloChange > 0 && (
+              <span className="elo-up">▲{first.eloChange}</span>
+            )}
+
+            {type === "elo" && first.eloChange < 0 && (
+              <span className="elo-down">▼{Math.abs(first.eloChange)}</span>
+            )}
+          </p>
           <div className="podium-stand">
             <span className="podium-stand-num">1</span>
           </div>
@@ -39,7 +59,17 @@ export default function Podium({ users, type = "elo" }) {
         <div className="podium-card third">
           <img src={getAvatar(third)} alt={third.username} />
           <h3>{third.username}</h3>
-          <p>{getValue(third)}</p>
+          <p className="podium-score">
+            {getValue(third)}
+
+            {type === "elo" && third.eloChange > 0 && (
+              <span className="elo-up">▲{third.eloChange}</span>
+            )}
+
+            {type === "elo" && third.eloChange < 0 && (
+              <span className="elo-down">▼{Math.abs(third.eloChange)}</span>
+            )}
+          </p>
           <div className="podium-stand">
             <span className="podium-stand-num">3</span>
           </div>

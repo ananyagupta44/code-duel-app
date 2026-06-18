@@ -362,24 +362,6 @@ export const submitMatchSolution = async (req, res) => {
 
       await emitLeaderboardUpdate(io);
     }
-    if (match.matchType === "tournament") {
-      const winner = await User.findById(userId);
-
-      const loserId =
-        match.player1Id.toString() === userId.toString()
-          ? match.player2Id
-          : match.player1Id;
-
-      const loser = await User.findById(loserId);
-
-      winner.elo += 15;
-      loser.elo = Math.max(800, loser.elo - 5);
-
-      await winner.save();
-      await loser.save();
-
-      await emitLeaderboardUpdate(io);
-    }
 
     await match.save();
     io.to(`spectate:${match._id}`).emit("spectate:progressUpdate", {
@@ -393,6 +375,14 @@ export const submitMatchSolution = async (req, res) => {
         winnerId: match.winnerId,
         loserId: match.loserId,
         matchId,
+      });
+
+      io.to(player1Socket).emit("matchFinished", {
+        matchId: match._id,
+      });
+
+      io.to(player2Socket).emit("matchFinished", {
+        matchId: match._id,
       });
 
       const users = await User.find({

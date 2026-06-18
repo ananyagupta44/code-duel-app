@@ -6,34 +6,53 @@
   z-index: 9998;
 }
 
-.spectate-modal {
+/* Wraps the modal + the floating feed panel together so they stay
+   visually grouped and centered as one unit. Pointer events are off on
+   the wrapper itself so clicking the gap between the two still reaches
+   the backdrop and closes the view. */
+.spectate-overlay {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 95%;
-  max-width: 1500px;
-  height: 90vh;
-  overflow-y: auto;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px;
+  pointer-events: none;
+}
+
+.spectate-modal,
+.spectate-feed-panel {
+  pointer-events: auto;
+}
+
+.spectate-modal {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  height: 84vh;
   background: linear-gradient(160deg, #1a1528 0%, #0d0c16 100%);
   border: 1px solid rgba(184,156,255,0.25);
   border-radius: 14px;
   box-shadow: 0 0 50px rgba(128,92,186,0.15);
-  z-index: 9999;
-  padding: 2rem;
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.spectate-modal::-webkit-scrollbar { width: 6px; }
-.spectate-modal::-webkit-scrollbar-thumb {
-  background: rgba(169,146,214,0.3);
-  border-radius: 4px;
+/* TOPBAR */
+.spectate-topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
-/* SPECTATOR BADGE */
 .spectator-indicator {
-  position: absolute;
-  top: 20px;
-  left: 20px;
+  justify-self: start;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -60,12 +79,35 @@
   50% { opacity: 0.3; }
 }
 
+.match-timer {
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.match-timer-label {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(255,255,255,0.4);
+}
+
+.match-timer-value {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #ffd76a;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
 .spectate-close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 38px;
-  height: 38px;
+  justify-self: end;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,9 +124,49 @@
   color: white;
 }
 
+/* SCROLLABLE BODY (everything below the topbar) */
+.spectate-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 1.4rem;
+  padding-right: 6px;
+}
+
+.spectate-modal-body::-webkit-scrollbar { width: 6px; }
+.spectate-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(169,146,214,0.3);
+  border-radius: 4px;
+}
+
+/* LOADING STATE */
+.spectate-loading {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: rgba(255,255,255,0.45);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.85rem;
+}
+
+.spectate-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid rgba(184,156,255,0.15);
+  border-top-color: #b89cff;
+  animation: spectateSpin 0.8s linear infinite;
+}
+
+@keyframes spectateSpin {
+  to { transform: rotate(360deg); }
+}
+
 /* PROBLEM HEADER */
 .spectate-problem {
-  margin: 50px 0 2rem;
+  margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
@@ -92,7 +174,7 @@
 .spectate-problem h1 {
   font-family: "Big Shoulders", sans-serif;
   color: #d4b8ff;
-  font-size: 2.2rem;
+  font-size: 2.1rem;
   margin-bottom: 0.75rem;
   letter-spacing: 0.5px;
 }
@@ -111,6 +193,24 @@
   padding: 4px 12px;
   font-family: "Chivo Mono", monospace;
   font-size: 0.75rem;
+}
+
+.problem-meta span.diff-tag-easy {
+  background: rgba(74,222,128,0.1);
+  border-color: rgba(74,222,128,0.3);
+  color: #4ade80;
+}
+
+.problem-meta span.diff-tag-medium {
+  background: rgba(247,201,72,0.1);
+  border-color: rgba(247,201,72,0.32);
+  color: #f7c948;
+}
+
+.problem-meta span.diff-tag-hard {
+  background: rgba(255,107,107,0.1);
+  border-color: rgba(255,107,107,0.32);
+  color: #ff8f8f;
 }
 
 .spectate-problem p {
@@ -133,12 +233,20 @@
   border-radius: 10px;
   padding: 1rem;
   overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.player-column.leading {
+  border-color: rgba(93,202,165,0.4);
+  box-shadow: 0 0 28px rgba(93,202,165,0.1);
 }
 
 .player-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   margin-bottom: 0.75rem;
 }
 
@@ -148,14 +256,40 @@
   font-size: 1.3rem;
 }
 
-.player-header span {
+.player-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.player-tags span {
   font-family: "Chivo Mono", monospace;
+  font-size: 0.7rem;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.elo-tag {
   color: #c6afed;
-  font-size: 0.78rem;
   background: rgba(169,146,214,0.08);
   border: 1px solid rgba(169,146,214,0.2);
-  padding: 3px 10px;
-  border-radius: 20px;
+}
+
+.lang-tag {
+  color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.leading-tag {
+  color: #9fe1cb;
+  background: rgba(93,202,165,0.12);
+  border: 1px solid rgba(93,202,165,0.35);
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .progress-wrapper {
@@ -174,33 +308,161 @@
   transition: width 0.3s ease;
 }
 
-.live-feed {
-  margin-top: 2rem;
-  padding: 1rem;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(128,92,186,.25);
+.editor-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.07);
 }
 
-.live-feed h3 {
-  color: #b89cff;
+/* =========================
+   FLOATING LIVE FEED PANEL
+========================= */
+
+.spectate-feed-panel {
+  flex: 0 0 300px;
+  height: 84vh;
+  background: linear-gradient(160deg, #1a1528 0%, #0d0c16 100%);
+  border: 1px solid rgba(184,156,255,0.2);
+  border-radius: 14px;
+  box-shadow: 0 0 40px rgba(128,92,186,0.12);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.feed-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.feed-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  animation: recPulse 1.2s infinite;
+  flex-shrink: 0;
+}
+
+.feed-panel-header h3 {
+  font-family: "Big Shoulders", sans-serif;
+  color: #b89cff;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+  flex: 1;
+}
+
+.feed-count {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.05);
+  padding: 2px 9px;
+  border-radius: 10px;
 }
 
 .feed-events {
   display: flex;
   flex-direction: column;
-  gap: .6rem;
-  max-height: 220px;
+  gap: 0.55rem;
   overflow-y: auto;
+  flex: 1;
+  padding-right: 4px;
+}
+
+.feed-events::-webkit-scrollbar { width: 5px; }
+.feed-events::-webkit-scrollbar-thumb {
+  background: rgba(169,146,214,0.3);
+  border-radius: 4px;
+}
+
+.feed-empty {
+  color: rgba(255,255,255,0.3);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 2.5rem 0.5rem;
 }
 
 .feed-event {
-  color: white;
-  font-size: .9rem;
-  padding: .6rem;
-  background: rgba( 255, 255, 255, .03 );
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0.6rem 0.7rem;
+  background: rgba(255,255,255,0.03);
+  border-left: 2px solid rgba(169,146,214,0.4);
+  border-radius: 6px;
+  animation: feedIn 0.25s ease;
 }
 
-@media (max-width: 1100px) {
+@keyframes feedIn {
+  from { opacity: 0; transform: translateX(6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.feed-event-time {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.4px;
+}
+
+.feed-event-message {
+  color: rgba(230,225,245,0.85);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+/* Below this, modal + panel side by side gets cramped — stack the feed
+   panel under the modal instead. */
+@media (max-width: 1480px) {
+  .spectate-overlay {
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  .spectate-modal {
+    height: auto;
+    max-height: 78vh;
+  }
+
+  .spectate-feed-panel {
+    width: 100%;
+    max-width: 1100px;
+    height: 200px;
+    flex: none;
+  }
+}
+
+@media (max-width: 900px) {
   .spectate-players { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .spectate-modal {
+    padding: 1.1rem;
+    border-radius: 10px;
+  }
+
+  .spectate-topbar {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+  }
+
+  .match-timer {
+    grid-column: 1 / -1;
+    order: -1;
+  }
+
+  .spectate-close { justify-self: end; }
 }

@@ -5,7 +5,6 @@ import { startTournamentInternal } from "../services/tournamentEngine.js";
 export const startTournamentScheduler = () => {
   cron.schedule("*/10 * * * * *", async () => {
     try {
-      console.log("match active");
       const now = new Date();
 
       const tournaments = await Tournament.find({

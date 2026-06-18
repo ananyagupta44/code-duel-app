@@ -12,6 +12,7 @@ import { FaRobot } from "react-icons/fa";
 import { FaUserFriends } from "react-icons/fa";
 import { FaStopCircle } from "react-icons/fa";
 import { RiSwordLine } from "react-icons/ri";
+import { FaLongArrowAltDown } from "react-icons/fa";
 
 export default function LobbyPage() {
   const router = useRouter();
@@ -446,6 +447,12 @@ export default function LobbyPage() {
           </div>
         </div>
       )}
+      <div className="lobby-subheading">
+        <h1>Find Your Game</h1>
+        <div className="matchmaking-heading-arrow">
+          <FaLongArrowAltDown size={32} />
+        </div>
+      </div>
       {/* matchmaking panel*/}
       <section className="matchmaking-panel">
         <div className="play-type">

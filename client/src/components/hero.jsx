@@ -7,7 +7,7 @@ import socket from "@/lib/socket";
 import api from "@/lib/api";
 import { MdArrowForwardIos } from "react-icons/md";
 import { IoLogoGameControllerB } from "react-icons/io";
-import { FaRobot } from "react-icons/fa";
+import { FaLongArrowAltDown, FaRobot } from "react-icons/fa";
 import { FaUserFriends } from "react-icons/fa";
 import { FaStopCircle } from "react-icons/fa";
 import { RiSwordLine } from "react-icons/ri";
@@ -29,6 +29,7 @@ export default function Hero() {
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [matchProgress, setMatchProgress] = useState({});
   const [liveMatches, setLiveMatches] = useState([]);
+  const [tournaments, setTournaments] = useState([]);
   const [topEloPlayers, setTopEloPlayers] = useState([]);
   const [topSolvedPlayers, setTopSolvedPlayers] = useState([]);
   const handleProtectedNavigation = (path) => {
@@ -39,7 +40,18 @@ export default function Hero() {
 
     router.push(path);
   };
+  useEffect(() => {
+    const fetchTournaments = async () => {
+      try {
+        const res = await api.get("/tournaments");
+        setTournaments(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
+    fetchTournaments();
+  }, []);
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -114,6 +126,15 @@ export default function Hero() {
       socket.off("leaderboard:update", handleLeaderboardUpdate);
     };
   }, []);
+  const upcomingTournaments = tournaments
+    .filter((t) => t.status === "upcoming" || t.status === "active")
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+  const featured = upcomingTournaments.slice(0, 2);
+
+  const openTournament = (id) => {
+    router.push(`/tournaments/${id}`);
+  };
 
   const mockMatches = [
     {
@@ -322,6 +343,12 @@ export default function Hero() {
           </div>
         </div>
       </div>
+      <div className="matchmaking-subheading">
+        <h1>Find Your Game</h1>
+        <div className="matchmaking-heading-arrow">
+          <FaLongArrowAltDown size={32} />
+        </div>
+      </div>
 
       <section className={`matchmaking-panel panel-${playType}`}>
         <div className="play-type">
@@ -467,6 +494,86 @@ export default function Hero() {
               : "FIND MATCH"}
         </button>
       </section>
+      <section className="hero-tournaments">
+        <div className="hero-tournaments-list">
+          <h2>Tournaments</h2>
+
+          {upcomingTournaments.slice(0, 8).map((t) => (
+            <div
+              key={t._id}
+              className="hero-tournament-row"
+              onClick={() => openTournament(t._id)}
+            >
+              <div className="hero-tournament-time">
+                <div>
+                  {new Date(t.startDate).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+
+                <div className="hero-tournament-date">
+                  {new Date(t.startDate).toLocaleDateString([], {
+                    day: "numeric",
+                    month: "short",
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <div className="hero-tournament-name">
+                  <span>{t.name}</span>
+                  <MdArrowForwardIos className="tournament-list-arrow" />
+                </div>
+
+                <div className="hero-tournament-meta">
+                  {t.participants.length}/{t.maxParticipants}
+                  {" • "}
+                  {t.difficulty}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="hero-tournaments-featured">
+          {featured.map((t, index) => (
+            <div
+              key={t._id}
+              className={`hero-feature-card card-${index}`}
+              onClick={() => openTournament(t._id)}
+            >
+              <div className="hero-feature-time">
+                <div>
+                  {new Date(t.startDate).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+
+                <div className="hero-feature-date">
+                  {new Date(t.startDate).toLocaleDateString([], {
+                    day: "numeric",
+                    month: "short",
+                  })}
+                </div>
+              </div>
+
+              <div className="hero-feature-name">{t.name}</div>
+
+              <div className="hero-feature-info">
+                {t.participants.length}/{t.maxParticipants}
+                {" • "}
+                {t.difficulty}
+              </div>
+
+              <div className="hero-feature-status">
+                {t.status.toUpperCase()}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
       <div className="leaderboard-glimpse-row">
         <div className="leaderboard-glimpse theme-elo">
           <div className="glimpse-head">
@@ -549,6 +656,7 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
       <SpectateModal
         isOpen={!!selectedMatch}
         matchId={selectedMatch}

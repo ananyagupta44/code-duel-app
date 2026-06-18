@@ -34,23 +34,35 @@ export const advanceTournament = async (tournamentId, finishedMatch) => {
     tournament.status = "finished";
 
     tournament.winnerId = winners[0];
+    const champion = await User.findById(winners[0]);
 
-    await User.findByIdAndUpdate(
-      winners[0],
-      {
-        $inc: {
-          tournamentWins: 1,
-        },
+    const championEloBefore = champion.elo;
 
-        $push: {
-          badges: {
-            name: "Tournament Champion",
-            awardedAt: new Date(),
-          },
-        },
-      },
-      { new: true },
-    );
+    champion.elo += 100;
+
+    await champion.save();
+
+    await Match.findByIdAndUpdate(finishedMatch._id, {
+      player1EloBefore:
+        finishedMatch.player1Id.toString() === champion._id.toString()
+          ? championEloBefore
+          : finishedMatch.player1EloBefore,
+
+      player2EloBefore:
+        finishedMatch.player2Id.toString() === champion._id.toString()
+          ? championEloBefore
+          : finishedMatch.player2EloBefore,
+
+      player1EloAfter:
+        finishedMatch.player1Id.toString() === champion._id.toString()
+          ? champion.elo
+          : finishedMatch.player1EloAfter,
+
+      player2EloAfter:
+        finishedMatch.player2Id.toString() === champion._id.toString()
+          ? champion.elo
+          : finishedMatch.player2EloAfter,
+    });
 
     await tournament.save();
 
@@ -115,7 +127,11 @@ export const startTournamentInternal = async (tournamentId) => {
   }
 
   if (tournament.participants.length < 2) {
-    throw new Error("Not enough participants");
+    tournament.status = "cancelled";
+
+    await tournament.save();
+
+    return tournament;
   }
 
   const players = await User.find({
@@ -130,7 +146,15 @@ export const startTournamentInternal = async (tournamentId) => {
     );
   }
 
-  const problems = await Problem.find();
+  let problems;
+
+  if (tournament.difficulty === "mixed") {
+    problems = await Problem.find();
+  } else {
+    problems = await Problem.find({
+      difficulty: tournament.difficulty,
+    });
+  }
 
   if (!problems.length) {
     throw new Error("No problems found");

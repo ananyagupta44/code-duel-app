@@ -447,7 +447,7 @@
 ========================================= */
 
 .matchmaking-panel {
-  margin-top: 84px;
+  margin-top: 20px;
   flex-shrink: 0;
   display: flex;
   gap: 1rem;
@@ -924,6 +924,23 @@
   letter-spacing: 1px;
   padding: 3px 8px;
   border-radius: 5px;
+}
+
+.lobby-subheading .matchmaking-heading-arrow{
+   color: #c6afed;
+}
+
+.lobby-subheading{
+  margin-top: 40px;
+  display: flex;
+   align-items: center; 
+ 
+}
+
+.lobby-subheading h1 {
+   color: #c6afed;
+  font-size: 40px;
+  font-family: "Big Shoulders";
 }
 
 /* THEME: TEAL — Rookie Bot */

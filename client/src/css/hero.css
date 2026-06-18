@@ -190,7 +190,7 @@
 
 .hero-bottom {
   margin-top: 3rem;
-  margin-bottom: 3rem;
+  margin-bottom: 5rem;
   display: flex;
   gap: 4rem;
   overflow-x: auto;
@@ -205,6 +205,7 @@
 }
 
 .hero-stats {
+  margin-top: 25px;
   min-width: 220px;
   flex-shrink: 0;
   display: flex;
@@ -219,7 +220,7 @@
 
 .stat h2 {
   font-family: "Big Shoulders", sans-serif;
-  font-size: 5.5rem;
+  font-size: 5.8rem;
   color: white;
   line-height: 1;
   padding-top: 20px;
@@ -281,8 +282,8 @@
 }
 
 .match-preview {
-  width: 270px;
-  height: 270px;
+  width: 300px;
+  height: 300px;
   flex-shrink: 0;
   padding: 1.1rem;
   border-radius: 12px;
@@ -1024,6 +1025,244 @@ border: 1px solid rgba(128,92,186,0.3);
   border: 1px solid rgba(255, 99, 71, 0.25);
   color: tomato;
   z-index: 2;
+}
+
+/* ===========================
+   TOURNAMENTS SECTION
+=========================== */
+
+.hero-tournaments {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 28px;
+}
+
+/* LEFT PANEL */
+
+.hero-tournaments-list {
+  overflow: hidden;
+}
+
+.hero-tournaments-list h2 {
+  padding: 0px 24px 20px 0px;
+  margin: 0;
+  font-size: 3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: "Big Shoulders", sans-serif;
+ color: #b259ff;
+}
+
+.hero-tournament-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 9px 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hero-tournament-row:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.hero-tournament-row:nth-child(even) {
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.hero-tournament-row:last-child {
+  border-bottom: none;
+}
+
+.hero-tournament-row:hover {
+  background: rgba(168, 85, 247, 0.08);
+}
+
+.hero-tournament-row:hover .hero-tournament-time{
+ 
+ color:rgb(228, 224, 233);
+}
+
+.hero-tournament-row:hover .hero-tournament-name{
+ color: #b259ff;
+}
+
+.hero-tournament-time {
+  min-width: 70px;
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: #c387f7b5;
+}
+
+.hero-tournament-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #faf9fb;
+}
+
+.tournament-list-arrow {
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.hero-tournament-row:hover .tournament-list-arrow {
+  transform: translateX(4px);
+  color: #c387f7b5;
+}
+
+.hero-tournament-meta {
+  margin-top: 4px;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+/* RIGHT PANEL */
+
+.hero-tournaments-featured {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.hero-feature-card {
+  position: relative;
+  min-height: 180px;
+  border-radius: 4px;
+  padding: 26px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.25s ease;
+}
+
+.hero-feature-card:hover {
+  transform: translateY(-4px);
+}
+
+.card-0 {
+  background: linear-gradient(
+    135deg,
+    #f000ff 0%,
+    #b300ff 50%,
+    #8700ff 100%
+  );
+}
+
+.card-1 {
+  background: linear-gradient(
+    135deg,
+    #222222 0%,
+    #1d1d1d 50%,
+    #5c5c5c 100%
+  );
+}
+
+.hero-feature-time {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: white;
+  opacity: 0.95;
+  font-family: "Big Shoulders";
+}
+
+.hero-feature-name {
+  margin-top: 90px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  font-family: "Big Shoulders", sans-serif;
+}
+
+.hero-feature-info {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.8rem;
+  font-family: "Chivo Mono";
+}
+
+.hero-feature-status {
+  margin-top: 14px;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.hero-tournament-date,
+.hero-feature-date {
+  font-size: 0.78rem;
+  font-family: "Chivo Mono";
+  font-weight: 200px;
+}
+.hero-feature-date{
+  align-items: right;
+  justify-self: right;
+}
+.hero-tournament-time,
+.hero-feature-time {
+  display: flex;
+  flex-direction: column;
+}
+
+.matchmaking-subheading .matchmaking-heading-arrow{
+   color: #c6afed;
+}
+
+.matchmaking-subheading{
+  margin-top: 40px;
+  display: flex;
+   align-items: center; 
+   margin-bottom: 20px;
+ 
+}
+
+.matchmaking-subheading h1 {
+   color: #c6afed;
+  font-size: 40px;
+  font-family: "Big Shoulders";
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+  .hero-tournaments {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-feature-time {
+    font-size: 3.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-tournament-row {
+    padding: 14px 18px;
+  }
+
+  .hero-feature-card {
+    min-height: 150px;
+    padding: 20px;
+  }
+
+  .hero-feature-time {
+    font-size: 2.5rem;
+  }
+
+  .hero-feature-name {
+    margin-top: 65px;
+    font-size: 1.2rem;
+  }
 }
 
 @media (max-width: 1100px) {
