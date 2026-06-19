@@ -4,7 +4,7 @@ import { spawn } from "child_process";
 
 export const executeCode = (language, code, input = "") => {
   return new Promise((resolve) => {
-    const tempDir = path.join(process.env.TEMP || process.env.TMP, "codeduel");
+    const tempDir = path.join(process.cwd(), "temp", "codeduel");
 
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir, { recursive: true });
