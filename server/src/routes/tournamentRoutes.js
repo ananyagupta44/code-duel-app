@@ -18,7 +18,7 @@ const router = express.Router();
 router.get("/", getTournaments);
 
 router.post("/create", protect, createTournament);
-router.get("/my-next-match", getMyTournamentMatch);
+router.get("/my-next-match", protect, getMyTournamentMatch);
 router.get("/my-active-match", protect, getMyActiveTournamentMatch);
 router.post("/:id/start", protect, startTournament);
 router.get("/:id/bracket", getTournament);

@@ -162,22 +162,34 @@ export const startTournament = async (req, res) => {
 };
 
 export const getMyTournamentMatch = async (req, res) => {
-  const userId = req.user._id;
+  try {
+    const userId = req.user._id;
 
-  const match = await Match.findOne({
-    matchType: "tournament",
-    status: { $in: ["waiting", "active"] },
-    $or: [{ player1Id: userId }, { player2Id: userId }],
-  })
-    .sort({ startTime: 1 })
-    .populate("tournamentId", "name")
-    .populate("player1Id", "username")
-    .populate("player2Id", "username");
+    const match = await Match.findOne({
+      matchType: "tournament",
+      status: { $in: ["waiting", "active"] },
+      $or: [
+        { player1Id: userId },
+        { player2Id: userId }
+      ],
+    })
+      .sort({ startTime: 1 })
+      .populate("tournamentId", "name")
+      .populate("player1Id", "username")
+      .populate("player2Id", "username");
 
-  if (!match) {
-    return res.json(null);
+    if (!match) {
+      return res.json(null);
+    }
+
+    res.json(match);
+  } catch (error) {
+    console.error("getMyTournamentMatch:", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
-  res.json(match);
 };
 
 export const getMyActiveTournamentMatch = async (req, res) => {
