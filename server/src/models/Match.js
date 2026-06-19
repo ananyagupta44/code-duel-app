@@ -139,6 +139,10 @@ const matchSchema = new mongoose.Schema(
       ref: "Tournament",
       default: null,
     },
+    aiWon: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

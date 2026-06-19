@@ -155,3 +155,57 @@
   margin-left: 6px;
   font-weight: 600;
 }
+
+/* =========================
+   EXPAND / COLLAPSE ROW
+========================= */
+
+.lb-expand-row {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.lb-expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 1rem;
+  border: none;
+  background: transparent;
+  color: rgba(169, 146, 214, 0.55);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.lb-expand-btn + .lb-expand-btn {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.lb-expand-btn:hover {
+  color: rgba(169, 146, 214, 0.9);
+  background: rgba(169, 146, 214, 0.07);
+}
+
+.lb-expand-btn--collapse {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.lb-expand-btn--collapse:hover {
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.lb-chevron {
+  transition: transform 0.2s ease;
+}
+
+.lb-expand-btn:hover .lb-chevron {
+  transform: translateY(2px);
+}

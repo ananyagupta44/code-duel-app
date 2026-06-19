@@ -105,8 +105,6 @@ export default function Navbar() {
               <>
                 <div className="user-info">{user.username}</div>
 
-                <Link href="/dashboard">Dashboard</Link>
-
                 <Link href="/profile">Profile</Link>
 
                 <button className="logout-btn" onClick={handleLogout}>

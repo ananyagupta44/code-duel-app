@@ -589,6 +589,47 @@
   flex-shrink: 0;
 }
 
+.td-match-card--bye {
+  border-color: rgba(250, 204, 21, 0.25);
+  background: rgba(250, 204, 21, 0.04);
+}
+
+.td-bye-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  background: rgba(250, 204, 21, 0.15);
+  border: 1px solid rgba(250, 204, 21, 0.25);
+
+  color: #facc15;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.td-bye-text {
+  margin-top: 8px;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.55);
+  padding-left: 36px;
+}
+
+.td-bye-notice {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+
+  border-radius: 8px;
+
+  background: rgba(250,204,21,0.08);
+  border: 1px solid rgba(250,204,21,0.15);
+
+  color: #facc15;
+  font-size: 0.8rem;
+  font-family: "Chivo Mono";
+}
+
 /* =========================
    RESPONSIVE
 ========================= */

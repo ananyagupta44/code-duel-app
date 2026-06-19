@@ -70,6 +70,10 @@ const tournamentSchema = new mongoose.Schema(
               ref: "User",
               default: null,
             },
+            isBye: {
+              type: Boolean,
+              default: false,
+            },
           },
         ],
       },

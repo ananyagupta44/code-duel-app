@@ -28,7 +28,10 @@ export const getLeaderboard = async (req, res) => {
 
 export const getMyProfile = async (req, res) => {
   try {
-    const currentUser = await User.findById(req.user.id);
+    const currentUser = await User.findById(req.user.id).populate(
+      "tournamentBadges.tournamentId",
+      "name difficulty",
+    );
 
     if (!currentUser) {
       return res.status(404).json({ message: "User not found" });
@@ -44,7 +47,7 @@ export const getMyProfile = async (req, res) => {
         $or: [{ player1Id: userId }, { player2Id: userId }],
 
         matchType: {
-          $in: ["ranked", "ai","tournament"],
+          $in: ["ranked", "ai", "tournament"],
         },
       }).sort({
         endedAt: 1,
@@ -257,6 +260,8 @@ export const getMyProfile = async (req, res) => {
       rank,
       wins: currentUser.wins,
       losses: currentUser.losses,
+       tournamentBadges:
+    currentUser.tournamentBadges || [],
       totalSolved: solvedSlugs.length,
       difficultyBreakdown,
       topicBreakdown,

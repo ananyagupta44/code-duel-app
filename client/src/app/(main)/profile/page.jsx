@@ -118,6 +118,36 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+      
+      {profile.tournamentBadges?.length > 0 && (
+        <div className="profile-badge-section">
+          <h3 className="badge-section-title">Championship Trophies</h3>
+
+          <div className="profile-badges">
+            {profile.tournamentBadges.map((badge, i) => (
+              <div key={badge.tournamentId || i} className="tournament-badge">
+                <div className="tb-shine" />
+                <div className="tb-medallion">
+                  <div className="tb-medallion-ring" />
+                  <span className="tb-medallion-icon">🏆</span>
+                </div>
+
+                <div className="tb-content">
+                  <div className="tb-rank">Champion</div>
+                  <div className="tb-name">{badge.tournamentName}</div>
+                  <div className="tb-date">
+                    {new Date(badge.wonAt).toLocaleDateString("en-US", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="profile-grid2">
         <div className="profile-card">

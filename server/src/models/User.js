@@ -67,11 +67,21 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-
-    badges: [
+    tournamentBadges: [
       {
-        name: String,
-        awardedAt: Date,
+        tournamentId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Tournament",
+        },
+
+        tournamentName: String,
+
+        wonAt: {
+          type: Date,
+          default: Date.now,
+        },
+
+        difficulty: String,
       },
     ],
   },

@@ -120,8 +120,10 @@ export default function TournamentTimeline({ tournaments = [] }) {
   const latest = allDates.length
     ? new Date(Math.max(...allDates))
     : new Date(now.getTime() + 7200000);
-  const minTime = new Date(earliest.getTime() - 1 * 3600000);
-  const maxTime = new Date(latest.getTime() + 1 * 3600000);
+  const minTime = new Date(
+    Math.min(earliest.getTime(), now.getTime()) - 3600000,
+  );
+  const maxTime = new Date(Math.max(latest.getTime(), now.getTime()) + 3600000);
   const totalHours = (maxTime - minTime) / 3600000;
   const totalWidth = Math.max(600, totalHours * PX_PER_HOUR + 40);
 
@@ -140,7 +142,7 @@ export default function TournamentTimeline({ tournaments = [] }) {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = Math.max(0, nowX - 200);
     }
-  }, [filter, tournaments]);
+  }, [filter, tournaments, nowX]);
 
   const scrollBy = (delta) =>
     scrollRef.current?.scrollBy({ left: delta, behavior: "smooth" });

@@ -13,6 +13,23 @@ import { FaUserFriends } from "react-icons/fa";
 import { FaStopCircle } from "react-icons/fa";
 import { RiSwordLine } from "react-icons/ri";
 import { FaLongArrowAltDown } from "react-icons/fa";
+import AiBotGrid from "./components/aiBotGrid";
+import "./components/aiBotGrid.css";
+
+const PLAY_TYPE_COPY = {
+  human: {
+    heading: "Find Your Game",
+    subtext: "Get matched instantly with a random online player.",
+  },
+  ai: {
+    heading: "Practice Makes Perfect",
+    subtext: "Pick a bot and sharpen your skills at your own pace.",
+  },
+  friend: {
+    heading: "Challenge a Friend",
+    subtext: "Pick any online player and send them a direct challenge.",
+  },
+};
 
 export default function LobbyPage() {
   const router = useRouter();
@@ -262,6 +279,9 @@ export default function LobbyPage() {
   const top50 = displayedUsers.slice(25, 50);
   const remaining = displayedUsers.slice(50);
 
+  const heading = PLAY_TYPE_COPY[playType]?.heading ?? "Find Your Game";
+  const subtext = PLAY_TYPE_COPY[playType]?.subtext ?? "";
+
   return (
     <div className={`lobby-page panel-${playType} ${chivo.className}`}>
       {playType === "friend" && (
@@ -345,6 +365,9 @@ export default function LobbyPage() {
           ) : (
             <div className="ranked-section">
               <h2 className={fjalla.className}>ELO Ranked Matchmaking</h2>
+              <p className="ranked-note">
+                You can only challenge players within ±200 ELO of your rating.
+              </p>
 
               <div className="ranked-list">
                 {displayedUsers.map((user, index) => (
@@ -367,88 +390,112 @@ export default function LobbyPage() {
             FIND YOUR NEXT DUEL
           </h1>
 
-          <div className="human-matchmaking-info">
-            <h2>Find Your Next Opponent</h2>
+          {matchMode === "casual" ? (
+            <div className="opponents-grid">
+              <div className={`opponent-column ${fjalla.className}`}>
+                <h2>
+                  Top 10{" "}
+                  <span className="online-count">{top10.length} online</span>
+                </h2>
 
-            <p>Queue into a live coding duel against another online player.</p>
+                {top10.map((user, index) => (
+                  <PlayerCard
+                    key={user._id}
+                    user={user}
+                    showChallenge={false}
+                    index={index}
+                  />
+                ))}
+              </div>
 
-            <p>
-              Casual matches are perfect for practice while
-              <span className="matchmaking-highlight">
-                {" "}
-                Ranked Matches
-              </span>{" "}
-              affect your ELO and leaderboard position.
-            </p>
+              <div className={`opponent-column ${fjalla.className}`}>
+                <h2>
+                  Top 25{" "}
+                  <span className="online-count">{top25.length} online</span>
+                </h2>
 
-            <ul>
-              <li>Automatic opponent matching</li>
-              <li>Difficulty-based problem selection</li>
-              <li>Live code duel experience</li>
-              <li>ELO progression in ranked mode</li>
-            </ul>
-          </div>
+                {top25.map((user, index) => (
+                  <PlayerCard
+                    key={user._id}
+                    user={user}
+                    showChallenge={false}
+                    index={index}
+                  />
+                ))}
+              </div>
+
+              <div className={`opponent-column ${fjalla.className}`}>
+                <h2>
+                  Top 50{" "}
+                  <span className="online-count">{top50.length} online</span>
+                </h2>
+
+                {top50.map((user, index) => (
+                  <PlayerCard
+                    key={user._id}
+                    user={user}
+                    showChallenge={false}
+                    index={index}
+                  />
+                ))}
+              </div>
+
+              <div className={`opponent-column ${fjalla.className}`}>
+                <h2>
+                  All Players{" "}
+                  <span className="online-count">
+                    {remaining.length} online
+                  </span>
+                </h2>
+
+                {remaining.map((user, index) => (
+                  <PlayerCard
+                    key={user._id}
+                    user={user}
+                    showChallenge={false}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="ranked-section">
+              <h2 className={fjalla.className}>ELO Ranked Matchmaking</h2>
+              <p className="ranked-note">
+                You can only be matched with players within ±200 ELO of your
+                rating.
+              </p>
+
+              <div className="ranked-list">
+                {displayedUsers.map((user, index) => (
+                  <PlayerCard
+                    key={user._id}
+                    user={user}
+                    showChallenge={false}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
       {playType === "ai" && (
         <div className="choose-opponent-section">
           <h1 className={`choose-title ${fjalla.className}`}>PRACTICE VS AI</h1>
 
-          <div className="ai-bot-grid">
-            {aiBots.map((bot) => (
-              <div
-                key={bot.id}
-                className={`ai-bot-card theme-${bot.theme} ${
-                  selectedBot === bot.id ? "selected" : ""
-                }`}
-                onClick={() => setSelectedBot(bot.id)}
-              >
-                {selectedBot === bot.id && (
-                  <div className="bot-selected-badge">SELECTED</div>
-                )}
-
-                <div className="bot-top-row">
-                  <div className="bot-avatar">{bot.avatar}</div>
-                  <div className="bot-name-block">
-                    <h3>{bot.name}</h3>
-                    <div className="bot-tier">{bot.tier}</div>
-                  </div>
-                </div>
-
-                <div className="bot-elo-row">
-                  <span className="bot-elo-label">Rating</span>
-                  <span className="bot-elo-value">{bot.elo}</span>
-                </div>
-
-                <p className="bot-description">{bot.description}</p>
-
-                <div className="bot-power-bars">
-                  <div className="bot-power-row">
-                    <span className="bot-power-label">Speed</span>
-                    <div className="bot-power-track">
-                      <div
-                        className="bot-power-fill"
-                        style={{ width: `${bot.speed}%` }}
-                      />
-                    </div>
-                  </div>
-                  <div className="bot-power-row">
-                    <span className="bot-power-label">Accuracy</span>
-                    <div className="bot-power-track">
-                      <div
-                        className="bot-power-fill"
-                        style={{ width: `${bot.accuracy}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <AiBotGrid
+            bots={aiBots}
+            selectedBot={selectedBot}
+            onSelect={setSelectedBot}
+          />
         </div>
       )}
       <div className="lobby-subheading">
-        <h1>Find Your Game</h1>
+        <div className="lobby-subheading-text">
+          <h1>{heading}</h1>
+          {subtext && <p className="lobby-subheading-subtext">{subtext}</p>}
+        </div>
         <div className="matchmaking-heading-arrow">
           <FaLongArrowAltDown size={32} />
         </div>

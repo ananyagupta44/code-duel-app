@@ -5,7 +5,7 @@ import "../leaderboard.css";
 import getAvatar from "@/utils/getAvatar";
 import { useAuth } from "@/context/authContext";
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 4;
 
 export default function LeaderboardTable({ users, type = "elo" }) {
   const { user } = useAuth();
@@ -13,16 +13,18 @@ export default function LeaderboardTable({ users, type = "elo" }) {
 
   const getValue = (u) => (type === "elo" ? u.elo : u.solvedCount);
 
+  const rest = users.slice(3); // everything after top 3
   const showMore = () =>
-    setVisible((v) => Math.min(v + PAGE_SIZE, users.length));
+    setVisible((v) => Math.min(v + PAGE_SIZE, rest.length));
   const showLess = () => setVisible(PAGE_SIZE);
 
   const isExpanded = visible > PAGE_SIZE;
-  const hasMore = visible < users.length;
+  const hasMore = visible < rest.length;
+  const remaining = rest.length - visible;
 
   return (
     <div className="leaderboard-table">
-      {users.slice(3, 3 + visible).map((u, index) => {
+      {rest.slice(0, visible).map((u, index) => {
         const isMe = user && u._id === user._id;
         return (
           <div
@@ -53,7 +55,6 @@ export default function LeaderboardTable({ users, type = "elo" }) {
         );
       })}
 
-      {/* Controls */}
       {(hasMore || isExpanded) && (
         <div className="lb-expand-row">
           {hasMore && (
@@ -62,7 +63,9 @@ export default function LeaderboardTable({ users, type = "elo" }) {
               onClick={showMore}
               aria-label="Show more players"
             >
-              <span>{users.length - visible - 3} more players</span>
+              <span>
+                {remaining} more player{remaining !== 1 ? "s" : ""}
+              </span>
               <svg
                 className="lb-chevron"
                 width="14"
@@ -87,21 +90,6 @@ export default function LeaderboardTable({ users, type = "elo" }) {
               aria-label="Show less"
             >
               <span>Show less</span>
-              <svg
-                className="lb-chevron lb-chevron--up"
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-              >
-                <path
-                  d="M2 9.5l5-5 5 5"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
             </button>
           )}
         </div>

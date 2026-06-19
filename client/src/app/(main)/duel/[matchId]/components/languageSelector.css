@@ -1,0 +1,123 @@
+.ls-root {
+  position: relative;
+  user-select: none;
+}
+
+.ls-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.ls-trigger:hover {
+  background: rgba(169, 146, 214, 0.1);
+  border-color: rgba(169, 146, 214, 0.35);
+}
+
+.ls-trigger--open {
+  background: rgba(169, 146, 214, 0.12);
+  border-color: rgba(169, 146, 214, 0.45);
+}
+
+.ls-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(169, 146, 214, 0.18);
+  border: 1px solid rgba(169, 146, 214, 0.25);
+  color: #c4aef0;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.ls-icon--sm {
+  width: 22px;
+  height: 18px;
+  font-size: 0.58rem;
+}
+
+.ls-label {
+  min-width: 76px;
+}
+
+.ls-chevron {
+  color: rgba(255, 255, 255, 0.35);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.ls-chevron--up {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+.ls-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 999;
+  min-width: 160px;
+  background: #15121f;
+  border: 1px solid rgba(169, 146, 214, 0.2);
+  border-radius: 10px;
+  padding: 4px;
+  list-style: none;
+  margin: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  animation: ls-drop 0.12s ease;
+}
+
+@keyframes ls-drop {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ls-option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.ls-option:hover {
+  background: rgba(169, 146, 214, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ls-option--active {
+  color: #c4aef0;
+}
+
+.ls-option--active .ls-icon--sm {
+  background: rgba(169, 146, 214, 0.25);
+  border-color: rgba(169, 146, 214, 0.4);
+  color: #c4aef0;
+}
+
+.ls-check {
+  margin-left: auto;
+  color: #a992d6;
+  flex-shrink: 0;
+}

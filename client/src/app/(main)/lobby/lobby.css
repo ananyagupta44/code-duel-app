@@ -109,8 +109,15 @@
 
 .ranked-section h2 {
   color: rgba(254, 254, 254, 0.75);
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   font-size: 2rem;
+}
+
+.ranked-note {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 20px;
 }
 
 .ranked-list {
@@ -943,6 +950,16 @@
   font-family: "Big Shoulders";
 }
 
+.lobby-subheading {
+  justify-content: space-between;
+}
+
+.lobby-subheading-subtext {
+  margin-top: 6px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.55);
+}
 /* THEME: TEAL — Rookie Bot */
 .ai-bot-card.theme-teal::before { background: linear-gradient(90deg, #0f6e56, #5dcaa5); }
 .ai-bot-card.theme-teal .bot-avatar { border-color: #5dcaa5; background: rgba(93, 202, 165, 0.15); }

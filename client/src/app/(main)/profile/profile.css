@@ -431,6 +431,191 @@
 .toggle-arrow.up {
   transform: rotate(180deg);
 }
+
+/* CHAMPIONSHIP TROPHIES */
+
+.profile-badge-section {
+  margin-bottom: 20px;
+}
+
+.badge-section-title {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(169,146,214,0.7);
+  margin-bottom: 12px;
+}
+
+.profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* CHAMPIONSHIP TROPHIES */
+
+.profile-badge-section {
+  margin-bottom: 20px;
+}
+
+.badge-section-title {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(169, 146, 214, 0.7);
+  margin-bottom: 12px;
+}
+
+.profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.tournament-badge {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  min-width: 270px;
+
+  padding: 16px 20px 16px 16px;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(160deg, #2b1f12 0%, #16111f 55%, #100e1c 100%);
+
+  border: 1px solid rgba(247, 201, 72, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 12px 28px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tournament-badge:hover {
+  transform: translateY(-3px);
+  border-color: rgba(247, 201, 72, 0.6);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 16px 36px rgba(247, 201, 72, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* foil shine sweep */
+.tb-shine {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(247, 201, 72, 0.12) 45%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(247, 201, 72, 0.12) 55%,
+    transparent 70%
+  );
+  background-size: 250% 250%;
+  background-position: 100% 0%;
+  pointer-events: none;
+  transition: background-position 0.9s ease;
+}
+
+.tournament-badge:hover .tb-shine {
+  background-position: 0% 100%;
+}
+
+/* hexagonal medallion */
+.tb-medallion {
+  position: relative;
+  z-index: 2;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  clip-path: polygon(
+    50% 0%,
+    100% 25%,
+    100% 75%,
+    50% 100%,
+    0% 75%,
+    0% 25%
+  );
+
+  background: linear-gradient(160deg, #fac775 0%, #ba7517 100%);
+  box-shadow:
+    0 0 14px rgba(247, 201, 72, 0.45),
+    inset 0 2px 4px rgba(255, 255, 255, 0.35),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.35);
+}
+
+.tb-medallion-ring {
+  position: absolute;
+  inset: 3px;
+  clip-path: polygon(
+    50% 0%,
+    100% 25%,
+    100% 75%,
+    50% 100%,
+    0% 75%,
+    0% 25%
+  );
+  background: linear-gradient(160deg, #2b1f12, #1a1306);
+}
+
+.tb-medallion-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 1.5rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.tb-content {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.tb-rank {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #fac775;
+  margin-bottom: 3px;
+}
+
+.tb-name {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tb-date {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.7rem;
+  font-family: "Chivo Mono", monospace;
+}
+
+
 /* RESPONSIVE */
 @media (max-width: 1100px) {
   .profile-header { flex-direction: column; }

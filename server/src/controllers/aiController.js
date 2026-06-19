@@ -90,6 +90,7 @@ export const createAiMatch = async (req, res) => {
 export const handleAiMatchSubmit = async (req, res, match) => {
   try {
     console.log("AI submit handler hit");
+
     const user = await User.findById(req.user._id);
 
     if (!user) {
@@ -106,70 +107,17 @@ export const handleAiMatchSubmit = async (req, res, match) => {
 
     const aiWon = match.player2Progress >= 100;
 
-    const playerWon = !aiWon;
-
-    match.player1EloBefore = user.elo;
-
-    if (playerWon) {
-      const newElo = calculateAiElo(user.elo, match.aiBot.elo, 1);
-console.log("Old ELO:", user.elo);
-      user.elo = newElo;
-
+    if (aiWon) {
+      await finishAiMatch(match, "ai");
+    } else {
       match.player1Progress = 100;
 
-      match.player1EloAfter = newElo;
-console.log("New ELO:", newElo);
-      match.status = "finished";
-
-      match.winner = "player";
-
-      match.winnerId = user._id;
-
-      match.endedAt = new Date();
-
-      user.wins += 1;
-    } else {
-      const newElo = calculateAiElo(user.elo, match.aiBot.elo, 0);
-
-      user.elo = newElo;
-
-      match.player1EloAfter = newElo;
-
-      match.status = "finished";
-
-      match.winner = "ai";
-
-      match.endedAt = new Date();
-
-      user.losses += 1;
+      await finishAiMatch(match, "player");
     }
-
-    user.isInMatch = false;
-
-    await user.save();
-    console.log("User saved");
-    await match.save();
-
-    io.to(match._id.toString()).emit("matchFinished", {
-      matchId: match._id,
-      winner: match.winner,
-    });
-
-    io.to(match._id.toString()).emit("eloUpdated", {
-      oldElo: match.player1EloBefore,
-      newElo: match.player1EloAfter,
-    });
 
     return res.json({
       success: true,
-
-      winner: match.winner,
-
-      eloBefore: match.player1EloBefore,
-
-      eloAfter: match.player1EloAfter,
-
-      eloChange: match.player1EloAfter - match.player1EloBefore,
+      winner: aiWon ? "ai" : "player",
     });
   } catch (error) {
     console.log(error);
@@ -178,4 +126,64 @@ console.log("New ELO:", newElo);
       message: error.message,
     });
   }
+};
+
+export const finishAiMatch = async (match, winner) => {
+  const freshMatch = await Match.findById(match._id);
+
+  if (!freshMatch || freshMatch.status === "finished") {
+    return;
+  }
+
+  const user = await User.findById(freshMatch.player1Id);
+
+  if (!user) return;
+
+  freshMatch.player1EloBefore = user.elo;
+
+  if (winner === "player") {
+    const newElo = calculateAiElo(user.elo, match.aiBot.elo, 1);
+
+    user.elo = newElo;
+    user.wins += 1;
+
+    freshMatch.player1EloAfter = newElo;
+    freshMatch.winner = "player";
+    freshMatch.winnerId = user._id;
+  } else {
+    const newElo = calculateAiElo(user.elo, match.aiBot.elo, 0);
+
+    user.elo = newElo;
+    user.losses += 1;
+
+    freshMatch.player1EloAfter = newElo;
+    freshMatch.winner = "ai";
+    freshMatch.loserId = user._id;
+  }
+
+  user.isInMatch = false;
+
+  freshMatch.status = "finished";
+  freshMatch.endedAt = new Date();
+
+  await user.save();
+  await freshMatch.save();
+
+  io.to(match._id.toString()).emit("matchFinished", {
+    matchId: match._id,
+    winner: match.winner,
+  });
+
+  io.to(match._id.toString()).emit("eloUpdated", {
+    oldElo: match.player1EloBefore,
+    newElo: match.player1EloAfter,
+  });
+
+  await emitHeroStats();
+
+  return {
+    winner: freshMatch.winner,
+    eloBefore: freshMatch.player1EloBefore,
+    eloAfter: freshMatch.player1EloAfter,
+  };
 };

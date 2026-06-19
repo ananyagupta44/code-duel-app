@@ -77,9 +77,24 @@ function getRoundLabel(roundNumber, totalRounds) {
 ========================= */
 
 function RankPlace({ place }) {
-  if (place === 1) return <span className="td-place gold"><Crown size={16} />1</span>;
-  if (place === 2) return <span className="td-place silver"><Medal size={16} />2</span>;
-  if (place === 3) return <span className="td-place bronze"><Medal size={16} />3</span>;
+  if (place === 1)
+    return (
+      <span className="td-place gold">
+        <Crown size={16} />1
+      </span>
+    );
+  if (place === 2)
+    return (
+      <span className="td-place silver">
+        <Medal size={16} />2
+      </span>
+    );
+  if (place === 3)
+    return (
+      <span className="td-place bronze">
+        <Medal size={16} />3
+      </span>
+    );
   return <span className="td-place">{place}</span>;
 }
 
@@ -96,8 +111,14 @@ function MatchPlayer({ player, isWinner, isDecided }) {
     );
   }
   return (
-    <div className={`td-match-player ${isWinner ? "is-winner" : isDecided ? "is-loser" : ""}`}>
-      <img src={getAvatar(player)} alt={player.username} className="td-player-avatar" />
+    <div
+      className={`td-match-player ${isWinner ? "is-winner" : isDecided ? "is-loser" : ""}`}
+    >
+      <img
+        src={getAvatar(player)}
+        alt={player.username}
+        className="td-player-avatar"
+      />
       <div>
         <div className="td-player-name">{player.username}</div>
         <div className="td-player-elo">ELO {player.elo ?? "—"}</div>
@@ -109,21 +130,47 @@ function MatchPlayer({ player, isWinner, isDecided }) {
 
 function MatchCard({ match, isCurrentRound }) {
   const decided = Boolean(match.winnerId);
+  const isBye = match.isBye;
+
+  if (isBye) {
+    return (
+      <div className="td-match-card td-match-card--bye">
+        <div className="td-bye-badge">BYE</div>
+
+        <MatchPlayer
+          player={match.player1Id || match.player2Id}
+          isWinner={true}
+          isDecided={true}
+        />
+
+        <div className="td-bye-text">Automatically advances to next round</div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`td-match-card${isCurrentRound && !decided ? " td-match-card--live" : ""}${decided ? " td-match-card--decided" : ""}`}>
+    <div
+      className={`td-match-card${
+        isCurrentRound && !decided ? " td-match-card--live" : ""
+      }${decided ? " td-match-card--decided" : ""}`}
+    >
       {isCurrentRound && !decided && (
         <div className="td-live-badge">
-          <span className="td-live-dot" /> Live
+          <span className="td-live-dot" />
+          Live
         </div>
       )}
+
       <MatchPlayer
         player={match.player1Id}
         isWinner={decided && match.winnerId?._id === match.player1Id?._id}
         isDecided={decided}
       />
+
       <div className="td-vs">
         <Swords size={13} color="rgba(168,85,247,0.7)" />
       </div>
+
       <MatchPlayer
         player={match.player2Id}
         isWinner={decided && match.winnerId?._id === match.player2Id?._id}
@@ -138,7 +185,7 @@ function MatchCard({ match, isCurrentRound }) {
 ========================= */
 
 // Card height + gap must match CSS exactly
-const CARD_H = 98;   // px — td-match-card min height
+const CARD_H = 98; // px — td-match-card min height
 const CARD_GAP = 16; // px — gap between cards in a round
 const ROUND_W = 240; // px — td-round width
 const COL_GAP = 100; // px — gap between round columns (horizontal space for connectors)
@@ -212,12 +259,18 @@ function BracketConnectors({ rounds }) {
                 // Each successive round has half the matches; space them so
                 // their midpoints align with the gap between the two feeder matches.
                 gap: `${CARD_GAP * Math.pow(2, idx)}px`,
-                paddingTop: idx === 0 ? 0 : `${(CARD_H + CARD_GAP * Math.pow(2, idx - 1)) / 2 - CARD_H / 2}px`,
+                paddingTop:
+                  idx === 0
+                    ? 0
+                    : `${(CARD_H + CARD_GAP * Math.pow(2, idx - 1)) / 2 - CARD_H / 2}px`,
               }}
             >
               {round.matches.map((match) => (
                 <MatchCard
-                  key={match.matchId || `${round.round}-${match.player1Id?._id}`}
+                  key={
+                    match.matchId ||
+                    `${round.round}-${match.player1Id?._id || match.player2Id?._id || Math.random()}`
+                  }
                   match={match}
                   isCurrentRound={round.round === rounds._currentRound}
                 />
@@ -287,7 +340,9 @@ export default function TournamentDetailsPage() {
   }, [id]);
 
   const startAt = tournament?.startTime || tournament?.startDate || null;
-  const countdown = useCountdown(tournament?.status === "upcoming" ? startAt : null);
+  const countdown = useCountdown(
+    tournament?.status === "upcoming" ? startAt : null,
+  );
 
   const handleJoinTournament = async () => {
     try {
@@ -300,17 +355,25 @@ export default function TournamentDetailsPage() {
     }
   };
 
-  const currentUserId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
-  const alreadyJoined = tournament?.participants?.some((p) => String(p._id) === String(currentUserId));
+  const currentUserId =
+    typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+  const alreadyJoined = tournament?.participants?.some(
+    (p) => String(p._id) === String(currentUserId),
+  );
 
   const ranked = useMemo(() => {
     if (!tournament?.participants) return [];
-    return [...tournament.participants].sort((a, b) => (b.elo ?? 0) - (a.elo ?? 0));
+    return [...tournament.participants].sort(
+      (a, b) => (b.elo ?? 0) - (a.elo ?? 0),
+    );
   }, [tournament]);
 
-  const totalRounds = tournament?.totalRounds || tournament?.bracket?.length || 0;
+  const totalRounds =
+    tournament?.totalRounds || tournament?.bracket?.length || 0;
   const previewAvatars = ranked.slice(0, 4);
-  const spotsLeft = tournament ? tournament.maxParticipants - tournament.participants.length : null;
+  const spotsLeft = tournament
+    ? tournament.maxParticipants - tournament.participants.length
+    : null;
   const isFull = spotsLeft !== null && spotsLeft <= 0;
 
   // Attach currentRound to bracket array so MatchCard can access it
@@ -321,20 +384,29 @@ export default function TournamentDetailsPage() {
     return arr;
   }, [tournament]);
 
-  if (loading) return <div className="tournament-details-page"><h2>Loading Tournament…</h2></div>;
-  if (!tournament) return <div className="tournament-details-page"><h2>Tournament not found</h2></div>;
+  if (loading)
+    return (
+      <div className="tournament-details-page">
+        <h2>Loading Tournament…</h2>
+      </div>
+    );
+  if (!tournament)
+    return (
+      <div className="tournament-details-page">
+        <h2>Tournament not found</h2>
+      </div>
+    );
 
   const joinLabel = isFull
     ? "Full"
     : tournament.status === "upcoming"
-    ? "Join Duel"
-    : tournament.status === "active"
-    ? "Spectate"
-    : "View Results";
+      ? "Join Duel"
+      : tournament.status === "active"
+        ? "Spectate"
+        : "View Results";
 
   return (
     <div className="tournament-details-page">
-
       {/* ── HERO ── */}
       <div className="td-hero">
         <div className="td-cover">
@@ -346,7 +418,9 @@ export default function TournamentDetailsPage() {
 
         <div className="td-info">
           <div className="td-status-line">
-            <span className={`td-status sm ${tournament.status}`}>{tournament.status}</span>
+            <span className={`td-status sm ${tournament.status}`}>
+              {tournament.status}
+            </span>
             <span className="td-meta-sep">•</span>
             <span>{formatDateTime(startAt)}</span>
             <span className="td-meta-sep">•</span>
@@ -363,11 +437,18 @@ export default function TournamentDetailsPage() {
 
           <div className="td-mini-participants">
             {previewAvatars.map((p) => (
-              <img key={p._id} src={getAvatar(p)} alt={p.username} className="td-mini-avatar" />
+              <img
+                key={p._id}
+                src={getAvatar(p)}
+                alt={p.username}
+                className="td-mini-avatar"
+              />
             ))}
             <span className="td-mini-participants-text">
               {tournament.participants.length} coders
-              {tournament.maxParticipants ? ` · ${tournament.maxParticipants} max` : ""}
+              {tournament.maxParticipants
+                ? ` · ${tournament.maxParticipants} max`
+                : ""}
             </span>
           </div>
         </div>
@@ -376,27 +457,37 @@ export default function TournamentDetailsPage() {
           {tournament.status === "upcoming" && (
             <>
               <div className="td-countdown-label">Tournament starts in</div>
-              <div className="td-countdown-time">{formatCountdown(countdown)}</div>
+              <div className="td-countdown-time">
+                {formatCountdown(countdown)}
+              </div>
               <div className="td-countdown-sub">{formatDateTime(startAt)}</div>
             </>
           )}
           {tournament.status === "active" && (
             <>
-              <div className="td-countdown-label"><span className="td-live-dot" /> Live now</div>
-              <div className="td-countdown-time">Round {tournament.currentRound || 1}</div>
+              <div className="td-countdown-label">
+                <span className="td-live-dot" /> Live now
+              </div>
+              <div className="td-countdown-time">
+                Round {tournament.currentRound || 1}
+              </div>
               <div className="td-countdown-sub">of {totalRounds || "?"}</div>
             </>
           )}
           {tournament.status === "finished" && (
             <>
               <div className="td-countdown-label">Tournament ended</div>
-              <div className="td-countdown-time"><Trophy size={32} /></div>
+              <div className="td-countdown-time">
+                <Trophy size={32} />
+              </div>
             </>
           )}
 
           <button
             className="td-join-btn"
-            disabled={alreadyJoined || isFull || tournament.status !== "upcoming"}
+            disabled={
+              alreadyJoined || isFull || tournament.status !== "upcoming"
+            }
             onClick={handleJoinTournament}
           >
             {alreadyJoined ? "Joined" : joinLabel}
@@ -407,19 +498,36 @@ export default function TournamentDetailsPage() {
       {/* ── STATS ── */}
       <div className="td-stats-grid">
         <div className="td-stat-card">
-          <div className="td-stat-card-header"><span>Participants</span><Users size={16} /></div>
-          <h2>{tournament.participants.length}/{tournament.maxParticipants || "∞"}</h2>
+          <div className="td-stat-card-header">
+            <span>Participants</span>
+            <Users size={16} />
+          </div>
+          <h2>
+            {Math.pow(
+              2,
+              Math.ceil(Math.log2(tournament.participants.length || 1)),
+            )}
+          </h2>
         </div>
         <div className="td-stat-card">
-          <div className="td-stat-card-header"><span>Difficulty</span><Gauge size={16} /></div>
+          <div className="td-stat-card-header">
+            <span>Difficulty</span>
+            <Gauge size={16} />
+          </div>
           <h2>{tournament.difficulty || "—"}</h2>
         </div>
         <div className="td-stat-card">
-          <div className="td-stat-card-header"><span>Prize Pool</span><Gift size={16} /></div>
+          <div className="td-stat-card-header">
+            <span>Prize Pool</span>
+            <Gift size={16} />
+          </div>
           <h2>{tournament.prizePool || "—"}</h2>
         </div>
         <div className="td-stat-card">
-          <div className="td-stat-card-header"><span>Current Round</span><ListOrdered size={16} /></div>
+          <div className="td-stat-card-header">
+            <span>Current Round</span>
+            <ListOrdered size={16} />
+          </div>
           <h2>{tournament.currentRound || "—"}</h2>
         </div>
       </div>
@@ -437,11 +545,17 @@ export default function TournamentDetailsPage() {
             <div key={player._id} className="td-table-row">
               <RankPlace place={index + 1} />
               <div className="td-player-info">
-                <img src={getAvatar(player)} alt={player.username} className="td-player-avatar" />
+                <img
+                  src={getAvatar(player)}
+                  alt={player.username}
+                  className="td-player-avatar"
+                />
                 <div>
                   <div className="td-player-name">{player.username}</div>
                   {player.currentStreak > 1 && (
-                    <div className="td-player-elo">🔥 {player.currentStreak} win streak</div>
+                    <div className="td-player-elo">
+                      🔥 {player.currentStreak} win streak
+                    </div>
                   )}
                 </div>
               </div>
@@ -453,11 +567,22 @@ export default function TournamentDetailsPage() {
 
       {/* ── BRACKET ── */}
       <div className="td-section">
+        {tournament.bracket?.some((round) =>
+          round.matches?.some((m) => m.isBye),
+        ) && (
+          <div className="td-bye-notice">
+            🏆 Higher-seeded players received automatic advancement (BYE) due to
+            uneven participant count.
+          </div>
+        )}
         <h2>Tournament Bracket</h2>
-        {bracketWithMeta.length > 0
-          ? <BracketConnectors rounds={bracketWithMeta} />
-          : <p className="td-bracket-empty">Bracket will be generated when the tournament starts.</p>
-        }
+        {bracketWithMeta.length > 0 ? (
+          <BracketConnectors rounds={bracketWithMeta} />
+        ) : (
+          <p className="td-bracket-empty">
+            Bracket will be generated when the tournament starts.
+          </p>
+        )}
       </div>
 
       {/* ── WINNER BANNER ── */}
@@ -469,8 +594,12 @@ export default function TournamentDetailsPage() {
               <Trophy size={40} />
             </div>
             <div className="td-winner-banner__text">
-              <span className="td-winner-banner__label">Tournament Champion</span>
-              <span className="td-winner-banner__name">{tournament.winnerId.username}</span>
+              <span className="td-winner-banner__label">
+                Tournament Champion
+              </span>
+              <span className="td-winner-banner__name">
+                {tournament.winnerId.username}
+              </span>
             </div>
             <div className="td-winner-banner__stars" aria-hidden="true">
               <Star size={14} />
@@ -480,7 +609,6 @@ export default function TournamentDetailsPage() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

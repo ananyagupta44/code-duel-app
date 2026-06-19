@@ -8,6 +8,7 @@ export default function PlayerCard({
   challengeUser,
   creatingMatch,
   index = 0,
+  showChallenge = true,
 }) {
   const totalGames = user.wins + user.losses;
   const winRate =
@@ -56,17 +57,19 @@ export default function PlayerCard({
         </div>
       </div>
 
-      <button
-        className="challenge-btn"
-        disabled={user.isInMatch || creatingMatch === user._id}
-        onClick={() => challengeUser(user._id)}
-      >
-        {user.isInMatch
-          ? "In Match"
-          : creatingMatch === user._id
-            ? "Creating..."
-            : "Challenge"}
-      </button>
+      {showChallenge && (
+        <button
+          className="challenge-btn"
+          disabled={user.isInMatch || creatingMatch === user._id}
+          onClick={() => challengeUser(user._id)}
+        >
+          {user.isInMatch
+            ? "In Match"
+            : creatingMatch === user._id
+              ? "Creating..."
+              : "Challenge"}
+        </button>
+      )}
     </div>
   );
 }

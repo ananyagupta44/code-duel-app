@@ -165,19 +165,15 @@ body {
 
 .user-info {
   padding: 12px 16px;
-
   font-family: "Chivo Mono", monospace;
   font-size: 0.9rem;
-
   color: #d4c1ff;
-
   border-bottom: 1px solid rgba(
     255,
     255,
     255,
     0.08
   );
-
   margin-bottom: 6px;
 }
 

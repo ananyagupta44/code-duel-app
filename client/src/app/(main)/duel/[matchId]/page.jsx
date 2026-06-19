@@ -12,6 +12,7 @@ import { IoIosHourglass } from "react-icons/io";
 import { throttle } from "lodash";
 import { useAuth } from "@/context/authContext";
 import { useMemo } from "react";
+import LanguageSelector from "./components/languageSelector";
 
 export default function DuelPage() {
   const { matchId } = useParams();
@@ -27,14 +28,7 @@ export default function DuelPage() {
   const [customInput, setCustomInput] = useState("");
   const [aiMessage, setAiMessage] = useState("");
   const { user } = useAuth();
-  const aiMessages = [
-    "Reading the problem...",
-    "Exploring brute force...",
-    "Trying an optimized solution...",
-    "Testing edge cases...",
-    "Optimizing memory usage...",
-    "Preparing final submission...",
-  ];
+
   const emitCodeUpdate = useMemo(
     () =>
       throttle((newCode) => {
@@ -55,16 +49,24 @@ export default function DuelPage() {
   }, [emitCodeUpdate]);
 
   useEffect(() => {
-    if (match?.matchType !== "ai") return;
+    if (!match || match.matchType !== "ai") return;
 
-    const interval = setInterval(() => {
-      const random = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+    const progress = match.player2Progress || 0;
 
-      setAiMessage(random);
-    }, 12000);
-
-    return () => clearInterval(interval);
-  }, [match]);
+    if (progress < 20) {
+      setAiMessage("Reading the problem...");
+    } else if (progress < 40) {
+      setAiMessage("Exploring brute force...");
+    } else if (progress < 60) {
+      setAiMessage("Trying an optimized solution...");
+    } else if (progress < 80) {
+      setAiMessage("Testing edge cases...");
+    } else if (progress < 95) {
+      setAiMessage("Optimizing memory usage...");
+    } else {
+      setAiMessage("Preparing final submission...");
+    }
+  }, [match?.player2Progress, match?.matchType]);
 
   const getStorageKey = (lang) => `duel_${matchId}_${lang}`;
 
@@ -282,15 +284,7 @@ Status: ${res.data.status}
           <div className="editor-panel">
             <div className="editor-header">
               <h2 className={fjalla.className}>Code Editor</h2>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-              >
-                <option value="javascript">JavaScript</option>
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-                <option value="cpp">C++</option>
-              </select>
+              <LanguageSelector value={language} onChange={setLanguage} />
             </div>
             <div className="editor-layout">
               <div className="editor-container">
