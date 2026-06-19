@@ -30,16 +30,16 @@ import profileRoutes from "./routes/profileRoutes.js";
 
 const app = express();
 
-const io = new Server(server, {
-  cors: {
-    origin: process.env.CLIENT_URL,
-    credentials: true,
-  },
-});
+const allowedOrigins = ["http://localhost:3000", process.env.CLIENT_URL];
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
