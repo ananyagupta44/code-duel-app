@@ -6,6 +6,8 @@ import api from "@/lib/api";
 import "./practice.css";
 import { fjalla } from "@/fonts";
 import { ChevronRight, ChevronLeft } from "lucide-react";
+import { useAuth } from "@/context/authContext";
+import { useAuthDrawer } from "@/context/drawerContext";
 
 export default function PracticePage() {
   const [problems, setProblems] = useState([]);
@@ -18,6 +20,15 @@ export default function PracticePage() {
   const topicsRef = useRef(null);
   const [solvedProblems, setSolvedProblems] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
+  const { isAuthenticated } = useAuth();
+  const { openLogin } = useAuthDrawer();
+
+  const handleProblemClick = (e) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      openLogin();
+    }
+  };
 
   const handleTopicsScroll = () => {
     if (!topicsRef.current) return;
@@ -247,6 +258,7 @@ export default function PracticePage() {
                     key={problem._id}
                     href={`/practice/${problem._id}`}
                     className="problem-row"
+                    onClick={handleProblemClick}
                   >
                     <span>{index + 1}</span>
 

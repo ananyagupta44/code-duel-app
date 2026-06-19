@@ -354,7 +354,9 @@ export default function Hero() {
         <div className="play-type">
           <button
             className={playType === "human" ? "active" : ""}
-            onClick={() => setPlayType("human")}
+            onClick={() => {
+              setPlayType("human");
+            }}
           >
             <IoLogoGameControllerB /> Random
           </button>
@@ -486,7 +488,16 @@ export default function Hero() {
           )}
         </div>
 
-        <button className="find-match-btn" onClick={handleFindMatch}>
+        <button
+          className="find-match-btn"
+          onClick={() => {
+            const allowed = handleProtectedNavigation("/lobby");
+
+            if (allowed) {
+              handleFindMatch();
+            }
+          }}
+        >
           {playType === "friend"
             ? "CREATE GAME"
             : playType === "ai"

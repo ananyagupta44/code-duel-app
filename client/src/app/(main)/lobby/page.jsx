@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import "./lobby.css";
 import PlayerCard from "./components/PlayerCard";
+import { useAuth } from "@/context/authContext";
 import socket from "@/lib/socket";
 import { fjalla, chivo } from "@/fonts";
 import { IoLogoGameControllerB } from "react-icons/io";
@@ -15,6 +16,7 @@ import { RiSwordLine } from "react-icons/ri";
 import { FaLongArrowAltDown } from "react-icons/fa";
 import AiBotGrid from "./components/aiBotGrid";
 import "./components/aiBotGrid.css";
+import { useAuthDrawer } from "@/context/drawerContext";
 
 const PLAY_TYPE_COPY = {
   human: {
@@ -33,9 +35,10 @@ const PLAY_TYPE_COPY = {
 
 export default function LobbyPage() {
   const router = useRouter();
-
+  const { openLogin } = useAuthDrawer();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
+  const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [creatingMatch, setCreatingMatch] = useState(null);
   const [playType, setPlayType] = useState("human");
@@ -629,7 +632,17 @@ export default function LobbyPage() {
           )}
         </div>
 
-        <button className="find-match-btn" onClick={handleFindMatch}>
+        <button
+          className="find-match-btn"
+          onClick={() => {
+            if (!isAuthenticated) {
+              openLogin();
+              return;
+            }
+
+            handleFindMatch();
+          }}
+        >
           {playType === "friend"
             ? "CREATE GAME"
             : playType === "ai"
