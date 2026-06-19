@@ -25,7 +25,7 @@ export const executeCode = (language, code, input = "") => {
 
       fs.writeFileSync(filePath, code);
 
-      command = "python";
+      command = process.platform === "win32" ? "python" : "python3";
       args = [filePath];
     } else if (language === "cpp") {
       const cppFile = path.join(tempDir, "main.cpp");
@@ -84,6 +84,11 @@ export const executeCode = (language, code, input = "") => {
       }
 
       child.stdin.end();
+
+      child.on("error", (err) => {
+        console.log("SPAWN ERROR:", err);
+        resolve(err.message);
+      });
 
       child.on("close", () => {
         clearTimeout(timeout);
