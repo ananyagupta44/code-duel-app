@@ -30,9 +30,16 @@ import profileRoutes from "./routes/profileRoutes.js";
 
 const app = express();
 
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  },
+});
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   }),
 );
@@ -112,7 +119,7 @@ io.on("connection", async (socket) => {
     const users = await User.find({
       isOnline: true,
     }).select("username elo wins losses solvedProblems isInMatch");
-  
+
     io.emit("lobbyUpdated", formatLobbyUsers(users));
   });
 
@@ -225,7 +232,7 @@ io.on("connection", async (socket) => {
       const users = await User.find({
         isOnline: true,
       }).select("username elo wins losses solvedProblems isInMatch");
-     
+
       io.emit("lobbyUpdated", formatLobbyUsers(users));
     } catch (error) {
       console.log(error);
