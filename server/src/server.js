@@ -84,7 +84,7 @@ export const emitHeroStats = async () => {
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     credentials: true,
   },
 });
