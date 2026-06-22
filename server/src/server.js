@@ -27,6 +27,7 @@ import leaderboardRoutes from "./routes/leaderboardRoutes.js";
 import tournamentRoutes from "./routes/tournamentRoutes.js";
 import { getLeaderboardData } from "./services/leaderboardEmitter.js";
 import profileRoutes from "./routes/profileRoutes.js";
+import judgeRoutes from "./routes/judgeRoutes.js";
 
 const app = express();
 
@@ -54,6 +55,7 @@ app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/tournaments", tournamentRoutes);
+app.use("/api/judge", judgeRoutes);
 
 app.get("/", (req, res) => {
   res.send("CodeDuel API Running");

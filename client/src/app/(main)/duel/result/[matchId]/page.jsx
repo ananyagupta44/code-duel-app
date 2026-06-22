@@ -11,6 +11,8 @@ export default function ResultPage() {
 
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isAiMatch = match.matchType === "ai";
+  const isTournamentMatch = match.matchType === "tournament";
 
   useEffect(() => {
     fetchMatch();
@@ -56,14 +58,36 @@ export default function ResultPage() {
   const minutes = Math.floor(duration / 60);
   const seconds = duration % 60;
 
+  const winnerName =
+    match.winner === "ai"
+      ? match.aiBot?.name
+      : match.winnerId?.username || "Unknown";
+
+  const loserName = isAiMatch
+    ? match.winner === "player"
+      ? match.aiBot?.name
+      : match.player1Id?.username
+    : match.loserId?.username ||
+      (match.player1Id?._id === match.winnerId?._id
+        ? match.player2Id?.username
+        : match.player1Id?.username);
+
+  const player2Name = isAiMatch
+    ? match.aiBot?.name
+    : match.player2Id?.username || "Waiting";
+
+  const eloChange =
+    match.player1EloAfter !== undefined && match.player1EloBefore !== undefined
+      ? match.player1EloAfter - match.player1EloBefore
+      : null;
+
   return (
     <div className="result-page">
       <div className="result-card">
         <div className="result-header">
           <h1>🏆 MATCH COMPLETE</h1>
-
           <p>
-            {match.winnerId?.username} defeated {match.loserId?.username}
+            {winnerName} defeated {loserName}
           </p>
         </div>
 
@@ -72,7 +96,7 @@ export default function ResultPage() {
             {match.winnerId?.username?.[0]?.toUpperCase()}
           </div>
 
-          <h2>{match.winnerId?.username}</h2>
+          <h2>{winnerName}</h2>
 
           <span className="winner-badge">WINNER</span>
         </div>
@@ -97,13 +121,33 @@ export default function ResultPage() {
 
           <div className="info-box">
             <span>Mode</span>
-            <h3>{match.matchType}</h3>
+            <h3>
+              {isAiMatch
+                ? "AI Duel"
+                : isTournamentMatch
+                  ? "Tournament"
+                  : "Ranked Duel"}
+            </h3>
           </div>
+          {eloChange !== null && (
+            <div className="info-box">
+              <span>ELO Change</span>
+
+              <h3
+                style={{
+                  color: eloChange >= 0 ? "#4ade80" : "#f87171",
+                }}
+              >
+                {eloChange >= 0 ? "+" : ""}
+                {eloChange}
+              </h3>
+            </div>
+          )}
         </div>
 
         <div className="players-progress">
           <div className="player-progress-card">
-            <h3>{match.player1Id?.username}</h3>
+            <h3>{player2Name}</h3>
 
             <div className="progress-bar">
               <div

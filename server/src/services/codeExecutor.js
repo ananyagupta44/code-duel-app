@@ -1,104 +1,52 @@
-import fs from "fs";
-import path from "path";
-import { spawn } from "child_process";
+const JUDGE0_URL = process.env.JUDGE0_URL || "https://ce.judge0.com";
 
-export const executeCode = (language, code, input = "") => {
-  return new Promise((resolve) => {
-    const tempDir = path.join(process.cwd(), "temp", "codeduel");
+const LANGUAGE_MAP = {
+  javascript: 63,
+  python: 71,
+  cpp: 54,
+};
 
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
+const b64encode = (str) => Buffer.from(str).toString("base64");
+const b64decode = (str) =>
+  str ? Buffer.from(str, "base64").toString("utf8") : "";
 
-    let command;
-    let args;
+export const executeCode = async (language, code, input = "") => {
+  const language_id = LANGUAGE_MAP[language];
 
-    if (language === "javascript") {
-      const filePath = path.join(tempDir, "main.js");
+  if (!language_id) return "Language not supported";
 
-      fs.writeFileSync(filePath, code);
+  // Submit with base64 encoding
+  const submitRes = await fetch(
+    `${JUDGE0_URL}/submissions?base64_encoded=true&wait=false`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        source_code: b64encode(code),
+        language_id,
+        stdin: b64encode(input),
+      }),
+    },
+  );
+  const { token } = await submitRes.json();
 
-      command = "node";
-      args = [filePath];
-    } else if (language === "python") {
-      const filePath = path.join(tempDir, "main.py");
+  // Poll with base64 encoding
+  let result;
+  for (let i = 0; i < 15; i++) {
+    await new Promise((r) => setTimeout(r, 800));
+    const pollRes = await fetch(
+      `${JUDGE0_URL}/submissions/${token}?base64_encoded=true&fields=stdout,stderr,status,time,compile_output`,
+    );
+    result = await pollRes.json();
+    if (result.status?.id > 2) break;
+  }
 
-      fs.writeFileSync(filePath, code);
+  console.log("Judge0 result:", JSON.stringify(result, null, 2));
 
-      command = process.platform === "win32" ? "python" : "python3";
-      args = [filePath];
-    } else if (language === "cpp") {
-      const cppFile = path.join(tempDir, "main.cpp");
-      const exeFile = path.join(tempDir, "main.exe");
+  if (result.compile_output) return b64decode(result.compile_output);
+  if (result.stderr) return b64decode(result.stderr);
+  if (result.status?.description === "Time Limit Exceeded")
+    return "Time Limit Exceeded";
 
-      fs.writeFileSync(cppFile, code);
-
-      const compiler = spawn("g++", [cppFile, "-o", exeFile]);
-
-      let compileError = "";
-
-      compiler.stderr.on("data", (data) => {
-        compileError += data.toString();
-      });
-
-      compiler.on("close", (compileCode) => {
-        if (compileCode !== 0) {
-          return resolve(compileError || "Compilation Error");
-        }
-
-        runExecutable(exeFile);
-      });
-
-      return;
-    } else {
-      return resolve("Language not supported");
-    }
-
-    runProcess(command, args);
-
-    function runExecutable(exeFile) {
-      runProcess(exeFile, []);
-    }
-
-    function runProcess(command, args) {
-      const child = spawn(command, args);
-
-      let stdout = "";
-      let stderr = "";
-
-      const timeout = setTimeout(() => {
-        child.kill("SIGTERM");
-        resolve("Time Limit Exceeded");
-      }, 5000);
-
-      child.stdout.on("data", (data) => {
-        stdout += data.toString();
-      });
-
-      child.stderr.on("data", (data) => {
-        stderr += data.toString();
-      });
-
-      if (input) {
-        child.stdin.write(input);
-      }
-
-      child.stdin.end();
-
-      child.on("error", (err) => {
-        console.log("SPAWN ERROR:", err);
-        resolve(err.message);
-      });
-
-      child.on("close", () => {
-        clearTimeout(timeout);
-
-        if (stderr) {
-          return resolve(stderr);
-        }
-
-        resolve(stdout || "No Output");
-      });
-    }
-  });
+  return b64decode(result.stdout) || "No Output";
 };
