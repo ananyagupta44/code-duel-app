@@ -11,8 +11,6 @@ export default function ResultPage() {
 
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(true);
-  const isAiMatch = match.matchType === "ai";
-  const isTournamentMatch = match.matchType === "tournament";
 
   useEffect(() => {
     fetchMatch();
@@ -49,6 +47,8 @@ export default function ResultPage() {
       </div>
     );
   }
+  const isAiMatch = match.matchType === "ai";
+  const isTournamentMatch = match.matchType === "tournament";
 
   const duration =
     match.startedAt && match.endedAt
@@ -147,7 +147,7 @@ export default function ResultPage() {
 
         <div className="players-progress">
           <div className="player-progress-card">
-            <h3>{player2Name}</h3>
+            <h3>{match.player1Id?.username}</h3>
 
             <div className="progress-bar">
               <div
@@ -162,7 +162,7 @@ export default function ResultPage() {
           </div>
 
           <div className="player-progress-card">
-            <h3>{match.player2Id?.username}</h3>
+            <h3>{player2Name}</h3>
 
             <div className="progress-bar">
               <div
