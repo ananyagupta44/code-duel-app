@@ -33,23 +33,20 @@ print(result)
 
 export const generateCppWrapper = (userCode, functionName, input) => {
   const parsed = JSON.parse(input);
-
   const args = Object.values(parsed);
 
   const argDeclarations = args
     .map((arg, i) => {
-      if (Array.isArray(arg)) {
+      if (Array.isArray(arg))
         return `vector<int> arg${i} = {${arg.join(",")}};`;
-      }
       if (typeof arg === "string") return `string arg${i} = "${arg}";`;
       if (typeof arg === "boolean")
         return `bool arg${i} = ${arg ? "true" : "false"};`;
-      if (typeof arg === "number") {
+      if (typeof arg === "number")
         return Number.isInteger(arg)
           ? `int arg${i} = ${arg};`
           : `double arg${i} = ${arg};`;
-      }
-      return `auto arg${i} = ${JSON.stringify(arg)};`;
+      return `auto arg${i} = ${arg};`;
     })
     .join("\n    ");
 
@@ -59,36 +56,47 @@ export const generateCppWrapper = (userCode, functionName, input) => {
 #include <bits/stdc++.h>
 using namespace std;
 
+void printResult(int x) { cout << x; }
+void printResult(long long x) { cout << x; }
+void printResult(double x) { cout << x; }
+void printResult(bool x) { cout << (x ? "true" : "false"); }
+void printResult(string x) { cout << x; }
+void printResult(vector<int> v) {
+    cout << "[";
+    for (int i = 0; i < (int)v.size(); i++) {
+        cout << v[i];
+        if (i < (int)v.size() - 1) cout << ",";
+    }
+    cout << "]";
+}
+void printResult(vector<string> v) {
+    cout << "[";
+    for (int i = 0; i < (int)v.size(); i++) {
+        cout << "\\"" << v[i] << "\\"";
+        if (i < (int)v.size() - 1) cout << ",";
+    }
+    cout << "]";
+}
+void printResult(vector<vector<int>> v) {
+    cout << "[";
+    for (int i = 0; i < (int)v.size(); i++) {
+        cout << "[";
+        for (int j = 0; j < (int)v[i].size(); j++) {
+            cout << v[i][j];
+            if (j < (int)v[i].size() - 1) cout << ",";
+        }
+        cout << "]";
+        if (i < (int)v.size() - 1) cout << ",";
+    }
+    cout << "]";
+}
+
 ${userCode}
 
 int main() {
     ${argDeclarations}
     auto result = ${functionName}(${argNames});
-
-    // print vector
-    if (false) {}
-    #define PRINT_VEC(T) \\
-    else if constexpr (is_same<decltype(result), vector<T>>::value) { \\
-        cout << "["; \\
-        for (int i = 0; i < (int)result.size(); i++) { \\
-            cout << result[i]; \\
-            if (i < (int)result.size() - 1) cout << ","; \\
-        } \\
-        cout << "]"; \\
-    }
-    PRINT_VEC(int)
-    PRINT_VEC(string)
-    PRINT_VEC(double)
-    else if constexpr (is_same<decltype(result), bool>::value) {
-        cout << (result ? "true" : "false");
-    }
-    else if constexpr (is_same<decltype(result), string>::value) {
-        cout << result;
-    }
-    else {
-        cout << result;
-    }
-
+    printResult(result);
     return 0;
 }
 `;

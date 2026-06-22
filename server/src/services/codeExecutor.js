@@ -41,8 +41,6 @@ export const executeCode = async (language, code, input = "") => {
     if (result.status?.id > 2) break;
   }
 
-  console.log("Judge0 result:", JSON.stringify(result, null, 2));
-
   if (result.compile_output) return b64decode(result.compile_output);
   if (result.stderr) return b64decode(result.stderr);
   if (result.status?.description === "Time Limit Exceeded")
