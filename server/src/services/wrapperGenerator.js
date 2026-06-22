@@ -35,18 +35,49 @@ export const generateCppWrapper = (userCode, functionName, input) => {
   const parsed = JSON.parse(input);
   const args = Object.values(parsed);
 
+  const detectType = (arg) => {
+    if (Array.isArray(arg)) {
+      if (Array.isArray(arg[0])) {
+        // 2D array
+        if (typeof arg[0][0] === "string" && arg[0][0].length === 1)
+          return "vector<vector<char>>";
+        return "vector<vector<int>>";
+      }
+      if (typeof arg[0] === "string" && arg[0].length === 1)
+        return "vector<char>";
+      if (typeof arg[0] === "string") return "vector<string>";
+      return "vector<int>";
+    }
+    if (typeof arg === "string" && arg.length === 1) return "char";
+    if (typeof arg === "string") return "string";
+    if (typeof arg === "boolean") return "bool";
+    if (typeof arg === "number")
+      return Number.isInteger(arg) ? "int" : "double";
+    return "auto";
+  };
+
+  const toLiteral = (arg, type) => {
+    if (type === "vector<vector<char>>") {
+      const rows = arg.map((row) => `{'${row.join("','")}'}`).join(",");
+      return `{${rows}}`;
+    }
+    if (type === "vector<vector<int>>") {
+      const rows = arg.map((row) => `{${row.join(",")}}`).join(",");
+      return `{${rows}}`;
+    }
+    if (type === "vector<char>") return `{'${arg.join("','")}'}`;
+    if (type === "vector<string>") return `{"${arg.join('","')}"}`;
+    if (type === "vector<int>") return `{${arg.join(",")}}`;
+    if (type === "char") return `'${arg}'`;
+    if (type === "string") return `"${arg}"`;
+    if (type === "bool") return arg ? "true" : "false";
+    return arg;
+  };
+
   const argDeclarations = args
     .map((arg, i) => {
-      if (Array.isArray(arg))
-        return `vector<int> arg${i} = {${arg.join(",")}};`;
-      if (typeof arg === "string") return `string arg${i} = "${arg}";`;
-      if (typeof arg === "boolean")
-        return `bool arg${i} = ${arg ? "true" : "false"};`;
-      if (typeof arg === "number")
-        return Number.isInteger(arg)
-          ? `int arg${i} = ${arg};`
-          : `double arg${i} = ${arg};`;
-      return `auto arg${i} = ${arg};`;
+      const type = detectType(arg);
+      return `${type} arg${i} = ${toLiteral(arg, type)};`;
     })
     .join("\n    ");
 
@@ -60,6 +91,7 @@ void printResult(int x) { cout << x; }
 void printResult(long long x) { cout << x; }
 void printResult(double x) { cout << x; }
 void printResult(bool x) { cout << (x ? "true" : "false"); }
+void printResult(char x) { cout << x; }
 void printResult(string x) { cout << x; }
 void printResult(vector<int> v) {
     cout << "[";
@@ -95,7 +127,8 @@ ${userCode}
 
 int main() {
     ${argDeclarations}
-    auto result = ${functionName}(${argNames});
+    Solution sol;
+    auto result = sol.${functionName}(${argNames});
     printResult(result);
     return 0;
 }
