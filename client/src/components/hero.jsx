@@ -433,14 +433,14 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      <div className="matchmaking-subheading">
-        <h1>Find Your Game</h1>
-        <div className="matchmaking-heading-arrow">
-          <FaLongArrowAltDown size={32} />
-        </div>
-      </div>
 
       <section className={`matchmaking-panel panel-${playType}`}>
+        <div className="matchmaking-subheading">
+          <h1>Find Your Game</h1>
+          <div className="matchmaking-heading-arrow">
+            <FaLongArrowAltDown size={32} />
+          </div>
+        </div>
         <div className="play-type">
           <button
             className={playType === "human" ? "active" : ""}
@@ -581,11 +581,14 @@ export default function Hero() {
         <button
           className="find-match-btn"
           onClick={() => {
-            const allowed = handleProtectedNavigation("/lobby");
-
-            if (allowed) {
-              handleFindMatch();
+            if (!isAuthenticated) {
+              openLogin();
+              return;
             }
+
+            router.push(
+              `/lobby?playType=${playType}&matchMode=${matchMode}&difficulty=${difficulty}&topic=${topic}`,
+            );
           }}
         >
           {playType === "friend"
@@ -679,7 +682,7 @@ export default function Hero() {
         <div className="leaderboard-glimpse theme-elo">
           <div className="glimpse-head">
             <h3>Top ELO</h3>
-            <Link href="/leaderboard" className="view-all-btn">
+            <Link href="/leaderboard?type=elo" className="view-all-btn">
               View All <MdArrowForwardIos />
             </Link>
           </div>
@@ -719,7 +722,7 @@ export default function Hero() {
         <div className="leaderboard-glimpse theme-solved">
           <div className="glimpse-head">
             <h3>Most Solved</h3>
-            <Link href="/leaderboard" className="view-all-btn">
+            <Link href="/leaderboard?type=solved" className="view-all-btn">
               View All <MdArrowForwardIos />
             </Link>
           </div>

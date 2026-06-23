@@ -12,13 +12,24 @@ import YourStatsCard from "./components/YourStatsCard";
 import socket from "@/lib/socket";
 import EloDistribution from "./components/EloDistribution";
 import SolvedDistribution from "./components/SolvedDistribution";
+import { useSearchParams } from "next/navigation";
 
 export default function LeaderboardPage() {
   const [eloLeaderboard, setEloLeaderboard] = useState([]);
   const [solvedLeaderboard, setSolvedLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [myStats, setMyStats] = useState(null);
+  const searchParams = useSearchParams();
+  
   const [leaderboardType, setLeaderboardType] = useState("elo");
+
+  useEffect(() => {
+    const type = searchParams.get("type");
+
+    if (type === "solved" || type === "elo") {
+      setLeaderboardType(type);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (myStats) {

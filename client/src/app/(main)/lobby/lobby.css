@@ -78,15 +78,28 @@
   top: 0;
   z-index: 10;
   padding: 16px;
-  color: rgba(254, 254, 254, 0.75);
   font-size: 1.8rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: #1a1530;
   margin: 0;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
+}
+
+.panel-human .opponent-column h2 {
+  color: #d4b8ff;
+  border-bottom-color: rgba(184, 156, 255, 0.25);
+}
+
+.panel-ai .opponent-column h2 {
+  color: #9fe1cb;
+  border-bottom-color: rgba(93, 202, 165, 0.25);
+}
+
+.panel-friend .opponent-column h2 {
+  color: #f5c4b3;
+  border-bottom-color: rgba(240, 153, 123, 0.25);
 }
 
 .online-count {
@@ -137,10 +150,10 @@
 
 .opponent-card {
   width: 100%;
-  padding: 10px;
+  padding: 5px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 7px;
   box-sizing: border-box;
   background: linear-gradient(160deg, #1c1530 0%, #100e1c 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -214,7 +227,6 @@
 .opponent-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
   min-width: 0;
   flex: 1;
 }
@@ -256,7 +268,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.4rem;
-  padding-top: 8px;
+  padding-top: 4px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -284,7 +296,7 @@
 
 .challenge-btn {
   width: 100%;
-  padding: 10px;
+  padding: 5px;
   border-radius: 7px;
   font-family: "Chivo Mono", monospace;
   font-size: 0.85rem;
@@ -933,10 +945,6 @@
   border-radius: 5px;
 }
 
-.lobby-subheading .matchmaking-heading-arrow{
-   color: #c6afed;
-}
-
 .lobby-subheading{
   margin-top: 40px;
   display: flex;
@@ -945,13 +953,27 @@
 }
 
 .lobby-subheading h1 {
-   color: #c6afed;
   font-size: 40px;
   font-family: "Big Shoulders";
 }
 
 .lobby-subheading {
   justify-content: space-between;
+}
+
+.panel-human .lobby-subheading h1,
+.panel-human .lobby-subheading .matchmaking-heading-arrow {
+  color: #b89cff;
+}
+
+.panel-ai .lobby-subheading h1,
+.panel-ai .lobby-subheading .matchmaking-heading-arrow {
+  color: #5dcaa5;
+}
+
+.panel-friend .lobby-subheading h1,
+.panel-friend .lobby-subheading .matchmaking-heading-arrow {
+  color: #f0997b;
 }
 
 .lobby-subheading-subtext {

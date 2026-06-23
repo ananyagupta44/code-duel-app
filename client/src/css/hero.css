@@ -592,12 +592,12 @@
   }
 }
 
-.matchmaking-panel {
-  width: 100%;
-  display: flex;
-  gap: 1rem;
-}
 
+.matchmaking-panel {
+  display: grid;
+  grid-template-columns: 180px 1fr 220px;
+  gap: 0.5rem;
+}
 .play-type {
   width: 180px;
   display: flex;
@@ -1384,22 +1384,38 @@ border: 1px solid rgba(128,92,186,0.3);
   flex-direction: column;
 }
 
-.matchmaking-subheading .matchmaking-heading-arrow{
-   color: #c6afed;
-}
-
-.matchmaking-subheading{
-  margin-top: 40px;
+.matchmaking-subheading {
+  grid-column: 1 / -1;
   display: flex;
-   align-items: center; 
-   margin-bottom: 20px;
- 
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .matchmaking-subheading h1 {
-   color: #c6afed;
   font-size: 40px;
   font-family: "Big Shoulders";
+}
+
+/* HUMAN */
+
+.panel-human .matchmaking-subheading h1,
+.panel-human .matchmaking-heading-arrow {
+  color: #b89cff;
+}
+
+/* AI */
+
+.panel-ai .matchmaking-subheading h1,
+.panel-ai .matchmaking-heading-arrow {
+  color: #5dcaa5;
+}
+
+/* FRIEND */
+
+.panel-friend .matchmaking-subheading h1,
+.panel-friend .matchmaking-heading-arrow {
+  color: #f0997b;
 }
 
 /* RESPONSIVE */

@@ -17,6 +17,7 @@ import { FaLongArrowAltDown } from "react-icons/fa";
 import AiBotGrid from "./components/aiBotGrid";
 import "./components/aiBotGrid.css";
 import { useAuthDrawer } from "@/context/drawerContext";
+import { useSearchParams } from "next/navigation";
 
 const PLAY_TYPE_COPY = {
   human: {
@@ -51,6 +52,7 @@ export default function LobbyPage() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [selectedBot, setSelectedBot] = useState("rookie");
   const [topics, setTopics] = useState([]);
+  const searchParams = useSearchParams();
 
   const aiBots = [
     {
@@ -153,6 +155,18 @@ export default function LobbyPage() {
       socket.off("inviteRejected", handleRejected);
     };
   }, [pendingMatch]);
+
+  useEffect(() => {
+    const playTypeParam = searchParams.get("playType");
+    const matchModeParam = searchParams.get("matchMode");
+    const difficultyParam = searchParams.get("difficulty");
+    const topicParam = searchParams.get("topic");
+
+    if (playTypeParam) setPlayType(playTypeParam);
+    if (matchModeParam) setMatchMode(matchModeParam);
+    if (difficultyParam) setDifficulty(difficultyParam);
+    if (topicParam) setTopic(topicParam);
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchTopics = async () => {
