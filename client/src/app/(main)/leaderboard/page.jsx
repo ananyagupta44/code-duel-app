@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import "./leaderboard.css";
@@ -14,13 +15,13 @@ import EloDistribution from "./components/EloDistribution";
 import SolvedDistribution from "./components/SolvedDistribution";
 import { useSearchParams } from "next/navigation";
 
-export default function LeaderboardPage() {
+function LeaderboardContent() {
   const [eloLeaderboard, setEloLeaderboard] = useState([]);
   const [solvedLeaderboard, setSolvedLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [myStats, setMyStats] = useState(null);
   const searchParams = useSearchParams();
-  
+
   const [leaderboardType, setLeaderboardType] = useState("elo");
 
   useEffect(() => {
@@ -126,5 +127,19 @@ export default function LeaderboardPage() {
         </section>
       </div>
     </main>
+  );
+}
+
+export default function LeaderboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="leaderboard-page">
+          <h2>Loading Leaderboard...</h2>
+        </main>
+      }
+    >
+      <LeaderboardContent />
+    </Suspense>
   );
 }
