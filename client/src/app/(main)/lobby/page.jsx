@@ -18,6 +18,7 @@ import AiBotGrid from "./components/aiBotGrid";
 import "./components/aiBotGrid.css";
 import { useAuthDrawer } from "@/context/drawerContext";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const PLAY_TYPE_COPY = {
   human: {
@@ -34,7 +35,7 @@ const PLAY_TYPE_COPY = {
   },
 };
 
-export default function LobbyPage() {
+function LobbyContent() {
   const router = useRouter();
   const { openLogin } = useAuthDrawer();
   const [users, setUsers] = useState([]);
@@ -690,5 +691,19 @@ export default function LobbyPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function LobbyPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="lobby-page">
+          <h2>Loading Lobby...</h2>
+        </main>
+      }
+    >
+      <LobbyContent />
+    </Suspense>
   );
 }
