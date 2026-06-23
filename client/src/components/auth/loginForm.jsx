@@ -8,6 +8,7 @@ import socket from "@/lib/socket";
 import "./authForm.css";
 import { fjalla } from "@/fonts";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function LoginForm() {
   const { openSignup, closeDrawer } = useAuthDrawer();
@@ -18,6 +19,23 @@ export default function LoginForm() {
     email: "",
     password: "",
   });
+
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const res = await api.post("/auth/google", {
+        credential: credentialResponse.credential,
+      });
+
+      socket.connect();
+      socket.emit("userOnline", res.data._id);
+
+      login(res.data);
+
+      closeDrawer();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -82,6 +100,22 @@ export default function LoginForm() {
           {loading ? "Logging In..." : "Login"}
         </button>
       </form>
+
+      <div className="auth-divider">
+        <span>OR</span>
+      </div>
+
+      <div className="google-login">
+        <GoogleLogin
+          theme="filled_black"
+          shape="pill"
+          size="large"
+          text="continue_with"
+          width="320"
+          onSuccess={handleGoogleLogin}
+          onError={() => console.log("Google Login Failed")}
+        />
+      </div>
 
       <div className="auth-footer">
         Don't have an account?

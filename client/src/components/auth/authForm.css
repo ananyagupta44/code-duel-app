@@ -128,3 +128,37 @@
 .password-toggle:hover {
   color: #d4c1ff;
 }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 1.2rem 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.auth-divider span {
+  color: rgba(188, 187, 187, 0.45);
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
+  font-family: "Chivo Mono", monospace;
+}
+
+.google-login {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.google-login > div {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

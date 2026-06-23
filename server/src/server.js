@@ -13,6 +13,7 @@ import { cleanupActivities } from "./jobs/activityCleanup.js";
 import { startMatchTimeoutScheduler } from "./jobs/matchTimeoutScheduler.js";
 import { cleanupMatchSubmissions } from "./jobs/matchSubmissionCleanup.js";
 import { cleanupSubmissions } from "./jobs/submissionCleanup.js";
+import { startDailyChallengeScheduler } from "./jobs/dailyChallengeScheduler.js";
 
 dotenv.config();
 import connectDB from "./config/db.js";
@@ -21,6 +22,7 @@ connectDB();
 startTournamentScheduler();
 startMatchTimeoutScheduler();
 startMatchScheduler();
+startDailyChallengeScheduler();
 
 cleanupActivities();
 cleanupMatchSubmissions();
@@ -43,6 +45,7 @@ import { getLeaderboardData } from "./services/leaderboardEmitter.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import judgeRoutes from "./routes/judgeRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
+import dailyChallengeRoutes from "./routes/dailyChallengeRoutes.js";
 
 const app = express();
 
@@ -72,6 +75,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/tournaments", tournamentRoutes);
 app.use("/api/judge", judgeRoutes);
 app.use("/api/activities", activityRoutes);
+app.use("/api/daily", dailyChallengeRoutes);
 
 app.get("/", (req, res) => {
   res.send("CodeDuel API Running");

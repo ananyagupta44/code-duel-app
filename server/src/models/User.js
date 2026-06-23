@@ -18,7 +18,9 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.googleId;
+      },
     },
 
     elo: {
@@ -84,6 +86,25 @@ const userSchema = new mongoose.Schema(
         difficulty: String,
       },
     ],
+
+    dailyChallengeStreak: {
+      type: Number,
+      default: 0,
+    },
+
+    bestDailyChallengeStreak: {
+      type: Number,
+      default: 0,
+    },
+
+    dailyChallengesCompleted: {
+      type: Number,
+      default: 0,
+    },
+
+    googleId: String,
+
+    avatar: String,
   },
   {
     timestamps: true,

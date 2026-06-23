@@ -6,6 +6,8 @@ import { useAuth } from "@/context/authContext";
 import api from "@/lib/api";
 import "./authForm.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { GoogleLogin } from "@react-oauth/google";
+import socket from "@/lib/socket";
 
 export default function SignupForm() {
   const { openLogin, closeDrawer } = useAuthDrawer();
@@ -40,6 +42,23 @@ export default function SignupForm() {
       alert(error.response?.data?.message || "Registration Failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const res = await api.post("/auth/google", {
+        credential: credentialResponse.credential,
+      });
+
+      socket.connect();
+      socket.emit("userOnline", res.data._id);
+
+      login(res.data);
+
+      closeDrawer();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -90,6 +109,22 @@ export default function SignupForm() {
           {loading ? "Creating..." : "Create Account"}
         </button>
       </form>
+
+      <div className="auth-divider">
+        <span>OR</span>
+      </div>
+
+      <div className="google-login">
+        <GoogleLogin
+          theme="filled_black"
+          shape="pill"
+          size="large"
+          text="continue_with"
+          width="320"
+          onSuccess={handleGoogleLogin}
+          onError={() => console.log("Google Login Failed")}
+        />
+      </div>
 
       <div className="auth-footer">
         Already have an account?
