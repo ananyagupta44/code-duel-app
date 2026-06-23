@@ -434,7 +434,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <section className={`matchmaking-panel panel-${playType}`}>
+      <section className={`matchmaking-panel-hero panel-${playType}`}>
         <div className="matchmaking-subheading">
           <h1>Find Your Game</h1>
           <div className="matchmaking-heading-arrow">

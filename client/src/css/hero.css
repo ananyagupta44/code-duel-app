@@ -593,7 +593,7 @@
 }
 
 
-.matchmaking-panel {
+.matchmaking-panel-hero {
   display: grid;
   grid-template-columns: 180px 1fr 220px;
   gap: 0.5rem;
