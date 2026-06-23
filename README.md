@@ -8,6 +8,7 @@
      ╚██████╗╚██████╔╝██████╔╝███████╗    ██████╔╝╚██████╔╝███████╗███████╗
       ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝    ╚═════╝  ╚═════╝ ╚══════╝╚══════╝
 ```
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-black?style=for-the-badge&logo=vercel)](https://code-duel-app.vercel.app/)
 
 **Real-time competitive coding — write code, duel opponents, claim the crown.**
 
