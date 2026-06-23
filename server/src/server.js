@@ -11,16 +11,24 @@ import Match from "./models/Match.js";
 import { logActivity } from "./utils/activityLogger.js";
 import { cleanupActivities } from "./jobs/activityCleanup.js";
 import { startMatchTimeoutScheduler } from "./jobs/matchTimeoutScheduler.js";
+import { cleanupMatchSubmissions } from "./jobs/matchSubmissionCleanup.js";
+import { cleanupSubmissions } from "./jobs/submissionCleanup.js";
 
 dotenv.config();
 import connectDB from "./config/db.js";
 
 connectDB();
 startTournamentScheduler();
-startMatchScheduler();
-cleanupActivities();
-setInterval(cleanupActivities, 15 * 60 * 1000);
 startMatchTimeoutScheduler();
+startMatchScheduler();
+
+cleanupActivities();
+cleanupMatchSubmissions();
+cleanupSubmissions();
+
+setInterval(cleanupActivities, 15 * 60 * 1000);
+setInterval(cleanupMatchSubmissions, 6 * 60 * 60 * 1000);
+setInterval(cleanupSubmissions, 24 * 60 * 60 * 1000);
 
 import authRoutes from "./routes/authRoutes.js";
 import problemRoutes from "./routes/problemRoutes.js";
