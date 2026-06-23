@@ -8,6 +8,9 @@ import { startTournamentScheduler } from "./jobs/tournamentScheduler.js";
 import { startMatchScheduler } from "./jobs/matchScheduler.js";
 import User from "./models/User.js";
 import Match from "./models/Match.js";
+import { logActivity } from "./utils/activityLogger.js";
+import { cleanupActivities } from "./jobs/activityCleanup.js";
+import { startMatchTimeoutScheduler } from "./jobs/matchTimeoutScheduler.js";
 
 dotenv.config();
 import connectDB from "./config/db.js";
@@ -15,6 +18,9 @@ import connectDB from "./config/db.js";
 connectDB();
 startTournamentScheduler();
 startMatchScheduler();
+cleanupActivities();
+setInterval(cleanupActivities, 15 * 60 * 1000);
+startMatchTimeoutScheduler();
 
 import authRoutes from "./routes/authRoutes.js";
 import problemRoutes from "./routes/problemRoutes.js";
@@ -28,6 +34,7 @@ import tournamentRoutes from "./routes/tournamentRoutes.js";
 import { getLeaderboardData } from "./services/leaderboardEmitter.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import judgeRoutes from "./routes/judgeRoutes.js";
+import activityRoutes from "./routes/activityRoutes.js";
 
 const app = express();
 
@@ -56,6 +63,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/tournaments", tournamentRoutes);
 app.use("/api/judge", judgeRoutes);
+app.use("/api/activities", activityRoutes);
 
 app.get("/", (req, res) => {
   res.send("CodeDuel API Running");
@@ -123,6 +131,14 @@ io.on("connection", async (socket) => {
     }).select("username elo wins losses solvedProblems isInMatch");
 
     io.emit("lobbyUpdated", formatLobbyUsers(users));
+
+    const user = await User.findById(userId).select("username");
+
+    await logActivity({
+      type: "online",
+      userId: user._id,
+      message: `🟢 ${user.username} came online`,
+    });
   });
 
   socket.on("disconnect", async () => {
@@ -137,9 +153,19 @@ io.on("connection", async (socket) => {
     }
 
     if (disconnectedUserId) {
+      const user = await User.findById(disconnectedUserId).select("username");
+
       await User.findByIdAndUpdate(disconnectedUserId, {
         isOnline: false,
       });
+
+      if (user) {
+        await logActivity({
+          type: "offline",
+          userId: user._id,
+          message: `🔴 ${user.username} went offline`,
+        });
+      }
 
       await emitHeroStats();
     }
@@ -189,6 +215,14 @@ io.on("connection", async (socket) => {
     io.emit("lobbyUpdated", formatLobbyUsers(users));
 
     console.log("User logged out:", userId);
+
+    const user = await User.findById(userId).select("username");
+
+    await logActivity({
+      type: "offline",
+      userId: user._id,
+      message: `🔴 ${user.username} logged out`,
+    });
   });
 
   socket.on(

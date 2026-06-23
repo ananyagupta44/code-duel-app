@@ -14,6 +14,7 @@ import {
 } from "../services/wrapperGenerator.js";
 import { emitLeaderboardUpdate } from "../services/leaderboardEmitter.js";
 import { handleAiMatchSubmit } from "./aiController.js";
+import { logActivity } from "../utils/activityLogger.js";
 
 const saveMatchCode = async ({ match, userId, code, language }) => {
   if (match.player1Id.toString() === userId.toString()) {
@@ -69,6 +70,18 @@ export const createMatch = async (req, res) => {
 
     await User.findByIdAndUpdate(opponentId, {
       isInMatch: true,
+    });
+
+    const player1 = await User.findById(player1Id).select("username");
+
+    const player2 = await User.findById(opponentId).select("username");
+
+    await logActivity({
+      type: "match_start",
+      message: `⚔️ ${player1.username} vs ${player2.username} started a duel`,
+      metadata: {
+        matchId: match._id,
+      },
     });
 
     const users = await User.find({
@@ -228,6 +241,7 @@ export const submitMatchSolution = async (req, res) => {
       }
     }
     const player = await User.findById(userId).select("username");
+    console.log("SUBMIT ROOM:", `spectate:${match._id}`);
 
     io.to(`spectate:${match._id}`).emit("spectate:event", {
       type: "tests",
@@ -296,18 +310,17 @@ export const submitMatchSolution = async (req, res) => {
         $set: { currentStreak: 0, isInMatch: false },
       });
 
-      await User.findByIdAndUpdate(userId, {
-        $inc: {
-          wins: 1,
-        },
-        isInMatch: false,
-      });
+      const winner = await User.findById(userId).select("username");
 
-      await User.findByIdAndUpdate(loserId, {
-        $inc: {
-          losses: 1,
+      const loser = await User.findById(loserId).select("username");
+
+      await logActivity({
+        type: "match_end",
+        message: `🏆 ${winner.username} defeated ${loser.username}`,
+        userId: winner._id,
+        metadata: {
+          matchId: match._id,
         },
-        isInMatch: false,
       });
 
       io.to(`spectate:${match._id}`).emit("spectate:event", {
@@ -377,14 +390,6 @@ export const submitMatchSolution = async (req, res) => {
         matchId,
       });
 
-      io.to(player1Socket).emit("matchFinished", {
-        matchId: match._id,
-      });
-
-      io.to(player2Socket).emit("matchFinished", {
-        matchId: match._id,
-      });
-
       const users = await User.find({
         isOnline: true,
       }).select("username elo wins losses solvedProblems isInMatch");
@@ -406,10 +411,11 @@ export const submitMatchSolution = async (req, res) => {
       status: match.status,
     });
   } catch (err) {
-    console.log(err);
+    console.error("SUBMIT ERROR:");
+    console.error(err);
 
     res.status(500).json({
-      message: "Submission failed",
+      message: err.message,
     });
   }
 };

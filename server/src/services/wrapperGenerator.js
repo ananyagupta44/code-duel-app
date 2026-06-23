@@ -134,3 +134,74 @@ int main() {
 }
 `;
 };
+
+export const generateJavaWrapper = (userCode, functionName, input) => {
+  const args = Object.values(JSON.parse(input));
+
+  const toJavaLiteral = (val) => {
+    if (Array.isArray(val)) {
+      if (val.every(v => typeof v === 'number')) return `new ArrayList<>(Arrays.asList(${val.join(',')}))`;
+      if (val.every(v => typeof v === 'string')) return `new ArrayList<>(Arrays.asList(${val.map(v => `"${v}"`).join(',')}))`;
+      return `new ArrayList<>()`;
+    }
+    if (typeof val === 'string') return `"${val}"`;
+    if (typeof val === 'boolean') return val ? 'true' : 'false';
+    if (typeof val === 'number') return Number.isInteger(val) ? `${val}` : `${val}d`;
+    return val;
+  };
+
+  const toJavaType = (val) => {
+    if (Array.isArray(val)) {
+      if (val.every(v => typeof v === 'number')) return 'List<Integer>';
+      if (val.every(v => typeof v === 'string')) return 'List<String>';
+      return 'List<Object>';
+    }
+    if (typeof val === 'string') return 'String';
+    if (typeof val === 'boolean') return 'boolean';
+    if (typeof val === 'number') return Number.isInteger(val) ? 'int' : 'double';
+    return 'Object';
+  };
+
+  const typedArgs = args.map((val, i) => `${toJavaType(val)} arg${i} = ${toJavaLiteral(val)};`).join('\n        ');
+  const argNames = args.map((_, i) => `arg${i}`).join(', ');
+
+  return `
+import java.util.*;
+import java.util.stream.*;
+
+public class Main {
+
+    ${userCode}
+
+    public static void main(String[] args) {
+        Main sol = new Main();
+        ${typedArgs}
+        Object result = sol.${functionName}(${argNames});
+
+        if (result instanceof int[]) {
+            int[] arr = (int[]) result;
+            StringBuilder sb = new StringBuilder("[");
+            for (int i = 0; i < arr.length; i++) {
+                sb.append(arr[i]);
+                if (i < arr.length - 1) sb.append(",");
+            }
+            sb.append("]");
+            System.out.println(sb.toString());
+        } else if (result instanceof List) {
+            List<?> list = (List<?>) result;
+            StringBuilder sb = new StringBuilder("[");
+            for (int i = 0; i < list.size(); i++) {
+                sb.append(list.get(i));
+                if (i < list.size() - 1) sb.append(",");
+            }
+            sb.append("]");
+            System.out.println(sb.toString());
+        } else if (result instanceof Boolean) {
+            System.out.println((boolean) result ? "true" : "false");
+        } else {
+            System.out.println(result);
+        }
+    }
+}
+`;
+};

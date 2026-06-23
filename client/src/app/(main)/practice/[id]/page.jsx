@@ -19,8 +19,7 @@ export default function ProblemPage() {
   const [customInput, setCustomInput] = useState("");
   const [showLanguages, setShowLanguages] = useState(false);
   const languageDropdownRef = useRef(null);
-  const [showSuccessBanner, setShowSuccessBanner] =
-  useState(false);
+  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
 
   const runCode = async () => {
     try {
@@ -43,33 +42,33 @@ export default function ProblemPage() {
   };
 
   const submitCode = async () => {
-  try {
-    setSubmitting(true);
+    try {
+      setSubmitting(true);
 
-    const res = await api.post(`/code/submit/${id}`, {
-      language,
-      code,
-    });
+      const res = await api.post(`/code/submit/${id}`, {
+        language,
+        code,
+      });
 
-    if (res.data.verdict === "Accepted") {
-      setShowSuccessBanner(true);
+      if (res.data.verdict === "Accepted") {
+        setShowSuccessBanner(true);
 
-      setTimeout(() => {
-        router.push("/practice");
-      }, 2500);
-    } else {
-      setOutput(
-        `${res.data.verdict}
-Passed ${res.data.passed}/${res.data.total} Test Cases`
-      );
+        setTimeout(() => {
+          router.push("/practice");
+        }, 2500);
+      } else {
+        setOutput(
+          `${res.data.verdict}
+Passed ${res.data.passed}/${res.data.total} Test Cases`,
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      setOutput("Submission Failed");
+    } finally {
+      setSubmitting(false);
     }
-  } catch (error) {
-    console.log(error);
-    setOutput("Submission Failed");
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -106,7 +105,7 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`
     const firstExample = problem.testCases?.find((t) => !t.isHidden);
 
     if (firstExample) {
-      setCustomInput(JSON.stringify(JSON.parse(firstExample.input), null, 2));
+      setCustomInput(firstExample.input);
     }
   }, [problem, language]);
 
@@ -130,6 +129,28 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`
 
     localStorage.setItem(`codeduel-${id}-${language}`, code);
   }, [code, id, language]);
+
+  const formatInput = (input) => {
+    try {
+      const parsed = JSON.parse(input);
+
+      return Object.entries(parsed)
+        .map(([key, value]) => {
+          if (Array.isArray(value)) {
+            return `${key} = [${value.join(", ")}]`;
+          }
+
+          if (typeof value === "string") {
+            return `${key} = "${value}"`;
+          }
+
+          return `${key} = ${value}`;
+        })
+        .join(", ");
+    } catch {
+      return input;
+    }
+  };
 
   if (loading) {
     return <div className="loading">Loading...</div>;
@@ -176,7 +197,7 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`
                   <strong>Input:</strong>
                 </p>
 
-                <pre>{JSON.stringify(JSON.parse(test.input), null, 2)}</pre>
+                <pre>{formatInput(test.input)}</pre>
 
                 <p>
                   <strong>Output:</strong>
@@ -200,7 +221,9 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`
                   ? "JavaScript"
                   : language === "python"
                     ? "Python"
-                    : "C++"}
+                    : language === "java"
+                      ? "Java"
+                      : "C++"}
 
                 <span
                   style={{
@@ -241,6 +264,14 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`
                     }}
                   >
                     C++
+                  </div>
+                  <div
+                    onClick={() => {
+                      setLanguage("java");
+                      setShowLanguages(false);
+                    }}
+                  >
+                    Java
                   </div>
                 </div>
               )}
@@ -295,23 +326,18 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`
         </div>
       </div>
       {showSuccessBanner && (
-  <div className="success-overlay">
-    <div className="success-banner">
-      <div className="success-icon">🏆</div>
+        <div className="success-overlay">
+          <div className="success-banner">
+            <div className="success-icon">🏆</div>
 
-      <h2>Problem Solved!</h2>
+            <h2>Problem Solved!</h2>
 
-      <p>
-        Congratulations! Your solution passed all
-        test cases.
-      </p>
+            <p>Congratulations! Your solution passed all test cases.</p>
 
-      <span>
-        Redirecting to Practice Arena...
-      </span>
-    </div>
-  </div>
-)}
+            <span>Redirecting to Practice Arena...</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -50,20 +50,29 @@
 }
 
 .hero-top {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 420px;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.hero-middle {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 4rem;
+  color: #cfc8e6;
+  font-size: 1rem;
+  line-height: 1.8;
+  padding-right: 40px;
 }
 
-.hero-left {
-  flex: 1;
-}
-
-.hero-right {
+.hero-middle {
   flex: 1;
   display: flex;
   justify-content: flex-end;
+}
+
+.hero-left{
+  width: 380px;
 }
 
 .hero-left h1 {
@@ -81,7 +90,7 @@
   color: rgba(188,187,187,0.9);
 }
 
-.hero-right p {
+.hero-middle p {
   max-width: 420px;
   font-family: "Chivo Mono", monospace;
   font-size: 1.5rem;
@@ -115,6 +124,166 @@
   transition: all 0.3s ease;
 
   overflow: hidden;
+}
+
+.hero-activity {
+  background: rgba(13, 11, 24, 0.095);
+  border: 1px solid rgba(160, 120, 255, 0.18);
+  border-radius: 4px;
+  overflow: hidden;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.activity-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(188, 187, 187, 0.6);
+}
+
+.activity-count-badge {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.65rem;
+  color: #a992d6;
+  background: rgba(169, 146, 214, 0.12);
+  border: 1px solid rgba(169, 146, 214, 0.2);
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.activity-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 92, 186, 0.25) transparent;
+}
+
+.activity-list::-webkit-scrollbar {
+  width: 3px;
+}
+
+.activity-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.activity-list::-webkit-scrollbar-thumb {
+  background: rgba(128, 92, 186, 0.3);
+  border-radius: 2px;
+}
+
+.activity-item {
+  padding: 9px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s ease;
+}
+
+.activity-item:hover {
+  background: rgba(128, 92, 186, 0.07);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 0.65rem;
+}
+
+.activity-icon.type-win {
+  background: rgba(93, 202, 165, 0.12);
+  color: #5dcaa5;
+  border: 1px solid rgba(93, 202, 165, 0.2);
+}
+
+.activity-icon.type-match {
+  background: rgba(184, 156, 255, 0.12);
+  color: #b89cff;
+  border: 1px solid rgba(184, 156, 255, 0.2);
+}
+
+.activity-icon.type-tournament {
+  background: rgba(247, 201, 72, 0.12);
+  color: #f7c948;
+  border: 1px solid rgba(247, 201, 72, 0.2);
+}
+
+.activity-icon.type-default {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(188, 187, 187, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.activity-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-message {
+  color: rgba(240, 235, 255, 0.85);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-time {
+  margin-top: 3px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.65rem;
+  color: rgba(139, 135, 167, 0.6);
+}
+
+.activity-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: rgba(139, 135, 167, 0.5);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.activity-empty-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(128, 92, 186, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(128, 92, 186, 0.4);
+  font-size: 0.9rem;
 }
 
 /* FIND MATCH */

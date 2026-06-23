@@ -8,6 +8,7 @@ import Match from "../models/Match.js";
 
 import {
   generateCppWrapper,
+  generateJavaWrapper,
   generateJSWrapper,
   generatePythonWrapper,
 } from "../services/wrapperGenerator.js";
@@ -21,16 +22,19 @@ export const runCode = async (req, res) => {
     if (language === "javascript") {
       executableCode = generateJSWrapper(code, functionName, input);
     }
-
     if (language === "python") {
       executableCode = generatePythonWrapper(code, functionName, input);
     }
     if (language === "cpp") {
       executableCode = generateCppWrapper(code, functionName, input);
     }
+    if (language === "java") {
+      executableCode = generateJavaWrapper(code, functionName, input);
+    }
+
+    const output = await executeCode(language, executableCode);
 
     if (matchId && req.user) {
-      const match = await Match.findById(matchId);
       const user = await User.findById(req.user._id).select("username");
 
       io.to(`spectate:${matchId}`).emit("spectate:event", {
@@ -39,14 +43,19 @@ export const runCode = async (req, res) => {
         timestamp: Date.now(),
       });
     }
-
-    const output = await executeCode(language, executableCode);
-
     res.json({
       output,
     });
   } catch (error) {
-    console.log(error);
+    if (req.body.matchId && req.user) {
+      const user = await User.findById(req.user._id).select("username");
+
+      io.to(`spectate:${req.body.matchId}`).emit("spectate:event", {
+        type: "error",
+        message: `❌ ${user.username} got an execution error`,
+        timestamp: Date.now(),
+      });
+    }
 
     res.status(500).json({
       message: error.message,
@@ -90,6 +99,13 @@ export const submitCode = async (req, res) => {
       }
       if (language === "cpp") {
         executableCode = generateCppWrapper(
+          code,
+          problem.functionName,
+          testCase.input,
+        );
+      }
+      if (language === "java") {
+        executableCode = generateJavaWrapper(
           code,
           problem.functionName,
           testCase.input,

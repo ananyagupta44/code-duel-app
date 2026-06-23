@@ -6,6 +6,7 @@ import User from "../models/User.js";
 import { emitHeroStats } from "../server.js";
 import { calculateAiElo } from "../utils/calculateAiElo.js";
 import { io } from "../server.js";
+import { logActivity } from "../utils/activityLogger.js";
 
 export const createAiMatch = async (req, res) => {
   try {
@@ -74,6 +75,12 @@ export const createAiMatch = async (req, res) => {
     startAiMatch(match);
 
     await emitHeroStats();
+
+    await logActivity({
+      type: "ai_match",
+      message: `🤖 ${req.user.username} challenged ${bot.name}`,
+      userId: req.user._id,
+    });
 
     res.json({
       matchId: match._id,

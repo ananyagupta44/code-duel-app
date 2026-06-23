@@ -31,6 +31,7 @@ export default function Hero() {
   const [liveMatches, setLiveMatches] = useState([]);
   const [tournaments, setTournaments] = useState([]);
   const [topEloPlayers, setTopEloPlayers] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [topSolvedPlayers, setTopSolvedPlayers] = useState([]);
   const handleProtectedNavigation = (path) => {
     if (!isAuthenticated) {
@@ -79,6 +80,34 @@ export default function Hero() {
 
     return () => {
       socket.off("heroStatsUpdated", handleStats);
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        const activities = await Activity.find()
+          .sort({ createdAt: -1 })
+          .limit(20);
+
+        res.json(activities);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchActivities();
+  }, []);
+
+  useEffect(() => {
+    const handleActivity = (activity) => {
+      setActivities((prev) => [activity, ...prev].slice(0, 50));
+    };
+
+    socket.on("activity:new", handleActivity);
+
+    return () => {
+      socket.off("activity:new", handleActivity);
     };
   }, []);
 
@@ -218,11 +247,72 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="hero-right">
+        <div className="hero-middle">
           <p>
             Challenge developers worldwide in fast-paced 1v1 coding battles.
             Compete, improve, and prove your skills in real-time coding arenas.
           </p>
+        </div>
+
+        <div className="hero-activity">
+          <div className="activity-header">
+            <div className="activity-header-left">
+              <span className="live-dot" />
+              LIVE ACTIVITY
+            </div>
+            {activities.length > 0 && (
+              <span className="activity-count-badge">{activities.length}</span>
+            )}
+          </div>
+
+          <div className="activity-list">
+            {activities.length === 0 ? (
+              <div className="activity-empty">
+                <div className="activity-empty-dot">⬡</div>
+                Waiting for activity...
+              </div>
+            ) : (
+              activities.map((activity) => {
+                const msg = activity.message?.toLowerCase() || "";
+                const iconType =
+                  msg.includes("won") || msg.includes("defeat")
+                    ? "win"
+                    : msg.includes("tournament")
+                      ? "tournament"
+                      : msg.includes("match") ||
+                          msg.includes("duel") ||
+                          msg.includes("start")
+                        ? "match"
+                        : "default";
+
+                const iconGlyph =
+                  iconType === "win"
+                    ? "✓"
+                    : iconType === "tournament"
+                      ? "⬡"
+                      : iconType === "match"
+                        ? "⚔"
+                        : "·";
+
+                return (
+                  <div key={activity._id} className="activity-item">
+                    <div className={`activity-icon type-${iconType}`}>
+                      {iconGlyph}
+                    </div>
+                    <div className="activity-body">
+                      <div className="activity-message">{activity.message}</div>
+                      <div className="activity-time">
+                        {new Date(activity.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
 

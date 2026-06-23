@@ -184,7 +184,6 @@ export default function SpectateModal({ isOpen, onClose, matchId }) {
   return (
     <>
       <div className="spectate-backdrop" onClick={onClose} />
-
       <div className="spectate-overlay">
         <div className="spectate-modal">
           <div className="spectate-topbar">
