@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import api from "@/lib/api";
 import "./problem.css";
 import Editor from "@monaco-editor/react";
@@ -9,6 +9,11 @@ import Editor from "@monaco-editor/react";
 export default function ProblemPage() {
   const { id } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const isDailyChallenge = searchParams.get("daily") === "true";
+
+  const [challenge, setChallenge] = useState(null);
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState("javascript");
@@ -51,6 +56,12 @@ export default function ProblemPage() {
       });
 
       if (res.data.verdict === "Accepted") {
+        if (isDailyChallenge && challenge) {
+          await api.post("/daily/submit", {
+            challengeId: challenge._id,
+          });
+        }
+
         setShowSuccessBanner(true);
 
         setTimeout(() => {
@@ -73,8 +84,17 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`,
   useEffect(() => {
     const fetchProblem = async () => {
       try {
-        const res = await api.get(`/problems/${id}`);
-        setProblem(res.data);
+        if (isDailyChallenge) {
+          const challengeRes = await api.get("/daily");
+
+          setChallenge(challengeRes.data);
+
+          setProblem(challengeRes.data.problemId);
+        } else {
+          const res = await api.get(`/problems/${id}`);
+
+          setProblem(res.data);
+        }
       } catch (error) {
         console.log(error);
       } finally {
@@ -82,8 +102,24 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`,
       }
     };
 
-    if (id) fetchProblem();
-  }, [id]);
+    fetchProblem();
+  }, [id, isDailyChallenge]);
+
+  useEffect(() => {
+    const startDailyChallenge = async () => {
+      if (!isDailyChallenge || !challenge) return;
+
+      try {
+        await api.post("/daily/start", {
+          challengeId: challenge._id,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    startDailyChallenge();
+  }, [challenge, isDailyChallenge]);
 
   useEffect(() => {
     if (!problem) return;
@@ -163,6 +199,9 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`,
   return (
     <div className="problem-page">
       <div className="problem-left">
+        {isDailyChallenge && (
+          <div className="daily-banner">🔥 DAILY CHALLENGE</div>
+        )}
         <h1>{problem.title}</h1>
 
         <div className="problem-meta">
@@ -330,9 +369,17 @@ Passed ${res.data.passed}/${res.data.total} Test Cases`,
           <div className="success-banner">
             <div className="success-icon">🏆</div>
 
-            <h2>Problem Solved!</h2>
+            <h2>
+              {isDailyChallenge
+                ? "Daily Challenge Complete!"
+                : "Problem Solved!"}
+            </h2>
 
-            <p>Congratulations! Your solution passed all test cases.</p>
+            <p>
+              {isDailyChallenge
+                ? "Your Daily Challenge ranking has been updated."
+                : "Congratulations! Your solution passed all test cases."}
+            </p>
 
             <span>Redirecting to Practice Arena...</span>
           </div>

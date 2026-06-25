@@ -116,9 +116,17 @@ export default function ProfilePage() {
             <div className="val">{profile.totalSolved}</div>
             <div className="lbl">Solved</div>
           </div>
+          <div className="profile-qcard fire">
+            <div className="val">{profile.dailyChallengeStreak}</div>
+            <div className="lbl">Daily Streak</div>
+          </div>
+          <div className="profile-qcard teal">
+            <div className="val">{profile.dailyChallengesCompleted}</div>
+            <div className="lbl">Challenges</div>
+          </div>
         </div>
       </div>
-      
+
       {profile.tournamentBadges?.length > 0 && (
         <div className="profile-badge-section">
           <h3 className="badge-section-title">Championship Trophies</h3>
@@ -137,6 +145,36 @@ export default function ProfilePage() {
                   <div className="tb-name">{badge.tournamentName}</div>
                   <div className="tb-date">
                     {new Date(badge.wonAt).toLocaleDateString("en-US", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* DAILY CHALLENGE BADGES */}
+      {profile.badges?.length > 0 && (
+        <div className="profile-badge-section">
+          <h3 className="badge-section-title">Daily Challenge Badges</h3>
+          <div className="profile-badges">
+            {profile.badges.map((badge, i) => (
+              <div key={badge._id || i} className="daily-badge">
+                <div className="db-shine" />
+                <div className="db-icon-wrap">
+                  <span className="db-icon">{badge.icon || "⚡"}</span>
+                </div>
+                <div className="db-content">
+                  <div className="db-type">{badge.type}</div>
+                  <div className="db-label">
+                    {badge.label || badge.problemTitle || "Challenge Complete"}
+                  </div>
+                  <div className="db-date">
+                    {new Date(badge.earnedAt).toLocaleDateString("en-US", {
                       day: "numeric",
                       month: "short",
                       year: "numeric",

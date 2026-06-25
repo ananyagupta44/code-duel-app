@@ -28,10 +28,9 @@ export const getLeaderboard = async (req, res) => {
 
 export const getMyProfile = async (req, res) => {
   try {
-    const currentUser = await User.findById(req.user.id).populate(
-      "tournamentBadges.tournamentId",
-      "name difficulty",
-    );
+    const currentUser = await User.findById(req.user.id)
+      .populate("tournamentBadges.tournamentId", "name difficulty")
+      .populate("badges.challengeId", "date");
 
     if (!currentUser) {
       return res.status(404).json({ message: "User not found" });
@@ -225,7 +224,7 @@ export const getMyProfile = async (req, res) => {
       const secs = duration % 60;
 
       const eloChange =
-        m.matchType === "ranked" && "tournament"
+        m.matchType === "ranked" || m.matchType === "tournament"
           ? isPlayer1
             ? (m.player1EloAfter ?? m.player1EloBefore ?? 0) -
               (m.player1EloBefore ?? 0)
@@ -253,15 +252,17 @@ export const getMyProfile = async (req, res) => {
 
     // ACTIVITY HEATMAP (26 weeks x 7 days)
     const activityHeatmap = await buildActivityHeatmap(currentUser._id);
-    console.log("ELO HISTORY", eloHistory);
     res.status(200).json({
       username: currentUser.username,
       elo: currentUser.elo,
       rank,
       wins: currentUser.wins,
       losses: currentUser.losses,
-       tournamentBadges:
-    currentUser.tournamentBadges || [],
+      tournamentBadges: currentUser.tournamentBadges || [],
+      badges: currentUser.badges || [], // ← add this
+      dailyChallengeStreak: currentUser.dailyChallengeStreak, // ← useful for profile page
+      bestDailyChallengeStreak: currentUser.bestDailyChallengeStreak,
+      dailyChallengesCompleted: currentUser.dailyChallengesCompleted,
       totalSolved: solvedSlugs.length,
       difficultyBreakdown,
       topicBreakdown,

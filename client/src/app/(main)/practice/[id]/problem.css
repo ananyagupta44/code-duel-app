@@ -490,3 +490,51 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+.daily-banner {
+  display: inline-flex;
+  align-items: center;
+
+  margin-bottom: 1rem;
+
+  padding: 8px 14px;
+
+  border-radius: 999px;
+
+  background: rgba(249, 115, 22, 0.12);
+
+  border: 1px solid rgba(249, 115, 22, 0.25);
+
+  color: #fb923c;
+
+  font-size: 0.85rem;
+
+  font-weight: 600;
+}
+
+.daily-leaderboard {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+
+  padding: 1rem;
+
+  border-radius: 14px;
+
+  background: rgba(255,255,255,0.03);
+
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.daily-leaderboard h3 {
+  margin-bottom: 0.8rem;
+  color: white;
+}
+
+.daily-rank {
+  display: flex;
+  justify-content: space-between;
+
+  margin-bottom: 0.5rem;
+
+  color: rgba(255,255,255,0.8);
+}

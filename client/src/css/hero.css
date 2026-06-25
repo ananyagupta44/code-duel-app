@@ -1418,6 +1418,81 @@ border: 1px solid rgba(128,92,186,0.3);
   color: #f0997b;
 }
 
+.daily-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(14px);
+}
+
+.daily-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.daily-header h3 {
+  color: white;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.daily-card h2 {
+  color: white;
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+
+.daily-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.daily-leaderboard {
+  margin-bottom: 1rem;
+}
+
+.daily-leaderboard h4 {
+  color: #d4c1ff;
+  margin-bottom: 0.7rem;
+  font-size: 0.9rem;
+}
+
+.daily-rank {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+}
+
+.daily-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+
+  color: white;
+  font-weight: 600;
+
+  background: linear-gradient(
+    135deg,
+    #8b5cf6,
+    #7c3aed
+  );
+
+  transition: 0.2s ease;
+}
+
+.daily-btn:hover {
+  transform: translateY(-2px);
+}
+
 /* RESPONSIVE */
 
 @media (max-width: 1100px) {

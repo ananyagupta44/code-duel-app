@@ -65,6 +65,7 @@ export const runCode = async (req, res) => {
 
 export const submitCode = async (req, res) => {
   try {
+    console.log("SUBMIT CODE HIT");
     const { problemId } = req.params;
 
     const { language, code } = req.body;

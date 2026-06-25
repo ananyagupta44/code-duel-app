@@ -2,6 +2,7 @@
 
 import express from "express";
 import {
+  checkDailyAttempt,
   getDailyChallenge,
   startDailyChallenge,
   submitDailyChallenge,
@@ -16,5 +17,7 @@ router.get("/", protect, getDailyChallenge);
 router.post("/start", protect, startDailyChallenge);
 
 router.post("/submit", protect, submitDailyChallenge);
+
+router.get("/:challengeId/attempted", protect, checkDailyAttempt);
 
 export default router;

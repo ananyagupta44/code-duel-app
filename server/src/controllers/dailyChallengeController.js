@@ -34,22 +34,20 @@ export const startDailyChallenge = async (req, res) => {
   try {
     const { challengeId } = req.body;
 
-    const existingAttempt =
-      await DailyChallengeAttempt.findOne({
-        challengeId,
-        userId: req.user._id,
-      });
+    const existingAttempt = await DailyChallengeAttempt.findOne({
+      challengeId,
+      userId: req.user._id,
+    });
 
     if (existingAttempt) {
       return res.json(existingAttempt);
     }
 
-    const attempt =
-      await DailyChallengeAttempt.create({
-        challengeId,
-        userId: req.user._id,
-        startedAt: new Date(),
-      });
+    const attempt = await DailyChallengeAttempt.create({
+      challengeId,
+      userId: req.user._id,
+      startedAt: new Date(),
+    });
 
     res.status(201).json(attempt);
   } catch (error) {
@@ -63,8 +61,7 @@ export const submitDailyChallenge = async (req, res) => {
   try {
     const { challengeId } = req.body;
 
-    const challenge =
-      await DailyChallenge.findById(challengeId);
+    const challenge = await DailyChallenge.findById(challengeId);
 
     if (!challenge) {
       return res.status(404).json({
@@ -72,12 +69,9 @@ export const submitDailyChallenge = async (req, res) => {
       });
     }
 
-    const existingEntry =
-      challenge.leaderboard.find(
-        (entry) =>
-          entry.userId.toString() ===
-          req.user._id.toString(),
-      );
+    const existingEntry = challenge.leaderboard.find(
+      (entry) => entry.userId.toString() === req.user._id.toString(),
+    );
 
     if (existingEntry) {
       return res.status(400).json({
@@ -85,11 +79,10 @@ export const submitDailyChallenge = async (req, res) => {
       });
     }
 
-    const attempt =
-      await DailyChallengeAttempt.findOne({
-        challengeId,
-        userId: req.user._id,
-      });
+    const attempt = await DailyChallengeAttempt.findOne({
+      challengeId,
+      userId: req.user._id,
+    });
 
     if (!attempt) {
       return res.status(404).json({
@@ -97,9 +90,7 @@ export const submitDailyChallenge = async (req, res) => {
       });
     }
 
-    const solveTimeMs =
-      Date.now() -
-      new Date(attempt.startedAt).getTime();
+    const solveTimeMs = Date.now() - new Date(attempt.startedAt).getTime();
 
     challenge.participants += 1;
 
@@ -110,25 +101,32 @@ export const submitDailyChallenge = async (req, res) => {
       completedAt: new Date(),
     });
 
-    challenge.leaderboard.sort(
-      (a, b) => a.solveTimeMs - b.solveTimeMs,
-    );
+    challenge.leaderboard.sort((a, b) => a.solveTimeMs - b.solveTimeMs);
 
     await challenge.save();
 
-    const user = await User.findById(
-      req.user._id,
+    const user = await User.findById(req.user._id);
+
+    const yesterday = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kolkata",
+    }).format(new Date(Date.now() - 86400000));
+
+    const yesterdayChallenge = await DailyChallenge.findOne({
+      date: yesterday,
+    });
+
+    const completedYesterday = yesterdayChallenge?.leaderboard.some(
+      (e) => e.userId.toString() === user._id.toString(),
     );
 
     user.dailyChallengesCompleted += 1;
 
     user.dailyChallengeStreak += 1;
 
-    user.bestDailyChallengeStreak =
-      Math.max(
-        user.bestDailyChallengeStreak,
-        user.dailyChallengeStreak,
-      );
+    user.bestDailyChallengeStreak = Math.max(
+      user.bestDailyChallengeStreak,
+      user.dailyChallengeStreak,
+    );
 
     await user.save();
 
@@ -148,14 +146,27 @@ export const submitDailyChallenge = async (req, res) => {
       solveTimeMs,
       rank:
         challenge.leaderboard.findIndex(
-          (e) =>
-            e.userId.toString() ===
-            user._id.toString(),
+          (e) => e.userId.toString() === user._id.toString(),
         ) + 1,
     });
   } catch (error) {
     res.status(500).json({
       message: error.message,
     });
+  }
+};
+
+export const checkDailyAttempt = async (req, res) => {
+  try {
+    const { challengeId } = req.params;
+
+    const attempt = await DailyChallengeAttempt.findOne({
+      challengeId,
+      userId: req.user._id,
+    });
+
+    res.json({ attempted: !!attempt });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

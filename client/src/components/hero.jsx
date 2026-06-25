@@ -32,6 +32,7 @@ export default function Hero() {
   const [tournaments, setTournaments] = useState([]);
   const [topEloPlayers, setTopEloPlayers] = useState([]);
   const [activities, setActivities] = useState([]);
+  const [dailyChallenge, setDailyChallenge] = useState(null);
   const [topSolvedPlayers, setTopSolvedPlayers] = useState([]);
   const handleProtectedNavigation = (path) => {
     if (!isAuthenticated) {
@@ -41,6 +42,17 @@ export default function Hero() {
 
     router.push(path);
   };
+
+  const fetchDailyChallenge = async () => {
+    try {
+      const res = await api.get("/daily");
+
+      setDailyChallenge(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
@@ -67,6 +79,10 @@ export default function Hero() {
     };
 
     fetchStats();
+  }, []);
+
+  useEffect(() => {
+    fetchDailyChallenge();
   }, []);
 
   useEffect(() => {

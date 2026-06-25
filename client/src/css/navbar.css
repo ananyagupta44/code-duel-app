@@ -302,3 +302,290 @@ body {
 .dropdown-btn.register:hover {
   color: #ffffff;
 }
+
+/* =============================================
+   DAILY CHALLENGE — NAVBAR ICON + POPOVER
+============================================= */
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Wrapper gives us the hover surface for the popover */
+.daily-nav-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.daily-nav-icon {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  background: rgba(249, 115, 22, 0.08);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.daily-nav-icon:hover {
+  background: rgba(249, 115, 22, 0.18);
+  border-color: rgba(249, 115, 22, 0.55);
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.2);
+}
+
+/* Streak counter badge */
+.daily-streak-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: #f97316;
+  color: white;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Invisible bridge fills the gap between the icon and the popover
+   so the hover state isn't lost as the cursor moves between them */
+.daily-nav-wrap::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: transparent;
+}
+
+/* Popover panel */
+.daily-nav-popover {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 280px;
+  background: linear-gradient(160deg, #1c1530 0%, #0e0c1a 100%);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  z-index: 99999;
+
+  /* Hidden by default, revealed on hover */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+}
+
+/* Orange top accent line */
+.daily-nav-popover::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 14px 14px 0 0;
+  background: linear-gradient(90deg, #f97316, #ea580c);
+}
+
+/* Show on hover of the wrapper */
+.daily-nav-wrap:hover .daily-nav-popover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* EYEBROW */
+.daily-pop-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  color: #f97316;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.daily-pop-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f97316;
+  animation: dailyPulse 1.5s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes dailyPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(1.35); }
+}
+
+/* TITLE */
+.daily-pop-title {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1.25;
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+
+/* META ROW */
+.daily-pop-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.daily-pop-diff {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 6px;
+  text-transform: capitalize;
+}
+
+.daily-pop-participants {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: auto;
+}
+
+/* FASTEST SOLVERS */
+.daily-pop-solvers {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 12px;
+  margin-bottom: 14px;
+}
+
+.daily-pop-solvers-label {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: 8px;
+}
+
+.daily-pop-solver-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.75rem;
+}
+
+.daily-pop-solver-row:last-child { border-bottom: none; }
+
+.daily-pop-solver-rank {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.68rem;
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.daily-pop-solver-name {
+  flex: 1;
+  color: rgba(230, 225, 245, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.daily-pop-solver-time {
+  color: #9fe1cb;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+/* CTA BUTTON */
+.daily-pop-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: white;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  transition: 0.2s ease;
+  box-shadow: 0 4px 18px rgba(249, 115, 22, 0.25);
+}
+
+.daily-pop-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
+}
+
+.fire-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.fire-icon-wrap svg {
+  fill: url(#fireGrad) #f97316;
+  filter: drop-shadow(0 0 3px rgba(251, 146, 60, 0.5));
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.daily-nav-icon:hover .fire-icon-wrap svg {
+  filter: 
+    drop-shadow(0 0 6px rgba(239, 68, 68, 0.7))
+    drop-shadow(0 0 12px rgba(251, 146, 60, 0.5));
+  transform: scale(1.15);
+  animation: flicker 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes flicker {
+  0%   { filter: drop-shadow(0 0 5px rgba(239,68,68,0.7)) drop-shadow(0 0 10px rgba(251,146,60,0.5)); transform: scale(1.15) rotate(-2deg); }
+  100% { filter: drop-shadow(0 0 8px rgba(239,68,68,0.9)) drop-shadow(0 0 16px rgba(251,146,60,0.7)); transform: scale(1.2)  rotate(2deg); }
+}
+
+.daily-pop-btn-done {
+  background: rgba(74, 222, 128, 0.08);
+  border-color: rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.daily-pop-btn-done:hover {
+  background: rgba(74, 222, 128, 0.08);
+  transform: none;
+}

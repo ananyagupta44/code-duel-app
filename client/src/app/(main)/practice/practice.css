@@ -1,362 +1,788 @@
-.practice-page{
-  min-height:100vh;
-  padding:60px 5rem 3rem;
-  background:linear-gradient(to right,#000000,#3c2d55);
+@import url("https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@700;800;900&family=Chivo+Mono:wght@300;400;500;600&display=swap");
+
+/* =====================
+   PAGE SHELL
+===================== */
+
+.practice-page {
+  min-height: 100vh;
+  padding: 5rem 3rem 4rem;
+  position: relative;
 }
 
 .practice-page::before {
   content: "";
-
   position: absolute;
   inset: 0;
-
   background-image:
-    linear-gradient(
-      rgba(128,92,186,0.14) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(128,92,186,0.14) 1px,
-      transparent 1px
-    );
-
+    linear-gradient(rgba(128, 92, 186, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128, 92, 186, 0.1) 1px, transparent 1px);
   background-size: 70px 70px;
-
-  mask-image: radial-gradient(
-    circle at center,
-    black 55%,
-    transparent 100%
-  );
-
-  -webkit-mask-image: radial-gradient(
-    circle at center,
-    black 55%,
-    transparent 100%
-  );
-
   pointer-events: none;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 40%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 40%, transparent 80%);
+  z-index: 0;
 }
 
-.practice-header{
-  margin-bottom:2rem;
+.practice-page > * {
+  position: relative;
+  z-index: 1;
 }
 
-.practice-header h1{
-  font-size:4rem;
-  color:#a992d6;
-  margin-bottom:1.5rem;
+/* =====================
+   HEADER
+===================== */
+
+.practice-header {
+  margin-bottom: 2rem;
 }
 
-.filters{
-  display:flex;
-  gap:1rem;
-  flex-wrap:wrap;
+.practice-header h1 {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 3.6rem;
+  font-weight: 900;
+  color: #a992d6;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
 }
 
-.filters input{
-  min-width:300px;
-  height:50px;
-  padding:0 16px;
-  background:rgba(157,157,157,.12);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:4px;
-  color:white;
-  font-family:"Chivo Mono",monospace;
-  backdrop-filter:blur(10px);
-  transition:.25s ease;
+.practice-header-sub {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.8rem;
+  color: rgba(188, 187, 187, 0.5);
+  margin-bottom: 1.6rem;
 }
 
-.filters input:focus{
-  outline:none;
-  border-color:#a992d6;
-  box-shadow:0 0 20px rgba(169,146,214,.2);
+/* STAT PILLS ROW */
+.practice-stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 1.6rem;
 }
 
-.custom-dropdown{
-  position:relative;
-  min-width:220px;
+.practice-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
 }
 
-.dropdown-trigger{
-  width:100%;
-  height:50px;
-  padding:0 18px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  background:rgba(157,157,157,.15);
-  backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.08);
-  color:rgba(188,187,187,.9);
-  font-family:"Chivo Mono",monospace;
-  cursor:pointer;
-  transition:.25s ease;
-  border-radius: 4px;
+.practice-stat-pill .stat-count {
+  font-weight: 600;
+  color: #d4b8ff;
 }
 
-.dropdown-trigger:hover{
-  border-color:rgba(169,146,214,.6);
+.practice-stat-pill .stat-label {
+  color: rgba(255, 255, 255, 0.4);
 }
 
-.dropdown-menu{
-  position:absolute;
-  top:110%;
-  left:0;
-  width:100%;
-  background:rgba(157,157,157,.15);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,.08);
-  z-index:1000;
-  overflow:hidden;
+.practice-stat-pill.easy-stat .stat-count { color: #4ade80; }
+.practice-stat-pill.medium-stat .stat-count { color: #facc15; }
+.practice-stat-pill.hard-stat .stat-count { color: #f87171; }
+.practice-stat-pill.solved-stat .stat-count { color: #9fe1cb; }
+
+/* =====================
+   FILTERS
+===================== */
+
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.dropdown-menu button{
-  width:100%;
-  padding:14px 18px;
-  border:none;
-  background:transparent;
-  text-align:left;
-  color:rgba(188,187,187,.9);
-  font-family:"Chivo Mono",monospace;
-  cursor:pointer;
-  transition:.25s ease;
+.filters input {
+  min-width: 260px;
+  height: 42px;
+  padding: 0 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: white;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  transition: 0.2s ease;
 }
 
-.dropdown-menu button:hover{
-  background:rgba(128,92,186,.15);
-  color:#d4c1ff;
+.filters input::placeholder {
+  color: rgba(188, 187, 187, 0.4);
 }
+
+.filters input:focus {
+  outline: none;
+  border-color: rgba(169, 146, 214, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(169, 146, 214, 0.08);
+}
+
+.custom-dropdown {
+  position: relative;
+  min-width: 180px;
+}
+
+.dropdown-trigger {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: rgba(188, 187, 187, 0.9);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.dropdown-trigger:hover {
+  border-color: rgba(169, 146, 214, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dropdown-trigger .chevron {
+  font-size: 0.65rem;
+  opacity: 0.6;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-trigger.open .chevron {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  background: #1a1528;
+  border: 1px solid rgba(169, 146, 214, 0.3);
+  border-radius: 8px;
+  z-index: 1000;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.dropdown-menu button {
+  width: 100%;
+  padding: 11px 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  color: rgba(188, 187, 187, 0.9);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.dropdown-menu button:hover {
+  background: rgba(169, 146, 214, 0.12);
+  color: #d4b8ff;
+}
+
+.dropdown-menu button.active-option {
+  color: #d4b8ff;
+  background: rgba(169, 146, 214, 0.1);
+}
+
+/* =====================
+   LAYOUT
+===================== */
+
+.practice-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+  align-items: start;
+  margin-top: 1.4rem;
+}
+
+.practice-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* =====================
+   TOPICS
+===================== */
 
 .topics-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
-
-  width: 100%;
+  gap: 8px;
 }
 
 .topics-container {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex: 1;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
 
-.topics-container::-webkit-scrollbar{
-  display:none;
+.topics-container::-webkit-scrollbar { display: none; }
+
+.topic-pill {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  color: rgba(188, 187, 187, 0.75);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.topic-pill{
-  flex-shrink:0;
-  padding:7px 15px;
-  background:rgba(157,157,157,.15);
-  border:1px solid rgba(255,255,255,.08);
-  color:rgba(188,187,187,.9);
-  font-family:"Chivo Mono",monospace;
-  cursor:pointer;
-  transition:.25s ease;
-  border-radius: 4px;
-  font-size: 0.82rem;
+.topic-pill:hover {
+  background: rgba(128, 92, 186, 0.12);
+  border-color: rgba(169, 146, 214, 0.4);
+  color: #c6afed;
 }
 
-.topic-pill:hover{
-  background:rgba(128,92,186,.15);
-}
-
-.topic-pill.active{
-  background:rgba(128,92,186,.25);
-  border-color:#a992d6;
-  color:white;
+.topic-pill.active {
+  background: rgba(169, 146, 214, 0.18);
+  border-color: #a992d6;
+  color: #e0d1ff;
 }
 
 .topics-arrow {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  background: rgba(157, 157, 157, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(188, 187, 187, 0.9);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: rgba(188, 187, 187, 0.7);
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: 0.2s ease;
 }
 
-.topics-arrow:hover{
-  background:rgba(128,92,186,.2);
-  border-color:rgba(169,146,214,.5);
-  color:#d4c1ff;
+.topics-arrow:hover {
+  background: rgba(128, 92, 186, 0.15);
+  border-color: rgba(169, 146, 214, 0.5);
+  color: #d4b8ff;
 }
 
-.topics-arrow svg{
-  stroke-width:2.5;
+/* =====================
+   PROBLEM TABLE
+===================== */
+
+.problem-table {
+  background: linear-gradient(160deg, #1c1530 0%, #100e1c 100%);
+  border: 1px solid rgba(128, 92, 186, 0.25);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
 }
 
-.problem-table{
-  background:rgba(157,157,157,.15);
-  border:1px solid rgba(255,255,255,.08);
-  backdrop-filter:blur(10px); 
-}
+/* .problem-table::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #805cba, #b89cff);
+} */
 
-.table-header,
-.problem-row{
-  display:grid;
-  grid-template-columns:
-    60px
-    120px
-    2fr
-    1fr
-    120px;
-
-  align-items:center;
-  padding: 14px 24px;
-}
-
-.table-header{
-  border-bottom:1px solid rgba(255,255,255,.08);
-  font-weight:700;
-  color:white;
-}
-
-.problem-row{
-  text-decoration:none;
-  color:rgba(188,187,187,.9);
-  transition:.25s ease;
-  border-bottom:1px solid rgba(255,255,255,.05);
-}
-
-.problem-row:hover{
-  background:rgba(128,92,186,.15);
-  border-color:rgba(190,186,186,.86);
-}
-
-.easy{
-  color:#4ade80;
-}
-
-.medium{
-  color:#facc15;
-}
-
-.hard{
-  color:#ef4444;
-}
-
-.status-badge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-width:90px;
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:.75rem;
-  font-weight:600;
-  font-family:"Chivo Mono",monospace;
-}
-
-.status-badge.solved{
-  background:rgba(34,197,94,.15);
-
-  color:#22c55e;
-
-  border:1px solid rgba(34,197,94,.3);
-}
-
-.status-badge.unsolved{
-  background:rgba(107,114,128,.15);
-
-  color:#9ca3af;
-
-  border:1px solid rgba(107,114,128,.3);
-}
-
-.practice-content {
+.table-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 24px;
-  align-items: start;
+  grid-template-columns: 52px 110px 1fr 130px 100px;
+  align-items: center;
+  padding: 12px 20px;
+  background: rgba(128, 92, 186, 0.1);
+  border-bottom: 1px solid rgba(169, 146, 214, 0.15);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(169, 146, 214, 0.6);
 }
 
-.practice-main {
-  min-width: 0;
+.problem-row {
+  display: grid;
+  grid-template-columns: 52px 110px 1fr 130px 100px;
+  align-items: center;
+  padding: 13px 20px;
+  text-decoration: none;
+  color: rgba(210, 200, 230, 0.85);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid rgba(128, 92, 186, 0.1);
+}
+
+.problem-row:last-child {
+  border-bottom: none;
+}
+
+.problem-row:hover {
+  background: rgba(169, 146, 214, 0.08);
+}
+
+.problem-row:hover .problem-title {
+  color: #d4b8ff;
+}
+
+.problem-number {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.72rem;
+}
+
+.problem-title {
+  transition: color 0.15s ease;
+  font-weight: 500;
+}
+
+.problem-topic {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.76rem;
+}
+
+/* DIFFICULTY LABELS */
+.difficulty {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.difficulty.easy   { color: #4ade80; }
+.difficulty.medium { color: #facc15; }
+.difficulty.hard   { color: #f87171; }
+
+/* STATUS BADGE */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: "Chivo Mono", monospace;
+  white-space: nowrap;
+}
+
+.status-badge.solved {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+
+.status-badge.solved::before {
+  content: "✓";
+  font-size: 0.65rem;
+}
+
+.status-badge.unsolved {
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.table-empty {
+  padding: 3rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.85rem;
+}
+
+/* =====================
+   RIGHT SIDEBAR
+===================== */
+
+.practice-sidebar {
+  position: sticky;
+  top: 88px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
+
+/* =====================
+   DAILY CHALLENGE CARD
+===================== */
+
+.daily-challenge-card {
+  background: linear-gradient(160deg, #1c1530 0%, #100e1c 100%);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: 12px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-challenge-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #f97316, #ea580c);
+}
+
+.daily-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.daily-eyebrow {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #f97316;
+  font-weight: 600;
+}
+
+.daily-header .daily-icon {
+  font-size: 1rem;
+}
+
+.daily-challenge-card h3 {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+
+.daily-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.daily-participants {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-left: auto;
+}
+
+.daily-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin-bottom: 14px;
+}
+
+.daily-top-solvers h4 {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 10px;
+}
+
+.daily-solver {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+}
+
+.daily-solver:last-child { border-bottom: none; }
+
+.daily-solver-rank {
+  width: 20px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.7rem;
+}
+
+.daily-solver-name {
+  flex: 1;
+  color: rgba(230, 225, 245, 0.85);
+}
+
+.daily-solver-time {
+  color: #9fe1cb;
+  font-size: 0.72rem;
+}
+
+.no-solvers {
+  color: rgba(255, 255, 255, 0.35);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+  font-style: italic;
+  padding: 8px 0;
+}
+
+.daily-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  transition: 0.2s ease;
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.25);
+}
+
+.daily-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(249, 115, 22, 0.35);
+}
+
+/* DIFFICULTY PILL */
+.difficulty-pill {
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.difficulty-pill.easy {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+
+.difficulty-pill.medium {
+  background: rgba(250, 204, 21, 0.1);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.25);
+}
+
+.difficulty-pill.hard {
+  background: rgba(248, 113, 113, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.25);
+}
+
+/* =====================
+   LEADERBOARD SIDEBAR
+===================== */
 
 .leaderboard-sidebar {
-  position: sticky;
-  top: 90px;
-  height: fit-content;
-  padding: 20px;
-  background: rgba(157, 157, 157, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-  backdrop-filter: blur(20px);
+  background: linear-gradient(160deg, #1c1530 0%, #100e1c 100%);
+  border: 1px solid rgba(128, 92, 186, 0.25);
+  border-radius: 12px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
 }
 
-.leaderboard-sidebar h2{
-  color:#a992d6;
-  margin-bottom:20px;
-  font-size:1.8rem;
-  font-family: "Fjalla One";
+.leaderboard-sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #805cba, #b89cff);
 }
 
-.leaderboard-user{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:14px 0;
-
-  border-bottom:
-    1px solid rgba(255,255,255,.05);
-
-  color:white;
+.leaderboard-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
 }
 
-.practice-rank{
-  width:40px;
-  font-weight:700;
+.leaderboard-heading h2 {
+  font-family: "Big Shoulders", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 0.4px;
 }
 
-.username{
-  flex:1;
+.leaderboard-eyebrow {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(169, 146, 214, 0.7);
 }
 
-.score{
-  color:#22c55e;
-  font-weight:700;
+.leaderboard-col-labels {
+  display: grid;
+  grid-template-columns: 34px 1fr 52px;
+  padding: 0 4px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 4px;
 }
 
-.gold{
-  color:#facc15;
+.leaderboard-col-labels span {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.3);
 }
 
-.silver{
-  color:#d1d5db;
+.leaderboard-col-labels span:last-child {
+  text-align: right;
 }
 
-.bronze{
-  color:#f97316;
+.leaderboard-user {
+  display: grid;
+  grid-template-columns: 34px 1fr 52px;
+  align-items: center;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s ease;
+  border-radius: 6px;
 }
 
-.topics-wrapper,
-.problem-table{
-  width:100%;
+.leaderboard-user:last-child { border-bottom: none; }
+
+.leaderboard-user:hover {
+  background: rgba(169, 146, 214, 0.07);
 }
 
-@media (max-width: 1100px){
-  .practice-content{
-    grid-template-columns:1fr;
+.practice-rank {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.practice-rank.gold   { color: #ffd700; }
+.practice-rank.silver { color: #c0c0c0; }
+.practice-rank.bronze { color: #cd7f32; }
+
+.rank-medal {
+  font-size: 0.95rem;
+}
+
+.username {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.8rem;
+  color: rgba(230, 225, 245, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.score {
+  text-align: right;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #9fe1cb;
+}
+
+.leaderboard-view-all {
+  display: block;
+  margin-top: 14px;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid rgba(169, 146, 214, 0.25);
+  background: rgba(169, 146, 214, 0.06);
+  color: #b89cff;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.leaderboard-view-all:hover {
+  background: rgba(169, 146, 214, 0.14);
+  border-color: rgba(184, 156, 255, 0.5);
+  color: #d4b8ff;
+}
+
+.daily-btn-solved {
+  background: rgba(74, 222, 128, 0.08);
+  border-color: rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.daily-btn-solved:hover {
+  background: rgba(74, 222, 128, 0.08);
+  transform: none;
+}
+
+@media (max-width: 1100px) {
+  .practice-content {
+    grid-template-columns: 1fr;
   }
 
-  .leaderboard-sidebar{
-    position:static;
+  .practice-sidebar {
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .practice-page {
+    padding: 5rem 1.2rem 3rem;
+  }
+
+  .practice-header h1 {
+    font-size: 2.6rem;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters input,
+  .custom-dropdown {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .table-header,
+  .problem-row {
+    grid-template-columns: 36px 90px 1fr 80px;
+  }
+
+  .table-header span:nth-child(4),
+  .problem-row .problem-topic {
+    display: none;
+  }
+
+  .practice-sidebar {
+    grid-template-columns: 1fr;
   }
 }
