@@ -53,6 +53,7 @@ function LobbyContent() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [selectedBot, setSelectedBot] = useState("rookie");
   const [topics, setTopics] = useState([]);
+  const [findingMatch, setFindingMatch] = useState(false);
   const searchParams = useSearchParams();
 
   const aiBots = [
@@ -263,24 +264,27 @@ function LobbyContent() {
   }, [currentUserId]);
 
   const handleFindMatch = async () => {
-    if (playType === "friend") {
-      router.push("/create-game");
-      return;
-    }
+    if (findingMatch) return;
 
-    if (playType === "ai") {
-      console.log("AI button clicked");
-      const res = await api.post("/ai/create", {
-        topic,
-        difficulty,
-        botId: selectedBot,
-      });
-
-      router.push(`/duel/${res.data.matchId}`);
-      return;
-    }
+    setFindingMatch(true);
 
     try {
+      if (playType === "friend") {
+        router.push("/create-game");
+        return;
+      }
+
+      if (playType === "ai") {
+        const res = await api.post("/ai/create", {
+          topic,
+          difficulty,
+          botId: selectedBot,
+        });
+
+        router.push(`/duel/${res.data.matchId}`);
+        return;
+      }
+
       const res = await api.post("/matches/find", {
         matchType: matchMode,
         difficulty,
@@ -289,6 +293,8 @@ function LobbyContent() {
       router.push(`/duel/${res.data.matchId}`);
     } catch (error) {
       alert(error.response?.data?.message || "No opponent found");
+    } finally {
+      setFindingMatch(false);
     }
   };
 
@@ -648,22 +654,31 @@ function LobbyContent() {
         </div>
 
         <button
-          className="find-match-btn"
-          onClick={() => {
-            if (!isAuthenticated) {
-              openLogin();
-              return;
-            }
-
-            handleFindMatch();
-          }}
-        >
-          {playType === "friend"
-            ? "CREATE GAME"
-            : playType === "ai"
-              ? "START GAME"
-              : "FIND MATCH"}
-        </button>
+  className={`find-match-btn ${findingMatch ? "loading" : ""}`}
+  disabled={findingMatch}
+  onClick={() => {
+    if (!findingMatch) {
+      if (!isAuthenticated) {
+        openLogin();
+      } else {
+        handleFindMatch();
+      }
+    }
+  }}
+>
+  {findingMatch ? (
+    <>
+      <span className="btn-spinner" />
+      Starting...
+    </>
+  ) : playType === "friend" ? (
+    "CREATE GAME"
+  ) : playType === "ai" ? (
+    "START GAME"
+  ) : (
+    "FIND MATCH"
+  )}
+</button>
       </section>
       {waitingModal && (
         <div className="waiting-modal-overlay">

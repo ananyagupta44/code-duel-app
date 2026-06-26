@@ -31,6 +31,9 @@ export default function PracticePage() {
   const { openLogin } = useAuthDrawer();
   const router = useRouter();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const PROBLEMS_PER_PAGE = 15;
+
   const handleProblemClick = (e) => {
     if (!isAuthenticated) {
       e.preventDefault();
@@ -115,6 +118,10 @@ export default function PracticePage() {
     return () => container.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, difficulty, topic]);
+
   // ── derived state ──────────────────────────────────────
   const solvedSet = new Set(solvedProblems || []);
 
@@ -124,6 +131,12 @@ export default function PracticePage() {
     const topicMatch = topic === "all" || p.topic === topic;
     return titleMatch && diffMatch && topicMatch;
   });
+
+  const totalPages = Math.ceil(filteredProblems.length / PROBLEMS_PER_PAGE);
+  const paginatedProblems = filteredProblems.slice(
+    (currentPage - 1) * PROBLEMS_PER_PAGE,
+    currentPage * PROBLEMS_PER_PAGE,
+  );
 
   const formatTopicLabel = (t) =>
     t === "all"
@@ -217,18 +230,19 @@ export default function PracticePage() {
               <span>Difficulty</span>
             </div>
 
-            {filteredProblems.length === 0 ? (
+            {paginatedProblems.length === 0 ? (
               <div className="table-empty">No problems match your filters.</div>
             ) : (
-              filteredProblems.map((problem, index) => (
+              paginatedProblems.map((problem, index) => (
                 <Link
                   key={problem._id}
                   href={`/practice/${problem._id}`}
                   className="problem-row"
                   onClick={handleProblemClick}
                 >
-                  <span className="problem-number">{index + 1}</span>
-
+                  <span className="problem-number">
+                    {(currentPage - 1) * PROBLEMS_PER_PAGE + index + 1}
+                  </span>
                   <span>
                     {solvedSet.has(problem.slug) ? (
                       <span className="status-badge solved">Solved</span>
@@ -236,13 +250,10 @@ export default function PracticePage() {
                       <span className="status-badge unsolved">Unsolved</span>
                     )}
                   </span>
-
                   <span className="problem-title">{problem.title}</span>
-
                   <span className="problem-topic">
                     {formatTopicLabel(problem.topic)}
                   </span>
-
                   <span className={`difficulty ${problem.difficulty}`}>
                     {problem.difficulty}
                   </span>
@@ -250,6 +261,67 @@ export default function PracticePage() {
               ))
             )}
           </div>
+
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button
+                className="page-btn"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft size={15} />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (page) =>
+                    page === 1 ||
+                    page === totalPages ||
+                    Math.abs(page - currentPage) <= 1,
+                )
+                .reduce((acc, page, idx, arr) => {
+                  if (idx > 0 && page - arr[idx - 1] > 1) {
+                    acc.push("...");
+                  }
+                  acc.push(page);
+                  return acc;
+                }, [])
+                .map((item, idx) =>
+                  item === "..." ? (
+                    <span key={`ellipsis-${idx}`} className="page-ellipsis">
+                      …
+                    </span>
+                  ) : (
+                    <button
+                      key={item}
+                      className={`page-btn ${currentPage === item ? "active" : ""}`}
+                      onClick={() => setCurrentPage(item)}
+                    >
+                      {item}
+                    </button>
+                  ),
+                )}
+
+              <button
+                className="page-btn"
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight size={15} />
+              </button>
+
+              <span className="page-info">
+                {(currentPage - 1) * PROBLEMS_PER_PAGE + 1}–
+                {Math.min(
+                  currentPage * PROBLEMS_PER_PAGE,
+                  filteredProblems.length,
+                )}{" "}
+                of {filteredProblems.length}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* RIGHT SIDEBAR — daily challenge + leaderboard */}

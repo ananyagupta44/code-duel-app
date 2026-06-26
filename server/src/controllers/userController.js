@@ -197,7 +197,7 @@ export const getMyProfile = async (req, res) => {
       status: "finished",
     })
       .sort({ endedAt: -1 })
-      .limit(10)
+      .limit(30)
       .populate("problemId", "title")
       .populate("player1Id", "username")
       .populate("player2Id", "username");

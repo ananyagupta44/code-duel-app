@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import api from "@/lib/api";
 import getAvatar from "@/utils/getAvatar";
 import { useAuth } from "@/context/authContext";
@@ -24,16 +24,12 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showAllMatches, setShowAllMatches] = useState(false);
+  const [matchSearch, setMatchSearch] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await api.get("/profile/me");
-
-        console.log("PROFILE DATA", res.data);
-        console.log("ELO HISTORY", res.data.eloHistory);
-
         setProfile(res.data);
       } catch (error) {
         console.log(error);
@@ -44,6 +40,19 @@ export default function ProfilePage() {
 
     fetchProfile();
   }, []);
+
+  const filteredMatches = useMemo(() => {
+    if (!profile) return [];
+    const recent = profile.recentMatches.slice(0, 30);
+    if (!matchSearch.trim()) return recent;
+    const q = matchSearch.toLowerCase();
+    return recent.filter(
+      (m) =>
+        m.opponentUsername?.toLowerCase().includes(q) ||
+        m.problemTitle?.toLowerCase().includes(q) ||
+        m.matchType?.toLowerCase().includes(q),
+    );
+  }, [profile, matchSearch]);
 
   if (loading) {
     return (
@@ -74,9 +83,6 @@ export default function ProfilePage() {
     },
     { name: "Hard", value: profile.difficultyBreakdown.hard, color: "#f09595" },
   ];
-  const visibleMatches = showAllMatches
-    ? profile.recentMatches
-    : profile.recentMatches.slice(0, 4);
 
   return (
     <div className="profile-page">
@@ -130,7 +136,6 @@ export default function ProfilePage() {
       {profile.tournamentBadges?.length > 0 && (
         <div className="profile-badge-section">
           <h3 className="badge-section-title">Championship Trophies</h3>
-
           <div className="profile-badges">
             {profile.tournamentBadges.map((badge, i) => (
               <div key={badge.tournamentId || i} className="tournament-badge">
@@ -139,7 +144,6 @@ export default function ProfilePage() {
                   <div className="tb-medallion-ring" />
                   <span className="tb-medallion-icon">🏆</span>
                 </div>
-
                 <div className="tb-content">
                   <div className="tb-rank">Champion</div>
                   <div className="tb-name">{badge.tournamentName}</div>
@@ -157,7 +161,6 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* DAILY CHALLENGE BADGES */}
       {profile.badges?.length > 0 && (
         <div className="profile-badge-section">
           <h3 className="badge-section-title">Daily Challenge Badges</h3>
@@ -190,21 +193,23 @@ export default function ProfilePage() {
       <div className="profile-grid2">
         <div className="profile-card">
           <h3>ELO Progress</h3>
-          <div style={{ height: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={profile.eloHistory || []}>
-                <XAxis dataKey="match" tick={{ fontSize: 10 }} />
-                <YAxis tick={{ fontSize: 10 }} domain={["auto", "auto"]} />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="elo"
-                  stroke="#b89cff"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div style={{ width: "100%", height: 220, minHeight: 220 }}>
+            {profile.eloHistory?.length > 0 && (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={profile.eloHistory || []}>
+                  <XAxis dataKey="match" tick={{ fontSize: 10 }} />
+                  <YAxis tick={{ fontSize: 10 }} domain={["auto", "auto"]} />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="elo"
+                    stroke="#b89cff"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -212,22 +217,32 @@ export default function ProfilePage() {
           <h3>Problems by Difficulty</h3>
           {profile.totalSolved > 0 ? (
             <div className="donut-wrap">
-              <div style={{ height: 180, width: 180, flexShrink: 0 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={difficultyData}
-                      dataKey="value"
-                      innerRadius={50}
-                      outerRadius={85}
-                      paddingAngle={2}
-                    >
-                      {difficultyData.map((entry, i) => (
-                        <Cell key={i} fill={entry.color} stroke="none" />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
+              <div
+                style={{
+                  width: 180,
+                  height: 180,
+                  minWidth: 180,
+                  minHeight: 180,
+                  flexShrink: 0,
+                }}
+              >
+                {profile.dailyActivity?.length > 0 && (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={difficultyData}
+                        dataKey="value"
+                        innerRadius={50}
+                        outerRadius={85}
+                        paddingAngle={2}
+                      >
+                        {difficultyData.map((entry, i) => (
+                          <Cell key={i} fill={entry.color} stroke="none" />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
               </div>
               <div className="donut-legend">
                 {difficultyData.map((d) => (
@@ -250,7 +265,7 @@ export default function ProfilePage() {
       <div className="profile-grid2">
         <div className="profile-card">
           <h3>Win / Loss — Last 14 Days</h3>
-          <div style={{ height: 200 }}>
+          <div style={{ width: "100%", height: 200, minHeight: 200 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={profile.dailyActivity}>
                 <XAxis dataKey="day" tick={{ fontSize: 10 }} />
@@ -308,14 +323,11 @@ export default function ProfilePage() {
       <div className="profile-grid2 reverse">
         <div className="profile-card">
           <h3>Activity (Last 26 Weeks)</h3>
-
           <div className="activity-grid">
             {profile.activityHeatmap.map((cell, i) => (
               <div
                 key={i}
-                className={`act-cell ${
-                  cell.level > 0 ? `act-${cell.level}` : ""
-                }`}
+                className={`act-cell ${cell.level > 0 ? `act-${cell.level}` : ""}`}
               >
                 <div className="heat-tooltip">
                   <strong>{cell.count}</strong>{" "}
@@ -332,12 +344,59 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="profile-card">
-          <h3>Recent Matches</h3>
+        <div className="profile-card profile-card--matches">
+          <div className="match-card-header">
+            <h3>Recent Matches</h3>
+            <span className="match-count-badge">
+              {filteredMatches.length} /{" "}
+              {Math.min(profile.recentMatches.length, 30)}
+            </span>
+          </div>
+
+          {/* Search */}
+          <div className="match-search-wrap">
+            <svg
+              className="match-search-icon"
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+            >
+              <circle
+                cx="6"
+                cy="6"
+                r="4.5"
+                stroke="currentColor"
+                strokeWidth="1.4"
+              />
+              <path
+                d="M10 10l2.5 2.5"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+              />
+            </svg>
+            <input
+              className="match-search-input"
+              type="text"
+              placeholder="Search opponent, problem, or type…"
+              value={matchSearch}
+              onChange={(e) => setMatchSearch(e.target.value)}
+            />
+            {matchSearch && (
+              <button
+                className="match-search-clear"
+                onClick={() => setMatchSearch("")}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           {profile.recentMatches.length > 0 ? (
-            <>
-              <div className="match-history">
-                {visibleMatches.map((m) => (
+            filteredMatches.length > 0 ? (
+              <div className="match-history match-history--scroll">
+                {filteredMatches.map((m) => (
                   <div className="match-row" key={m._id}>
                     <div className={`result-tag ${m.isWin ? "win" : "loss"}`}>
                       {m.isWin ? "W" : "L"}
@@ -350,28 +409,15 @@ export default function ProfilePage() {
                         {m.matchType} · {m.duration}
                       </div>
                     </div>
-
                     <div className="match-date">{m.timeAgo}</div>
                   </div>
                 ))}
               </div>
-
-              {profile.recentMatches.length > 4 && (
-                <button
-                  className="match-history-toggle"
-                  onClick={() => setShowAllMatches((prev) => !prev)}
-                >
-                  {showAllMatches
-                    ? "Show less"
-                    : `Show ${profile.recentMatches.length - 4} more`}
-                  <span
-                    className={`toggle-arrow ${showAllMatches ? "up" : "down"}`}
-                  >
-                    ▾
-                  </span>
-                </button>
-              )}
-            </>
+            ) : (
+              <div className="profile-empty">
+                No matches found for "{matchSearch}"
+              </div>
+            )
           ) : (
             <div className="profile-empty">No matches played yet</div>
           )}

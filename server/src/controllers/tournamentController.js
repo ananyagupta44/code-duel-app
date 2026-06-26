@@ -135,6 +135,8 @@ export const getTournament = async (req, res) => {
     }
 
     res.json(tournament);
+
+    console.log("tournaments found:", tournaments.length);
   } catch (error) {
     console.log(error);
 
@@ -168,10 +170,7 @@ export const getMyTournamentMatch = async (req, res) => {
     const match = await Match.findOne({
       matchType: "tournament",
       status: { $in: ["waiting", "active"] },
-      $or: [
-        { player1Id: userId },
-        { player2Id: userId }
-      ],
+      $or: [{ player1Id: userId }, { player2Id: userId }],
     })
       .sort({ startTime: 1 })
       .populate("tournamentId", "name")

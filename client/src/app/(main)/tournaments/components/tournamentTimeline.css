@@ -10,7 +10,8 @@
 /* TOP BAR */
 .ttl-topbar {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 1.25rem;
   flex-wrap: wrap;
@@ -25,12 +26,12 @@
 
 .ttl-filter-btn {
   padding: 5px 14px;
-  border-radius: 20px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: transparent;
   color: rgba(255, 255, 255, 0.45);
   font-family: "Chivo Mono", monospace;
-  font-size: 14px;
+  font-size: 12px;
   letter-spacing: 0.4px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -45,6 +46,14 @@
   background: rgba(153, 92, 186, 0.225);
   border-color: rgba(169, 146, 214, 0.45);
   color: #a992d6;
+}
+
+.ttl-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .ttl-nav {
@@ -67,6 +76,109 @@
 .ttl-nav button:hover {
   border-color: rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.8);
+}
+
+/* VIEW MODE TOGGLE */
+.ttl-view-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ttl-view-btn {
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  font-family: "Chivo Mono", monospace;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ttl-view-btn.active {
+  background: rgba(169, 146, 214, 0.15);
+  color: #c6afed;
+}
+
+.ttl-view-btn:hover:not(.active) {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* DATE NAVIGATOR */
+.ttl-date-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ttl-date-arrow {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ttl-date-arrow:hover {
+  background: rgba(169, 146, 214, 0.12);
+  border-color: rgba(169, 146, 214, 0.3);
+  color: #c6afed;
+}
+
+.ttl-date-input {
+  opacity: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.ttl-date-label {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 160px;
+  text-align: center;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.ttl-date-label:hover {
+  border-color: rgba(169, 146, 214, 0.3);
+  color: #c6afed;
+}
+
+.ttl-today-btn {
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  font-family: "Chivo Mono", monospace;
+  background: rgba(169, 146, 214, 0.1);
+  border: 1px solid rgba(169, 146, 214, 0.25);
+  border-radius: 6px;
+  color: #c6afed;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ttl-today-btn:hover {
+  background: rgba(169, 146, 214, 0.2);
+  border-color: rgba(169, 146, 214, 0.4);
 }
 
 /* SCROLL AREA */
@@ -128,10 +240,18 @@
   background: rgba(128, 92, 186, 0.25);
 }
 
+.ttl-tick--date {
+  font-size: 0.7rem;
+  color: rgba(184, 156, 255, 0.8) !important;
+  font-weight: 600;
+  top: 4px;
+}
+
 /* ROWS */
 .ttl-rows {
   position: relative;
   padding-top: 10px;
+  min-height: 400px;
 }
 
 .ttl-vline {

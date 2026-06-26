@@ -851,68 +851,119 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
-@media (max-width: 540px) {
-  .cm-row { grid-template-columns: 1fr; }
-  .cm-modal { border-radius: 14px; }
-  .cm-body { padding: 16px 16px 20px; }
-  .cm-header { padding: 16px 16px 14px; }
+.cm-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.6);
+  cursor: pointer;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media (max-width: 900px) {
-  .t-summary-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .t-stats-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .t-champion-banner {
-    flex-direction: column;
-    text-align: center;
-  }
+.cm-input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
-@media (max-width: 600px) {
-  .t-summary-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .t-summary-title {
-    font-size: 1.6rem;
-  }
-
-  .t-champion-banner h2 {
-    font-size: 2rem;
-  }
-
-  .create-modal-row {
-    grid-template-columns: 1fr;
-  }
-
-  .t-search-input {
-    width: 160px;
-  }
+.cm-datepicker-wrap {
+  width: 100%;
 }
 
-/* RESPONSIVE */
-@media (max-width: 1100px) {
-  .t-live-grid,
-  .t-upcoming-grid { grid-template-columns: repeat(2, 1fr); }
-  .t-skeleton-grid { grid-template-columns: repeat(2, 1fr); }
-  .tournaments-page { padding: 2rem 1.5rem 4rem; }
+/* override react-datepicker default styles */
+.react-datepicker {
+  background: #1c1530 !important;
+  border: 1px solid rgba(169, 146, 214, 0.25) !important;
+  border-radius: 12px !important;
+  font-family: "Chivo Mono", monospace !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden;
 }
 
-@media (max-width: 700px) {
-  .t-live-grid,
-  .t-upcoming-grid { grid-template-columns: 1fr; }
-  .t-skeleton-grid { grid-template-columns: 1fr; }
-  .t-stats-row { grid-template-columns: repeat(2, 1fr); }
-  .t-skeleton-row { grid-template-columns: repeat(2, 1fr); }
-  .t-filter-row { flex-wrap: wrap; }
+.react-datepicker__header {
+  background: #14101f !important;
+  border-bottom: 1px solid rgba(169, 146, 214, 0.15) !important;
+  border-radius: 0 !important;
+  padding: 12px 0 8px !important;
+}
+
+.react-datepicker__current-month {
+  color: #c6afed !important;
+  font-family: "Big Shoulders", sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 1px !important;
+}
+
+.react-datepicker__day-name {
+  color: rgba(169, 146, 214, 0.5) !important;
+  font-size: 0.7rem !important;
+  width: 2rem !important;
+}
+
+.react-datepicker__day {
+  color: rgba(255, 255, 255, 0.75) !important;
+  border-radius: 6px !important;
+  width: 2rem !important;
+  line-height: 2rem !important;
+  font-size: 0.8rem !important;
+  transition: all 0.15s ease !important;
+}
+
+.react-datepicker__day:hover {
+  background: rgba(169, 146, 214, 0.2) !important;
+  color: #fff !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background: rgba(169, 146, 214, 0.35) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.react-datepicker__day--today {
+  border: 1px solid rgba(169, 146, 214, 0.4) !important;
+  color: #c6afed !important;
+}
+
+.react-datepicker__day--disabled {
+  color: rgba(255, 255, 255, 0.15) !important;
+  cursor: not-allowed !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: rgba(169, 146, 214, 0.6) !important;
+}
+
+.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before {
+  border-color: #c6afed !important;
+}
+
+.react-datepicker__time-container {
+  border-left: 1px solid rgba(169, 146, 214, 0.15) !important;
+}
+
+.react-datepicker__time {
+  background: #1c1530 !important;
+}
+
+.react-datepicker__time-list-item {
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 0.78rem !important;
+  font-family: "Chivo Mono", monospace !important;
+  transition: all 0.15s ease !important;
+}
+
+.react-datepicker__time-list-item:hover {
+  background: rgba(169, 146, 214, 0.2) !important;
+  color: #fff !important;
+}
+
+.react-datepicker__time-list-item--selected {
+  background: rgba(169, 146, 214, 0.35) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box {
+  width: 90px !important;
+}
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
 }

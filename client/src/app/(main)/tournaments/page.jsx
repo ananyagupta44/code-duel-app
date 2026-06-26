@@ -7,6 +7,8 @@ import { useAuth } from "@/context/authContext";
 import "./tournaments.css";
 import socket from "@/lib/socket";
 import TournamentTimeline from "./components/tournamentTimeline";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const PARTICIPANT_OPTIONS = [4, 8, 16, 32, 64];
 
@@ -80,9 +82,9 @@ export default function TournamentsPage() {
 
   const validateStep1 = () => {
     const errors = {};
-    if (!form.name.trim()) errors.name = "Tournament needs a name.";
-    if (!form.startDate) errors.startDate = "Pick a start date.";
-    if (!form.endDate) errors.endDate = "Pick an end date.";
+    if (!form.name.trim()) errors.name = "Tournament name required.";
+    if (!form.startDate) errors.startDate = "Start date required.";
+    if (!form.endDate) errors.endDate = "End date required.";
     if (
       form.startDate &&
       form.endDate &&
@@ -302,13 +304,24 @@ export default function TournamentsPage() {
                     <label className="cm-label">
                       Start date <span className="cm-required">*</span>
                     </label>
-                    <input
-                      type="datetime-local"
-                      className={`cm-input${formErrors.startDate ? " cm-input--error" : ""}`}
-                      value={form.startDate}
-                      onChange={(e) =>
-                        setForm({ ...form, startDate: e.target.value })
+                    <DatePicker
+                      selected={
+                        form.startDate ? new Date(form.startDate) : null
                       }
+                      onChange={(date) =>
+                        setForm({
+                          ...form,
+                          startDate: date?.toISOString() || "",
+                        })
+                      }
+                      showTimeSelect
+                      timeFormat="HH:mm"
+                      timeIntervals={15}
+                      dateFormat="MMM d, yyyy h:mm aa"
+                      placeholderText="Pick a start date"
+                      className={`cm-input${formErrors.startDate ? " cm-input--error" : ""}`}
+                      wrapperClassName="cm-datepicker-wrap"
+                      minDate={new Date()}
                     />
                     {formErrors.startDate && (
                       <span className="cm-error">{formErrors.startDate}</span>
@@ -318,12 +331,20 @@ export default function TournamentsPage() {
                     <label className="cm-label">
                       End date <span className="cm-required">*</span>
                     </label>
-                    <input
-                      type="datetime-local"
+                    <DatePicker
+                      selected={form.endDate ? new Date(form.endDate) : null}
+                      onChange={(date) =>
+                        setForm({ ...form, endDate: date?.toISOString() || "" })
+                      }
+                      showTimeSelect
+                      timeFormat="HH:mm"
+                      timeIntervals={15}
+                      dateFormat="MMM d, yyyy h:mm aa"
+                      placeholderText="Pick an end date"
                       className={`cm-input${formErrors.endDate ? " cm-input--error" : ""}`}
-                      value={form.endDate}
-                      onChange={(e) =>
-                        setForm({ ...form, endDate: e.target.value })
+                      wrapperClassName="cm-datepicker-wrap"
+                      minDate={
+                        form.startDate ? new Date(form.startDate) : new Date()
                       }
                     />
                     {formErrors.endDate && (
@@ -334,13 +355,26 @@ export default function TournamentsPage() {
 
                 <div className="cm-field">
                   <label className="cm-label">Registration deadline</label>
-                  <input
-                    type="datetime-local"
-                    className={`cm-input${formErrors.registrationDeadline ? " cm-input--error" : ""}`}
-                    value={form.registrationDeadline}
-                    onChange={(e) =>
-                      setForm({ ...form, registrationDeadline: e.target.value })
+                  <DatePicker
+                    selected={
+                      form.registrationDeadline
+                        ? new Date(form.registrationDeadline)
+                        : null
                     }
+                    onChange={(date) =>
+                      setForm({
+                        ...form,
+                        registrationDeadline: date?.toISOString() || "",
+                      })
+                    }
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    dateFormat="MMM d, yyyy h:mm aa"
+                    placeholderText="Pick a deadline (optional)"
+                    className="cm-input"
+                    wrapperClassName="cm-datepicker-wrap"
+                    maxDate={form.startDate ? new Date(form.startDate) : null}
                   />
                   {formErrors.registrationDeadline && (
                     <span className="cm-error">

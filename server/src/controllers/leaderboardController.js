@@ -19,7 +19,7 @@ export const getLeaderboardData = async (req, res) => {
       eloUsers.map(async (user) => {
         const lastMatch = await Match.findOne({
           status: "finished",
-          matchType: "ranked",
+          matchType: { $in: ["ranked", "ai", "tournament"] },
           $or: [{ player1Id: user._id }, { player2Id: user._id }],
         }).sort({ endedAt: -1 });
 
