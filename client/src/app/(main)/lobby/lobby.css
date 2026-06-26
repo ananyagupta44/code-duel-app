@@ -24,7 +24,7 @@
   pointer-events: none;
 }
 
-.lobby-page > * {
+.lobby-page > *:not(.tutorial-veil):not(.tutorial-card) {
   position: relative;
   z-index: 2;
 }
@@ -1061,3 +1061,121 @@
 .ai-bot-card.theme-crimson .bot-power-fill { background: #e24b4a; }
 .ai-bot-card.theme-crimson.selected { box-shadow: 0 0 0 2px #e24b4a, 0 0 24px rgba(163, 45, 45, 0.35); }
 .ai-bot-card.theme-crimson .bot-selected-badge { background: #e24b4a; color: #501313; }
+
+.lobby-help {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+/* show popover on hover of the wrapper */
+.lobby-help:hover .help-popover {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.help-popover {
+  position: fixed;
+  width: 300px;
+  padding: 22px 20px;
+  background: linear-gradient(145deg, #14112a 0%, #1b1638 100%);
+  border: 1px solid rgba(184, 156, 255, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 32px rgba(128, 92, 186, 0.15);
+  z-index: 999999;
+}
+
+/* invisible bridge so cursor moving from btn → popover doesn't close it */
+.help-popover::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 0;
+  right: 0;
+  height: 6px;
+}
+
+.help-popover-title {
+  font-family: "Big Shoulders", "Fjalla One", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.help-popover-text {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.8rem;
+  color: rgba(200, 195, 230, 0.65);
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+.help-popover-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.help-popover-cancel {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.help-popover-cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.help-popover-start {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #b89cff 0%, #7a5ccc 100%);
+  color: white;
+  font-family: "Big Shoulders", "Fjalla One", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+
+.help-popover-start:hover {
+  box-shadow: 0 0 16px rgba(184, 156, 255, 0.4);
+}
+
+.help-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: #b89cff;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(172, 77, 185, 0.35);
+}
+
+.help-btn:hover {
+    background: #afa9ec;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(172, 77, 185, 0.5);
+}
+
+.help-btn:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 6px rgba(172, 77, 185, 0.3);
+}

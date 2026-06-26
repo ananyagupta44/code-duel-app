@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import "./lobby.css";
@@ -19,6 +19,10 @@ import "./components/aiBotGrid.css";
 import { useAuthDrawer } from "@/context/drawerContext";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import TutorialModal from "./components/TutorialModal";
+import "./components/tutorialModal.css";
+import HelpDialog from "./components/helpDialog";
+import { FaQuestion } from "react-icons/fa6";
 
 const PLAY_TYPE_COPY = {
   human: {
@@ -54,7 +58,56 @@ function LobbyContent() {
   const [selectedBot, setSelectedBot] = useState("rookie");
   const [topics, setTopics] = useState([]);
   const [findingMatch, setFindingMatch] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState(0);
+  const [showHelpDialog, setShowHelpDialog] = useState(false);
+  const playTypeRef = useRef(null);
+  const modeRef = useRef(null);
+  const topicRef = useRef(null);
+  const difficultyRef = useRef(null);
+  const botRef = useRef(null);
+  const startButtonRef = useRef(null);
   const searchParams = useSearchParams();
+  const helpBtnRef = useRef(null);
+  const [helpPopoverPos, setHelpPopoverPos] = useState({ top: 0, left: 0 });
+  const isOverBtn = useRef(false);
+  const isOverPopover = useRef(false);
+
+  const openHelpPopover = () => {
+    const rect = helpBtnRef.current.getBoundingClientRect();
+    setHelpPopoverPos({
+      top: rect.bottom + 8,
+      left: rect.right - 300, // popover width is 300px, right-align with button
+    });
+    setShowHelpDialog(true);
+  };
+
+  const handleBtnEnter = () => {
+    isOverBtn.current = true;
+    openHelpPopover();
+  };
+
+  const handleBtnLeave = () => {
+    isOverBtn.current = false;
+    setTimeout(() => {
+      if (!isOverBtn.current && !isOverPopover.current) {
+        setShowHelpDialog(false);
+      }
+    }, 100);
+  };
+
+  const handlePopoverEnter = () => {
+    isOverPopover.current = true;
+  };
+
+  const handlePopoverLeave = () => {
+    isOverPopover.current = false;
+    setTimeout(() => {
+      if (!isOverBtn.current && !isOverPopover.current) {
+        setShowHelpDialog(false);
+      }
+    }, 100);
+  };
 
   const aiBots = [
     {
@@ -188,6 +241,38 @@ function LobbyContent() {
     fetchTopics();
   }, []);
 
+  useEffect(() => {
+    const alreadySeen = localStorage.getItem("lobbyTutorialSeen");
+
+    if (!alreadySeen) {
+      setShowTutorial(true);
+      setTutorialStep(0);
+    }
+  }, []);
+
+  const skipTutorial = () => {
+    localStorage.setItem("lobbyTutorialSeen", "true");
+    setShowTutorial(false);
+  };
+
+  const finishTutorial = () => {
+    localStorage.setItem("lobbyTutorialSeen", "true");
+    setShowTutorial(false);
+    setTutorialStep(0);
+  };
+
+  const startTutorial = () => {
+    setPlayType("human");
+    setMatchMode("casual");
+    setDifficulty("medium");
+    setTopic(topics[0] || "array");
+    setSelectedBot("rookie");
+
+    setTutorialStep(0);
+    setShowHelpDialog(false);
+    setShowTutorial(true);
+  };
+
   const fetchUsers = async () => {
     try {
       const res = await api.get("/matches/lobby");
@@ -200,6 +285,16 @@ function LobbyContent() {
       setLoading(false);
     }
   };
+
+  const currentTutorialRef = useMemo(() => {
+    if (!showTutorial) return null;
+    if (tutorialStep === 0) return playTypeRef; // step 0 will be centered anyway
+    if (playType === "ai" && tutorialStep === 1) return topicRef;
+    if (playType !== "ai" && tutorialStep === 1) return modeRef;
+    if (tutorialStep === 2) return difficultyRef;
+    if (playType === "ai" && tutorialStep === 3) return botRef;
+    return startButtonRef;
+  }, [tutorialStep, playType, showTutorial]);
 
   const displayedUsers = useMemo(() => {
     const safeUsers = Array.isArray(users) ? users : [];
@@ -306,8 +401,97 @@ function LobbyContent() {
   const heading = PLAY_TYPE_COPY[playType]?.heading ?? "Find Your Game";
   const subtext = PLAY_TYPE_COPY[playType]?.subtext ?? "";
 
+  const getTutorialStep = () => {
+    if (playType === "human") {
+      return [
+        {
+          title: "Choose Play Type",
+          description: "Select Random, AI or Friend.",
+        },
+        {
+          title: "Choose Match Mode",
+          description: "Pick Ranked or Non Ranked.",
+        },
+        {
+          title: "Choose Difficulty",
+          description: "Select the problem difficulty.",
+        },
+        {
+          title: "Find a Match",
+          description: "Click FIND MATCH to start matchmaking.",
+        },
+      ];
+    }
+
+    if (playType === "ai") {
+      return [
+        {
+          title: "Choose Play Type",
+          description: "Select Random, AI or Friend.",
+        },
+        {
+          title: "Choose Problem Topic",
+          description: "Select the type of problem you want.",
+        },
+        {
+          title: "Choose Difficulty",
+          description: "Select problem difficulty.",
+        },
+        {
+          title: "Choose an AI Bot",
+          description: "Select the bot you'd like to battle.",
+        },
+        {
+          title: "Start Game",
+          description: "Click START GAME to begin.",
+        },
+      ];
+    }
+
+    return [
+      {
+        title: "Choose Play Type",
+        description: "Select Random, AI or Friend.",
+      },
+      {
+        title: "Choose Match Mode",
+        description: "Pick Ranked or Non Ranked.",
+      },
+      {
+        title: "Choose Difficulty",
+        description: "Select the problem difficulty.",
+      },
+      {
+        title: "Challenge a Player",
+        description: "Challenge an online player or click CREATE GAME.",
+      },
+    ];
+  };
+
+  const tutorialSteps = getTutorialStep();
+
   return (
     <div className={`lobby-page panel-${playType} ${chivo.className}`}>
+      <div className="lobby-help">
+        <button
+          ref={helpBtnRef}
+          className="help-btn"
+          aria-label="Help"
+          onMouseEnter={handleBtnEnter}
+          onMouseLeave={handleBtnLeave}
+        >
+          <FaQuestion />
+        </button>
+        {showHelpDialog && (
+          <HelpDialog
+            position={helpPopoverPos}
+            onMouseEnter={handlePopoverEnter}
+            onMouseLeave={handlePopoverLeave}
+            onCancel={() => setShowHelpDialog(false)}
+            onStart={startTutorial}
+          />
+        )}
+      </div>
       {playType === "friend" && (
         <div className="choose-opponent-section">
           <h1 className={`choose-title ${fjalla.className}`}>
@@ -507,12 +691,27 @@ function LobbyContent() {
       {playType === "ai" && (
         <div className="choose-opponent-section">
           <h1 className={`choose-title ${fjalla.className}`}>PRACTICE VS AI</h1>
+          <div
+            ref={botRef}
+            id="tutorial-bots"
+            className={
+              showTutorial && playType === "ai" && tutorialStep === 3
+                ? "tutorial-highlight"
+                : ""
+            }
+          >
+            <AiBotGrid
+              bots={aiBots}
+              selectedBot={selectedBot}
+              onSelect={(botId) => {
+                setSelectedBot(botId);
 
-          <AiBotGrid
-            bots={aiBots}
-            selectedBot={selectedBot}
-            onSelect={setSelectedBot}
-          />
+                if (showTutorial && playType === "ai" && tutorialStep === 3) {
+                  setTutorialStep(4);
+                }
+              }}
+            />
+          </div>
         </div>
       )}
       <div className="lobby-subheading">
@@ -526,24 +725,48 @@ function LobbyContent() {
       </div>
       {/* matchmaking panel*/}
       <section className="matchmaking-panel">
-        <div className="play-type">
+        <div
+          ref={playTypeRef}
+          id="tutorial-play-type"
+          className={`play-type ${
+            showTutorial && tutorialStep === 0 ? "tutorial-highlight" : ""
+          }`}
+        >
           <button
             className={playType === "human" ? "active" : ""}
-            onClick={() => setPlayType("human")}
+            onClick={() => {
+              setPlayType("human");
+
+              if (showTutorial && tutorialStep === 0) {
+                setTutorialStep(1);
+              }
+            }}
           >
             <IoLogoGameControllerB /> Random
           </button>
 
           <button
             className={playType === "ai" ? "active" : ""}
-            onClick={() => setPlayType("ai")}
+            onClick={() => {
+              setPlayType("ai");
+
+              if (showTutorial && tutorialStep === 0) {
+                setTutorialStep(1);
+              }
+            }}
           >
             <FaRobot /> AI
           </button>
 
           <button
             className={playType === "friend" ? "active" : ""}
-            onClick={() => setPlayType("friend")}
+            onClick={() => {
+              setPlayType("friend");
+
+              if (showTutorial && tutorialStep === 0) {
+                setTutorialStep(1);
+              }
+            }}
           >
             <FaUserFriends /> Friend
           </button>
@@ -552,10 +775,24 @@ function LobbyContent() {
         <div className="match-options">
           {playType === "friend" && (
             <>
-              <div className="match-mode">
+              <div
+                ref={modeRef}
+                id="tutorial-match-mode"
+                className={`match-mode ${
+                  showTutorial && tutorialStep === 1 && playType !== "ai"
+                    ? "tutorial-highlight"
+                    : ""
+                }`}
+              >
                 <button
                   className={matchMode === "casual" ? "active" : ""}
-                  onClick={() => setMatchMode("casual")}
+                  onClick={() => {
+                    setMatchMode("casual");
+
+                    if (showTutorial && tutorialStep === 1) {
+                      setTutorialStep(2);
+                    }
+                  }}
                 >
                   <FaStopCircle />
                   Non Ranked
@@ -563,21 +800,39 @@ function LobbyContent() {
 
                 <button
                   className={matchMode === "ranked" ? "active" : ""}
-                  onClick={() => setMatchMode("ranked")}
+                  onClick={() => {
+                    setMatchMode("ranked");
+
+                    if (showTutorial && tutorialStep === 1) {
+                      setTutorialStep(2);
+                    }
+                  }}
                 >
                   <RiSwordLine />
                   ELO Ranked
                 </button>
               </div>
 
-              <div className="difficulty-options">
+              <div
+                ref={difficultyRef}
+                id="tutorial-difficulty"
+                className={`difficulty-options ${
+                  showTutorial && tutorialStep === 2 ? "tutorial-highlight" : ""
+                }`}
+              >
                 {["Easy", "Medium", "Hard", "Random"].map((level) => (
                   <button
                     key={level}
                     className={
                       difficulty === level.toLowerCase() ? "active" : ""
                     }
-                    onClick={() => setDifficulty(level.toLowerCase())}
+                    onClick={() => {
+                      setDifficulty(level.toLowerCase());
+
+                      if (showTutorial && tutorialStep === 2) {
+                        setTutorialStep(3);
+                      }
+                    }}
                   >
                     {level}
                   </button>
@@ -588,26 +843,56 @@ function LobbyContent() {
 
           {playType === "ai" && (
             <>
-              <div className="topic-options">
+              <div
+                ref={topicRef}
+                id="tutorial-topic"
+                className={`topic-options ${
+                  showTutorial && tutorialStep === 1 && playType === "ai"
+                    ? "tutorial-highlight"
+                    : ""
+                }`}
+              >
                 {topics.map((item) => (
                   <button
                     key={item}
                     className={topic === item ? "active" : ""}
-                    onClick={() => setTopic(item)}
+                    onClick={() => {
+                      setTopic(item);
+
+                      if (
+                        showTutorial &&
+                        playType === "ai" &&
+                        tutorialStep === 1
+                      ) {
+                        setTutorialStep(2);
+                      }
+                    }}
                   >
                     {item === "random" ? "Random" : item}
                   </button>
                 ))}
               </div>
 
-              <div className="difficulty-options">
+              <div
+                ref={difficultyRef}
+                id="tutorial-difficulty"
+                className={`difficulty-options ${
+                  showTutorial && tutorialStep === 2 ? "tutorial-highlight" : ""
+                }`}
+              >
                 {["Easy", "Medium", "Hard", "Random"].map((level) => (
                   <button
                     key={level}
                     className={
                       difficulty === level.toLowerCase() ? "active" : ""
                     }
-                    onClick={() => setDifficulty(level.toLowerCase())}
+                    onClick={() => {
+                      setDifficulty(level.toLowerCase());
+
+                      if (showTutorial && tutorialStep === 2) {
+                        setTutorialStep(3);
+                      }
+                    }}
                   >
                     {level}
                   </button>
@@ -618,10 +903,24 @@ function LobbyContent() {
 
           {playType === "human" && (
             <div className="friend-panel">
-              <div className="match-mode">
+              <div
+                ref={modeRef}
+                id="tutorial-match-mode"
+                className={`match-mode ${
+                  showTutorial && tutorialStep === 1 && playType !== "ai"
+                    ? "tutorial-highlight"
+                    : ""
+                }`}
+              >
                 <button
                   className={matchMode === "casual" ? "active" : ""}
-                  onClick={() => setMatchMode("casual")}
+                  onClick={() => {
+                    setMatchMode("casual");
+
+                    if (showTutorial && tutorialStep === 1) {
+                      setTutorialStep(2);
+                    }
+                  }}
                 >
                   <FaStopCircle />
                   Non Ranked
@@ -629,21 +928,39 @@ function LobbyContent() {
 
                 <button
                   className={matchMode === "ranked" ? "active" : ""}
-                  onClick={() => setMatchMode("ranked")}
+                  onClick={() => {
+                    setMatchMode("ranked");
+
+                    if (showTutorial && tutorialStep === 1) {
+                      setTutorialStep(2);
+                    }
+                  }}
                 >
                   <RiSwordLine />
                   ELO Ranked
                 </button>
               </div>
               <div className="space"></div>
-              <div className="difficulty-options">
+              <div
+                ref={difficultyRef}
+                id="tutorial-difficulty"
+                className={`difficulty-options ${
+                  showTutorial && tutorialStep === 2 ? "tutorial-highlight" : ""
+                }`}
+              >
                 {["Easy", "Medium", "Hard", "Random"].map((level) => (
                   <button
                     key={level}
                     className={
                       difficulty === level.toLowerCase() ? "active" : ""
                     }
-                    onClick={() => setDifficulty(level.toLowerCase())}
+                    onClick={() => {
+                      setDifficulty(level.toLowerCase());
+
+                      if (showTutorial && tutorialStep === 2) {
+                        setTutorialStep(3);
+                      }
+                    }}
                   >
                     {level}
                   </button>
@@ -654,32 +971,68 @@ function LobbyContent() {
         </div>
 
         <button
-  className={`find-match-btn ${findingMatch ? "loading" : ""}`}
-  disabled={findingMatch}
-  onClick={() => {
-    if (!findingMatch) {
-      if (!isAuthenticated) {
-        openLogin();
-      } else {
-        handleFindMatch();
-      }
-    }
-  }}
->
-  {findingMatch ? (
-    <>
-      <span className="btn-spinner" />
-      Starting...
-    </>
-  ) : playType === "friend" ? (
-    "CREATE GAME"
-  ) : playType === "ai" ? (
-    "START GAME"
-  ) : (
-    "FIND MATCH"
-  )}
-</button>
+          ref={startButtonRef}
+          id="tutorial-start-button"
+          className={`find-match-btn
+        ${
+          showTutorial &&
+          ((playType === "human" && tutorialStep === 3) ||
+            (playType === "friend" && tutorialStep === 3) ||
+            (playType === "ai" && tutorialStep === 4))
+            ? "tutorial-highlight"
+            : ""
+        }
+    `}
+          disabled={findingMatch}
+          onClick={() => {
+            if (findingMatch) return;
+            if (!isAuthenticated) {
+              openLogin();
+              return;
+            }
+            if (
+              showTutorial &&
+              ((playType === "human" && tutorialStep === 3) ||
+                (playType === "friend" && tutorialStep === 3) ||
+                (playType === "ai" && tutorialStep === 4))
+            ) {
+              finishTutorial();
+            }
+            handleFindMatch();
+          }}
+        >
+          {findingMatch ? (
+            <>
+              <span className="btn-spinner" />
+              Starting...
+            </>
+          ) : playType === "friend" ? (
+            "CREATE GAME"
+          ) : playType === "ai" ? (
+            "START GAME"
+          ) : (
+            "FIND MATCH"
+          )}
+        </button>
       </section>
+
+      {showTutorial && (
+        <TutorialModal
+          step={tutorialStep + 1}
+          totalSteps={tutorialSteps.length}
+          title={tutorialSteps[tutorialStep].title}
+          description={tutorialSteps[tutorialStep].description}
+          onSkip={skipTutorial}
+          onNext={() => {
+            if (tutorialStep + 1 >= tutorialSteps.length) {
+              finishTutorial();
+            } else {
+              setTutorialStep((s) => s + 1);
+            }
+          }}
+          targetRef={currentTutorialRef}
+        />
+      )}
       {waitingModal && (
         <div className="waiting-modal-overlay">
           <div className="waiting-modal">
